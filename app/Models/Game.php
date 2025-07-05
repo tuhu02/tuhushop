@@ -12,6 +12,10 @@ class Game extends Produk
     // Game model sekarang extends Produk untuk backward compatibility
     // Semua method dan relasi sudah ada di Produk model
     
+    protected $primaryKey = 'product_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
     /**
      * Method untuk mengambil produk pertama
      */
@@ -32,7 +36,7 @@ class Game extends Produk
 
     public function transactions()
     {
-        return $this->hasMany(\App\Models\Transaction::class, 'game_id', 'game_id');
+        return $this->hasMany(\App\Models\Transaction::class, 'game_id', 'product_id');
     }
 
     public function priceLists()

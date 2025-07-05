@@ -65,7 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/produk', [App\Http\Controllers\Admin\ProdukController::class, 'index'])->name('produk.index');
     Route::get('/produk/create', [App\Http\Controllers\Admin\ProdukController::class, 'create'])->name('produk.create');
     Route::post('/produk', [App\Http\Controllers\Admin\ProdukController::class, 'store'])->name('produk.store');
-    // Route::get('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'show'])->name('produk.show');
+    Route::get('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'show'])->name('produk.show');
     Route::get('/produk/{product}/edit', [App\Http\Controllers\Admin\ProdukController::class, 'edit'])->name('produk.edit');
     Route::put('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'destroy'])->name('produk.destroy');
@@ -78,6 +78,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Denom Management
     Route::post('/denom', [App\Http\Controllers\Admin\PriceListController::class, 'store'])->name('denom.store');
+    Route::get('/denom/{id}/edit', [App\Http\Controllers\Admin\PriceListController::class, 'edit'])->name('denom.edit');
     Route::put('/denom/{id}', [App\Http\Controllers\Admin\PriceListController::class, 'update'])->name('denom.update');
     Route::delete('/denom/{id}', [App\Http\Controllers\Admin\PriceListController::class, 'destroy'])->name('denom.destroy');
     Route::patch('/denom/{id}/toggle-status', [App\Http\Controllers\Admin\PriceListController::class, 'toggleStatus'])->name('denom.toggleStatus');
@@ -123,5 +124,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/kategoriProduk/{id}', [App\Http\Controllers\Admin\KategoriProdukController::class, 'destroy'])->name('kategoriProduk.destroy');
 });
 
-// Route::get('/produk/{product}', [ProdukController::class, 'show'])->name('produk.show');
+// Route publik produk (pastikan didefinisikan setelah group admin)
 Route::get('/produk/{product_id}', [App\Http\Controllers\ProdukController::class, 'showPublic'])->name('produk.public');

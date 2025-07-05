@@ -13,7 +13,6 @@ class PriceList extends Model
         'harga',
         'kategori',
         'provider',
-        'nama_denom',
         'harga_modal',
         'harga_jual',
         'harga_member',

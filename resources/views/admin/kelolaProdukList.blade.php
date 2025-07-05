@@ -74,7 +74,7 @@
     <div class="bg-white rounded-lg shadow">
         <div class="p-6 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">Daftar Produk</h2>
-        </div>
+        </div>  
         
         <div class="p-6">
             @if($products->count() > 0)
@@ -84,10 +84,10 @@
                             <div class="flex items-start space-x-4">
                                 <!-- Product Image -->
                                 <div class="flex-shrink-0">
-                                    @if($product->logo)
-                                        <img src="{{ Storage::url($product->logo) }}" 
-                                             alt="{{ $product->product_name }}" 
-                                             class="w-16 h-16 object-cover rounded-lg border">
+                                    @if($product->thumbnail_url)
+                                    <img src="{{ asset('storage/'.$product->thumbnail_url) }}" 
+                                        alt="{{ $product->product_name }}" 
+                                        class="w-16 h-16 object-cover rounded-lg border">
                                     @else
                                         <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                                             <i class="fas fa-image text-gray-400 text-xl"></i>

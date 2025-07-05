@@ -2,43 +2,108 @@
 
 @section('content')
 <div class="ml-64 p-8">
-    <div class="flex items-center mb-6">
-        <img src="{{ asset('image/' . $game->thumbnail_url) }}" alt="{{ $game->game_name }}" class="w-16 h-16 object-cover rounded mr-4 border shadow">
-        <div>
-            <h1 class="text-2xl font-bold mb-1">{{ $game->game_name }}</h1>
-            <div class="text-gray-500">{{ $game->developer }}</div>
-        </div>
-        <a href="{{ route('admin.kelolaProduk') }}" class="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">Kembali</a>
-    </div>
-    <div class="mb-6">
-        <form action="{{ route('admin.denom.store') }}" method="POST" class="flex gap-2 items-center bg-gray-50 p-3 rounded">
-            @csrf
-            <input type="hidden" name="game_id" value="{{ $game->game_id }}">
-            <input type="text" name="kode_produk" placeholder="Kode Produk" required class="border rounded px-2 py-1 w-24">
-            <input type="text" name="nama_produk" placeholder="Nama Produk" required class="border rounded px-2 py-1 w-32">
-            <input type="text" name="denom" placeholder="Denom" required class="border rounded px-2 py-1 w-20">
-            <input type="number" name="harga" placeholder="Harga" required class="border rounded px-2 py-1 w-24">
-            <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Tambah Denom</button>
-        </form>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        @foreach($game->priceLists as $denom)
-            <div class="bg-white border rounded shadow-sm p-4 flex flex-col justify-between">
-                <div>
-                    <div class="font-semibold text-base mb-1">{{ $denom->denom ?? $denom->nama_produk ?? '-' }}</div>
-                    <div class="text-xs text-gray-500 mb-1">Kode: {{ $denom->kode_produk ?? '-' }}</div>
-                    <div class="text-teal-600 font-bold text-lg mb-2">Rp {{ number_format($denom->harga ?? 0) }}</div>
-                </div>
-                <div class="flex gap-2 mt-2">
-                    <button class="flex-1 bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs" disabled>Edit</button>
-                    <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus denom ini?')" class="flex-1">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-xs">Hapus</button>
-                    </form>
+    <div class="bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Detail Produk</h1>
+        <div class="flex items-start space-x-6">
+            <div>
+                <img src="{{ asset('image/' . $product->thumbnail_url) }}" alt="{{ $product->product_name }}" class="w-32 h-32 object-cover rounded-lg border">
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold">{{ $product->product_name }}</h2>
+                <p class="text-gray-600 mb-2">Developer: {{ $product->developer }}</p>
+                <p class="text-gray-600 mb-2">Kategori: {{ $product->kategori->nama ?? '-' }}</p>
+                <p class="text-gray-600 mb-2">Deskripsi: {{ $product->description ?? '-' }}</p>
+                <div class="mt-4">
+                    <a href="{{ route('admin.produk.edit', $product->product_id) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2">Edit</a>
+                    <a href="{{ route('admin.kelolaProduk') }}" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Kembali</a>
                 </div>
             </div>
-        @endforeach
+        </div>
     </div>
+    <!-- Form Tambah Denom -->
+    <div class="bg-white rounded-lg shadow p-6 mt-8">
+        <h2 class="text-lg font-semibold mb-4">Tambah Denom</h2>
+        <form action="{{ route('admin.denom.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="nama_produk" class="block text-sm font-medium text-gray-700 mb-1">Nama Denom *</label>
+                    <input type="text" id="nama_produk" name="nama_produk" required class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label for="harga" class="block text-sm font-medium text-gray-700 mb-1">Harga *</label>
+                    <input type="number" id="harga" name="harga" required min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label for="harga_member" class="block text-sm font-medium text-gray-700 mb-1">Harga Member</label>
+                    <input type="number" id="harga_member" name="harga_member" min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label for="profit" class="block text-sm font-medium text-gray-700 mb-1">Profit</label>
+                    <input type="number" id="profit" name="profit" min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label for="provider" class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
+                    <input type="text" id="provider" name="provider" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <select id="kategori" name="kategori" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="diamond">Diamond</option>
+                        <option value="nondiamond">Non Diamond</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo Denom</label>
+                    <input type="file" id="logo" name="logo" accept="image/*" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                </div>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Tambah Denom</button>
+            </div>
+        </form>
+    </div>
+    <!-- Tabel Daftar Denom -->
+    @if($product->priceLists->count())
+        <div class="bg-white rounded-lg shadow p-6 mt-8">
+            <h2 class="text-lg font-semibold mb-4">Daftar Denom</h2>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Nama Denom</th>
+                        <th class="px-4 py-2">Harga</th>
+                        <th class="px-4 py-2">Harga Member</th>
+                        <th class="px-4 py-2">Kategori</th>
+                        <th class="px-4 py-2">Provider</th>
+                        <th class="px-4 py-2">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($product->priceLists as $denom)
+                        <tr>
+                            <td class="px-4 py-2">{{ $denom->nama_produk }}</td>
+                            <td class="px-4 py-2">Rp{{ number_format($denom->harga) }}</td>
+                            <td class="px-4 py-2">Rp{{ number_format($denom->harga_member) }}</td>
+                            <td class="px-4 py-2">{{ $denom->kategori }}</td>
+                            <td class="px-4 py-2">{{ $denom->provider }}</td>
+                            <td class="px-4 py-2">
+                                <a href="{{ route('admin.denom.edit', $denom->id) }}" class="text-green-600 hover:text-green-800 mr-2">Edit</a>
+                                <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin ingin menghapus denom ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <div class="bg-white rounded-lg shadow p-6 mt-8">
+            <p class="text-gray-500">Belum ada denom untuk produk ini.</p>
+        </div>
+    @endif
 </div>
 @endsection 

@@ -18,6 +18,7 @@ class Produk extends Model
         'release_date',
         'description',
         'thumbnail_url',
+        'banner_url',
         'is_active',
         'digiflazz_id',
         'category',

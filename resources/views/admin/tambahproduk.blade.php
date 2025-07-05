@@ -105,12 +105,13 @@
                     <div class="md:col-span-2">
                         <label for="logo" class="block mb-2 font-semibold text-gray-700">Logo Produk</label>
                         <div class="flex items-center space-x-4">
-                            <div class="w-32 h-32 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg hover:border-blue-500 cursor-pointer">
-                                <label for="logo" class="flex flex-col items-center cursor-pointer">
-                                    <i class="fas fa-image text-4xl text-gray-400 hover:text-blue-500"></i>
-                                    <span class="mt-2 text-sm text-gray-500">Upload Logo</span>
-                                </label>
-                            </div>
+                            @if(isset($product) && $product->thumbnail_url)
+                                <div class="w-32 h-32 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg hover:border-blue-500 cursor-pointer">
+                                    <img src="{{ asset('image/' . $product->thumbnail_url) }}" 
+                                         alt="Logo {{ $product->product_name }}" 
+                                         class="w-16 h-16 object-cover rounded">
+                                </div>
+                            @endif
                             <div class="flex-1">
                                 <input type="file" 
                                        id="logo" 

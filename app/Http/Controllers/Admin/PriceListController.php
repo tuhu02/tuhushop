@@ -14,72 +14,47 @@ class PriceListController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,product_id',
-            'nama_denom' => 'required|string|max:255',
-            'harga_modal' => 'required|numeric|min:0',
-            'harga_jual' => 'required|numeric|min:0',
-            'harga_member' => 'required|numeric|min:0',
-            'profit' => 'required|numeric|min:0',
+            'nama_produk' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'harga_member' => 'nullable|numeric|min:0',
+            'profit' => 'nullable|numeric|min:0',
             'provider' => 'nullable|string|max:255',
             'kategori' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'kode_digiflazz' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->all();
-        
+        $data = $request->only(['product_id','nama_produk','harga','harga_member','profit','provider','kategori']);
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('denoms', 'public');
             $data['logo'] = $logoPath;
         }
-
-        // Set default values
-        $data['nama_produk'] = $data['nama_denom'];
-        $data['harga'] = $data['harga_jual'];
-        $data['status'] = $data['status'] ?? 'active';
-
         PriceList::create($data);
-        
         return back()->with('success', 'Denom berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
     {
-        $priceList = PriceList::findOrFail($id);
-        
+        $denom = PriceList::findOrFail($id);
         $request->validate([
-            'nama_denom' => 'required|string|max:255',
-            'harga_modal' => 'required|numeric|min:0',
-            'harga_jual' => 'required|numeric|min:0',
-            'harga_member' => 'required|numeric|min:0',
-            'profit' => 'required|numeric|min:0',
+            'nama_produk' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'harga_member' => 'nullable|numeric|min:0',
+            'profit' => 'nullable|numeric|min:0',
             'provider' => 'nullable|string|max:255',
             'kategori' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'kode_digiflazz' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255',
         ]);
-
-        $data = $request->all();
-        
-        // Handle logo upload
+        $data = $request->only(['nama_produk','harga','harga_member','profit','provider','kategori']);
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($priceList->logo) {
-                Storage::disk('public')->delete($priceList->logo);
+            if ($denom->logo) {
+                \Storage::disk('public')->delete($denom->logo);
             }
             $logoPath = $request->file('logo')->store('denoms', 'public');
             $data['logo'] = $logoPath;
         }
-
-        // Update related fields
-        $data['nama_produk'] = $data['nama_denom'];
-        $data['harga'] = $data['harga_jual'];
-
-        $priceList->update($data);
-        
-        return back()->with('success', 'Denom berhasil diperbarui!');
+        $denom->update($data);
+        return redirect()->route('admin.produk.show', $denom->product_id)->with('success', 'Denom berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -132,5 +107,11 @@ class PriceListController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    public function edit($id)
+    {
+        $denom = PriceList::findOrFail($id);
+        return view('admin.denom.edit', compact('denom'));
     }
 } 

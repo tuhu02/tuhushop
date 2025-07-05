@@ -23,7 +23,7 @@ class ProdukController extends Controller
         $product = Produk::with(['priceLists', 'kategori'])->findOrFail($product);
         $diamond = $product->priceLists->where('kategori', 'diamond');
         $nonDiamond = $product->priceLists->where('kategori', 'nondiamond');
-        return view('admin.kelolaProduk', compact('product', 'diamond', 'nonDiamond'));
+        return view('admin.produk.show', compact('product', 'diamond', 'nonDiamond'));
     }
 
     public function create()
@@ -48,8 +48,10 @@ class ProdukController extends Controller
         
         // Handle logo upload
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('products', 'public');
-            $data['logo'] = $logoPath;
+            $logoFile = $request->file('logo');
+            $logoName = time() . '_' . $logoFile->getClientOriginalName();
+            $logoFile->move(public_path('image'), $logoName);
+            $data['thumbnail_url'] = $logoName;
         }
         // Handle banner upload
         if ($request->hasFile('banner')) {
@@ -89,12 +91,14 @@ class ProdukController extends Controller
         
         // Handle logo upload
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($product->logo) {
-                Storage::disk('public')->delete($product->logo);
+            // Delete old logo if exists (untuk update)
+            if (isset($product) && $product->thumbnail_url && file_exists(public_path('image/' . $product->thumbnail_url))) {
+                unlink(public_path('image/' . $product->thumbnail_url));
             }
-            $logoPath = $request->file('logo')->store('products', 'public');
-            $data['logo'] = $logoPath;
+            $logoFile = $request->file('logo');
+            $logoName = time() . '_' . $logoFile->getClientOriginalName();
+            $logoFile->move(public_path('image'), $logoName);
+            $data['thumbnail_url'] = $logoName;
         }
         // Handle banner upload
         if ($request->hasFile('banner')) {
@@ -118,8 +122,8 @@ class ProdukController extends Controller
         $product = Produk::findOrFail($product);
         
         // Delete logo if exists
-        if ($product->logo) {
-            Storage::disk('public')->delete($product->logo);
+        if ($product->thumbnail_url && file_exists(public_path('image/' . $product->thumbnail_url))) {
+            unlink(public_path('image/' . $product->thumbnail_url));
         }
         
         $product->delete();
