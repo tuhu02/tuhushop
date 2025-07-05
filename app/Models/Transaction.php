@@ -77,6 +77,14 @@ class Transaction extends Model
     }
 
     /**
+     * Get the product associated with the transaction.
+     */
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'product_id');
+    }
+
+    /**
      * Generate unique order ID.
      */
     public static function generateOrderId(): string

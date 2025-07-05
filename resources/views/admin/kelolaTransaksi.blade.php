@@ -10,7 +10,7 @@
 <body class="bg-gray-50">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <x-admin-sidebar />
+    <x-admin-sidebar />
         
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -24,10 +24,10 @@
                     <div class="flex items-center space-x-4">
                         <button class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
                             <i class="fas fa-download mr-2"></i>Export Data
-                        </button>
+            </button>
                     </div>
                 </div>
-            </header>
+        </header>
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
@@ -39,7 +39,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Cari Transaksi</label>
                             <div class="relative">
                                 <input type="text" 
-                                       placeholder="Cari berdasarkan Order ID, nama user, atau game..." 
+                                       placeholder="Cari berdasarkan Order ID, nama user, atau produk..." 
                                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             </div>
@@ -140,7 +140,7 @@
                                         User
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Game
+                                        Produk
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Amount
@@ -154,8 +154,8 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
                                     </th>
-                                </tr>
-                            </thead>
+                    </tr>
+                </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <!-- Sample Transaction Rows -->
                                 <tr class="hover:bg-gray-50">
@@ -279,16 +279,16 @@
                                             </button>
                                             <button class="text-green-600 hover:text-green-900">
                                                 <i class="fas fa-check"></i>
-                                            </button>
+                            </button>
                                             <button class="text-red-600 hover:text-red-900">
                                                 <i class="fas fa-times"></i>
-                                            </button>
+                            </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
                     <!-- Pagination -->
                     <div class="px-6 py-4 border-t border-gray-200">
@@ -301,17 +301,17 @@
                                     <option>50</option>
                                 </select>
                                 <span class="text-sm text-gray-700">entries</span>
-                            </div>
+            </div>
                             <div class="flex items-center space-x-2">
                                 <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">Previous</button>
                                 <button class="px-3 py-1 text-sm bg-teal-600 text-white rounded">1</button>
                                 <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">2</button>
                                 <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">3</button>
                                 <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">Next</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            </div>
+            </div>
+            </div>
             </main>
         </div>
     </div>

@@ -40,12 +40,12 @@
                         <span>Home</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-3 py-2 text-white rounded hover:bg-gray-700 md:hover:bg-transparent md:hover:text-aqua md:p-0">
+                {{-- <li>
+                    <a href="{{ route('customer.index') }}" class="flex items-center gap-2 px-3 py-2 text-white rounded hover:bg-gray-700 md:hover:bg-transparent md:hover:text-aqua md:p-0">
                         <img src="{{ asset('image/Tag.svg') }}" class="w-6 h-6 block" alt="">
-                        <span>Topup</span>
+                        <span>Shop</span>
                     </a>
-                </li>
+                </li> --}}
                 <li>
                     <a href="{{ route('cekTransaksi') }}" class="flex items-center gap-2 px-3 py-2 text-gray-300 rounded hover:bg-gray-700 md:hover:bg-transparent md:hover:text-aqua md:p-0">
                         <img src="{{ asset('image/Search.svg') }}" class="w-6 h-6 block" alt="">

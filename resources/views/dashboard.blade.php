@@ -8,6 +8,13 @@
     @vite('resources/css/app.css')
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     
+    <style>
+        .hover-effect::after {
+            display: none !important;
+            background: none !important;
+            content: none !important;
+        }
+    </style>
 </head>
 <body>
     
@@ -60,18 +67,52 @@
         <!-- Bagian POPULER (Tetap Seperti Semula) -->
         <h1 class="text-white font-bold text-2xl mb-3 mt-5">POPULER</h1>
         <div class="grid grid-cols-3 gap-4">
-            @foreach($favorites as $favorit)
-            <a href="{{ url('produk/' . Str::slug($favorit->game->game_name)) }}">
+            @foreach($populerGames as $game)
+            <a href="{{ url('produk/' . Str::slug($game->game_name)) }}">
                 <div class="p-3 rounded-lg bg-charcoal flex items-center hover:bg-aqua hover:shadow-lg transition duration-200">
-                    <img src="{{ asset('image/' . $favorit->game->thumbnail_url) }}" alt="" class="w-24 h-24 rounded-lg object-cover">
+                    <img src="{{ asset('image/' . $game->thumbnail_url) }}" alt="" class="w-24 h-24 rounded-lg object-cover">
                     <div class="pl-3">
-                        <h1 class="text-white text-lg font-bold leading-tight">{{ $favorit->game->game_name }}</h1>
-                        <p class="text-white text-sm">{{ $favorit->game->developer }}</p>
+                        <h1 class="text-white text-lg font-bold leading-tight mb-1">
+                            {{ $game->game_name ?? $game->product_name ?? 'Tanpa Nama' }}
+                        </h1>
+                        <p class="text-gray-300 text-sm">{{ $game->developer ?? '-' }}</p>
                     </div>
                 </div>
             </a>
             @endforeach
         </div>
+
+        <!-- Bundling Section -->
+        @if(isset($bundles) && count($bundles) > 0)
+        <h1 class="text-white font-bold text-2xl mb-3 mt-10">PAKET BUNDLING HEMAT</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            @foreach($bundles as $bundle)
+            <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
+                @if($bundle->image)
+                    <img src="{{ asset('storage/' . $bundle->image) }}" alt="{{ $bundle->name }}" class="w-full h-48 object-cover">
+                @else
+                    <div class="w-full h-48 bg-gray-700 flex items-center justify-center text-gray-400">No Image</div>
+                @endif
+                <div class="p-5 flex-1 flex flex-col">
+                    <h2 class="text-xl font-bold text-aqua mb-2">{{ $bundle->name }}</h2>
+                    <p class="text-white mb-2">{{ $bundle->description }}</p>
+                    <div class="mb-2">
+                        <span class="text-lg font-semibold text-green-400">Rp{{ number_format($bundle->price,0,',','.') }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-sm text-gray-300 font-semibold">Termasuk:</span>
+                        <ul class="list-disc list-inside text-white text-sm mt-1">
+                            @foreach($bundle->products as $product)
+                                <li>{{ $product->product_name }} <span class="text-gray-400">x{{ $product->pivot->quantity }}</span></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <a href="#" class="mt-auto inline-block bg-aqua text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-200 text-center">Beli Paket</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
 
         <!-- Kategori Produk -->
         <div class="flex gap-2 my-7">
@@ -84,18 +125,25 @@
         <!-- Daftar Produk Berdasarkan Kategori -->
         <div id="topup-products" class="grid grid-cols-5 gap-7">
             @foreach($allGame as $index => $game)
-                <div class="hover-effect game-item"
-                    style="background-image: url('{{ asset('image/' . $game->thumbnail_url) }}');"
-                    data-text="{{ $game->game_name }}"
-                    data-index="{{ $index }}"
-                    {{ $index >= 10 ? 'hidden' : '' }}> <!-- Sembunyikan game ke-11 dan seterusnya -->
-                </div>
+                <a href="{{ route('produk.public', $game->product_id) }}" class="block">
+                    <div class="hover-effect game-item relative group"
+                        style="background-image: url('{{ asset('image/' . $game->thumbnail_url) }}');"
+                        data-index="{{ $index }}"
+                        {{ $index >= 10 ? 'hidden' : '' }}>
+                        <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <h3 class="text-white text-lg font-bold mb-1">{{ $game->game_name ?? $game->product_name ?? 'Tanpa Nama' }}</h3>
+                            <p class="text-gray-300 text-sm">{{ $game->developer ?? '-' }}</p>
+                        </div>
+                    </div>
+                </a>
             @endforeach
         </div>
 
+        @if(count($allGame) > 10)
         <div class="text-center mt-4">
-            <button id="loadMore" class="bg-gray-700 border-2 border-aqua text-white px-4 py-2 rounded-lg font-semibold hover:bg-aqua">Tampilkan Lainnya...</button>
+            <button id="loadMore" class="bg-gray-700 border-2 border-aqua text-white px-4 py-2 rounded-lg hover:bg-aqua">Tampilkan Lainnya...</button>
         </div>
+        @endif
 
         <div id="voucher-products" class="grid grid-cols-5 gap-7 hidden">
             <!-- Produk Voucher -->
@@ -149,16 +197,16 @@
                             <span class="block uppercase text-blueGray-500 text-sm font-semibold mb-2">Useful Links</span>
                             <ul class="list-unstyled">
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://www.creative-tim.com/presentation?ref=njs-profile">About Us</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://www.creative-tim.com/presentation?ref=njs-profile">About Us</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://blog.creative-tim.com?ref=njs-profile">Blog</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="https://blog.creative-tim.com?ref=njs-profile">Blog</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://www.github.com/creativetimofficial?ref=njs-profile">Github</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://www.github.com/creativetimofficial?ref=njs-profile">Github</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://www.creative-tim.com/bootstrap-themes/free?ref=njs-profile">Free Products</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="https://www.creative-tim.com/bootstrap-themes/free?ref=njs-profile">Free Products</a>
                                 </li>
                             </ul>
                         </div>
@@ -166,16 +214,16 @@
                             <span class="block uppercase text-blueGray-500 text-sm font-semibold mb-2">Other Resources</span>
                             <ul class="list-unstyled">
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://github.com/creativetimofficial/notus-js/blob/main/LICENSE.md?ref=njs-profile">MIT License</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://github.com/creativetimofficial/notus-js/blob/main/LICENSE.md?ref=njs-profile">MIT License</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://creative-tim.com/terms?ref=njs-profile">Terms &amp; Conditions</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/terms?ref=njs-profile">Terms &amp; Conditions</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://creative-tim.com/privacy?ref=njs-profile">Privacy Policy</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/privacy?ref=njs-profile">Privacy Policy</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm" href="https://creative-tim.com/contact-us?ref=njs-profile">Contact Us</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/contact-us?ref=njs-profile">Contact Us</a>
                                 </li>
                             </ul>
                         </div>
@@ -185,7 +233,7 @@
             <hr class="my-6 border-blueGray-300">
             <div class="flex flex-wrap items-center md:justify-between justify-center">
                 <div class="w-full md:w-4/12 px-4 mx-auto text-center">
-                    <div class="text-sm text-blueGray-500 font-semibold py-1">
+                    <div class="text-sm text-blueGray-500 py-1">
                         Copyright © <span id="get-current-year">2024</span><a href="https://www.creative-tim.com/product/notus-js" class="text-blueGray-500 hover:text-gray-800" target="_blank"> Tuhu Shop
                         <a href="https://www.creative-tim.com?ref=njs-profile" class="text-blueGray-500 hover:text-blueGray-800">|| Tuhu Pangestu</a>
                     </div>

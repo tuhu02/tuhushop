@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Game;
 use App\Models\Reseller;
 use App\Models\Withdrawal;
+use App\Models\Bundle;
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
@@ -31,11 +32,15 @@ class AdminDashboardController extends Controller
         $today = Carbon::today();
         $thisMonth = Carbon::now()->startOfMonth();
         
-        return [
-            'total_users' => User::where('role', 'user')->count(),
+        $stats = [
+            'total_users' => User::count(),
             'total_resellers' => Reseller::count(),
-            'total_games' => Game::count(),
             'total_transactions' => Transaction::count(),
+            'total_revenue' => Transaction::where('status', 'success')->sum('amount'),
+            'total_games' => Game::count(),
+            'total_withdrawals' => Withdrawal::count(),
+            'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
+            'total_bundles' => Bundle::count(),
             
             // Transaction status counts
             'failed_transactions' => Transaction::where('status', Transaction::STATUS_FAILED)->count(),
@@ -44,7 +49,6 @@ class AdminDashboardController extends Controller
             'cancelled_transactions' => Transaction::where('status', Transaction::STATUS_CANCELLED)->count(),
             
             // Revenue statistics
-            'total_revenue' => Transaction::where('status', Transaction::STATUS_SUCCESS)->sum('amount'),
             'today_revenue' => Transaction::where('status', Transaction::STATUS_SUCCESS)
                 ->whereDate('created_at', $today)
                 ->sum('amount'),
@@ -59,13 +63,10 @@ class AdminDashboardController extends Controller
             'online_users' => 98, // Mock data for now
             
             // Recent transactions
-            'recent_transactions' => Transaction::with(['user', 'game'])
-                ->latest()
-                ->take(10)
+            'recent_transactions' => Transaction::with(['user', 'reseller'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
                 ->get(),
-                
-            // Pending withdrawals
-            'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
             
             // Top performing games
             'top_games' => Game::withCount(['transactions' => function($query) {
@@ -75,5 +76,7 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get()
         ];
+
+        return $stats;
     }
 }

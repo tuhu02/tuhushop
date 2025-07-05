@@ -11,6 +11,11 @@ class Favorit extends Model
     {
         return $this->belongsTo(Game::class, 'game_id', 'game_id');
     }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'product_id');
+    }
 }
 
 

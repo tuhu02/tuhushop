@@ -6,19 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        // Semua kolom sudah ada di create_games_table, migration ini dikosongkan
+        Schema::create('kategori_produks', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        // Tidak perlu drop kolom apapun
+        Schema::dropIfExists('kategori_produks');
     }
 }; 

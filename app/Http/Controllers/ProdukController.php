@@ -19,13 +19,21 @@ class ProdukController extends Controller
 
     public function show($game)
     {
-        $diamond = PriceList::where('game_id', 1)->where('kategori','diamond')->get();
-        $nonDiamond = PriceList::where('game_id',1)->where('kategori','nondiamond')->get();
+        $diamond = PriceList::where('product_id', 1)->where('kategori','diamond')->get();
+        $nonDiamond = PriceList::where('product_id',1)->where('kategori','nondiamond')->get();
         $data = [
             "diamond" => $diamond,
             "nonDiamond" => $nonDiamond,
         ];
         return view('produk.' . $game, $data);
+    }
+
+    public function showPublic($product_id)
+    {
+        $product = Produk::with(['kategori', 'priceLists'])->where('product_id', $product_id)->firstOrFail();
+        $diamondDenoms = $product->priceLists->where('kategori', 'diamond');
+        $nonDiamondDenoms = $product->priceLists->where('kategori', 'nondiamond');
+        return view('customer.product', compact('product', 'diamondDenoms', 'nonDiamondDenoms'));
     }
 
 }

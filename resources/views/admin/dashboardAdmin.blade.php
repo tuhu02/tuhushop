@@ -16,7 +16,7 @@
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-6 py-4">
-                    <div>
+                <div>
                         <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
                         <p class="text-sm text-gray-600">Selamat datang kembali, Admin!</p>
                     </div>
@@ -56,12 +56,12 @@
                                 <i class="fas fa-users text-blue-600 text-xl"></i>
                             </div>
                         </div>
-                    </div>
+            </div>
 
                     <!-- Total Revenue -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Total Revenue</p>
                                 <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($stats['total_revenue']) }}</p>
                                 <p class="text-xs text-green-600 mt-1">
@@ -71,13 +71,13 @@
                             <div class="p-3 bg-green-100 rounded-full">
                                 <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
                             </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
 
                     <!-- Total Transactions -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Total Transaksi</p>
                                 <p class="text-3xl font-bold text-gray-900">{{ number_format($stats['total_transactions']) }}</p>
                                 <p class="text-xs text-blue-600 mt-1">
@@ -86,14 +86,14 @@
                             </div>
                             <div class="p-3 bg-purple-100 rounded-full">
                                 <i class="fas fa-shopping-cart text-purple-600 text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
+        </div>
 
                     <!-- Total Games -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Total Games</p>
                                 <p class="text-3xl font-bold text-gray-900">{{ number_format($stats['total_games']) }}</p>
                                 <p class="text-xs text-orange-600 mt-1">
@@ -119,35 +119,35 @@
                                 <i class="fas fa-check-circle text-green-600 text-xl"></i>
                             </div>
                         </div>
-                    </div>
+            </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Transaksi Pending</p>
                                 <p class="text-2xl font-bold text-yellow-600">{{ number_format($stats['pending_transactions']) }}</p>
                             </div>
                             <div class="p-3 bg-yellow-100 rounded-full">
                                 <i class="fas fa-clock text-yellow-600 text-xl"></i>
                             </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Transaksi Gagal</p>
                                 <p class="text-2xl font-bold text-red-600">{{ number_format($stats['failed_transactions']) }}</p>
                             </div>
                             <div class="p-3 bg-red-100 rounded-full">
                                 <i class="fas fa-times-circle text-red-600 text-xl"></i>
                             </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
-                            <div>
+                <div>
                                 <p class="text-sm font-medium text-gray-600">Transaksi Dibatalkan</p>
                                 <p class="text-2xl font-bold text-gray-600">{{ number_format($stats['cancelled_transactions']) }}</p>
                             </div>
@@ -169,9 +169,9 @@
                                 <option>30 Hari Terakhir</option>
                                 <option>3 Bulan Terakhir</option>
                             </select>
-                        </div>
+            </div>
                         <canvas id="revenueChart" class="w-full h-full"></canvas>
-                    </div>
+        </div>
 
                     <!-- Transaction Status Chart -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-72">
@@ -222,7 +222,7 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+            </div>
 
                     <!-- Quick Actions -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

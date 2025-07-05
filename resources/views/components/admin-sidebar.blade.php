@@ -6,7 +6,7 @@
                 <i class="fas fa-gamepad text-white text-xl"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-gray-900">Tuhu Game</h1>
+                <h1 class="text-xl font-bold text-gray-900">Tuhu Produk</h1>
                 <p class="text-xs text-gray-500">Admin Panel</p>
             </div>
         </div>
@@ -46,44 +46,56 @@
                 <i class="fas fa-chevron-down w-4 h-4 transition-transform" id="products-icon"></i>
             </button>
             <div id="products-submenu" class="hidden pl-8 space-y-1">
-                <a href="/admin/tambahProduk" 
-                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                <a href="{{ route('admin.produk.create') }}" 
+                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('admin.produk.create') ? 'bg-teal-50 text-teal-700' : '' }}">
                     <i class="fas fa-plus w-4 h-4 mr-2"></i>
                     Tambah Produk
                 </a>
-                <a href="/admin/kelolaProduk" 
-                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                <a href="{{ route('admin.produk.index') }}" 
+                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('admin.produk.index') ? 'bg-teal-50 text-teal-700' : '' }}">
                     <i class="fas fa-edit w-4 h-4 mr-2"></i>
                     Kelola Produk
+                </a>
+                <a href="{{ route('admin.kategori.index') }}" 
+                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('admin.kategori.*') ? 'bg-teal-50 text-teal-700' : '' }}">
+                    <i class="fas fa-tags w-4 h-4 mr-2"></i>
+                    Kelola Kategori
                 </a>
             </div>
         </div>
 
+        <!-- Bundling Management -->
+        <a href="{{ route('admin.bundles.index') }}"
+           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.bundles.*') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
+            <i class="fas fa-boxes w-5 h-5 mr-3"></i>
+            Bundling
+        </a>
+
         <!-- Transactions -->
-        <a href="/admin/transactions" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
+        <a href="{{ route('admin.transactions') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.transactions') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
             <i class="fas fa-shopping-cart w-5 h-5 mr-3"></i>
             Transaksi
             <span class="ml-auto bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">New</span>
         </a>
 
         <!-- Reseller Management -->
-        <a href="{{ route('admin.resellers') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
+        <a href="{{ route('admin.resellers.index') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.resellers.*') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
             <i class="fas fa-users w-5 h-5 mr-3"></i>
             Reseller
         </a>
 
         <!-- Withdrawals -->
-        <a href="{{ route('admin.withdrawals') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
+        <a href="{{ route('admin.withdrawals.index') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.withdrawals.*') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
             <i class="fas fa-money-bill-wave w-5 h-5 mr-3"></i>
             Withdrawal
         </a>
 
         <!-- Digiflazz API -->
-        <a href="{{ route('admin.digiflazz') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
+        <a href="{{ route('admin.digiflazz.index') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.digiflazz.*') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
             <i class="fas fa-cog w-5 h-5 mr-3"></i>
             Digiflazz API
         </a>
@@ -162,7 +174,9 @@ function toggleSubmenu(menuId) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
     
-    if (currentPath.includes('/admin/tambahProduk') || currentPath.includes('/admin/kelolaProduk')) {
+    if (currentPath.includes('/admin/produk') || currentPath.includes('/admin/kategori') || 
+        currentPath.includes('/admin/tambahProduk') || currentPath.includes('/admin/kelolaProduk') || 
+        currentPath.includes('/admin/kategoriProduk')) {
         toggleSubmenu('products');
     }
     
