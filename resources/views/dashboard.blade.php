@@ -18,6 +18,12 @@
         ['url' => '/kontak', 'label' => 'kontak'], 
     ]" />
 
+    @if(session('success'))
+        <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="container mx-auto mt-20 p-5">
         <!-- Carousel Section -->
         <div class="relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-lg">

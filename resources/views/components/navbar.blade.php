@@ -5,12 +5,24 @@
             <img src="{{asset('image/logo-baru.png')}}" class="w-28" alt="Logo">
         </a>
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <button type="button" class="text-white bg-aqua hover:bg-opacity-80 focus:ring-4 focus:outline-none focus:ring-aqua font-medium rounded-lg text-sm px-4 py-2 text-center">
-                Daftar
-            </button>
-            <button type="button" class="text-aqua focus:ring-4 focus:outline-none focus:ring-aqua font-medium rounded-lg text-sm px-4 py-2 text-center">
-                Masuk
-            </button>
+            @auth
+                <div class="flex items-center space-x-3">
+                    <span class="text-white text-sm">Halo, {{ Auth::user()->name }}</span>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-aqua hover:text-white focus:ring-4 focus:outline-none focus:ring-aqua font-medium rounded-lg text-sm px-4 py-2 text-center transition duration-200">
+                            Keluar
+                        </button>
+                    </form>
+                </div>
+            @else
+                <a href="{{ route('register') }}" class="text-white bg-aqua hover:bg-opacity-80 focus:ring-4 focus:outline-none focus:ring-aqua font-medium rounded-lg text-sm px-4 py-2 text-center">
+                    Daftar
+                </a>
+                <a href="{{ route('login') }}" class="text-aqua focus:ring-4 focus:outline-none focus:ring-aqua font-medium rounded-lg text-sm px-4 py-2 text-center">
+                    Masuk
+                </a>
+            @endauth
             <button data-collapse-toggle="navbar-sticky" type="button"
                 class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-400 rounded-lg md:hidden hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600"
                 aria-controls="navbar-sticky" aria-expanded="false">

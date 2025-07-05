@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tuhu-topup-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - tuhu-network
+    depends_on:
+      - db
+      - redis
+      - queue
+
+  # Nginx Web Server
+  webserver:
+    image: nginx:alpine
+    container_name: tuhu-topup-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - tuhu-network
+    depends_on:
+      - app
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: tuhu-topup-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: tuhu_topup
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: tuhu_user
+      MYSQL_PASSWORD: tuhu_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - tuhu-network
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: tuhu-topup-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - tuhu-network
+
+  # Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tuhu-topup-queue
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    networks:
+      - tuhu-network
+    depends_on:
+      - db
+      - redis
+
+  # Queue Monitor (Horizon)
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tuhu-topup-horizon
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    command: php artisan horizon
+    networks:
+      - tuhu-network
+    depends_on:
+      - db
+      - redis
+
+  # Elasticsearch (for search functionality)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: tuhu-topup-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - tuhu-network
+
+  # Kibana (for Elasticsearch monitoring)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: tuhu-topup-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - tuhu-network
+    depends_on:
+      - elasticsearch
+
+  # Mailhog (for email testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: tuhu-topup-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - tuhu-network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tuhu-topup-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - tuhu-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tuhu-topup-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - tuhu-network
+
+volumes:
+  dbdata:
+    driver: local
+  redisdata:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  tuhu-network:
+    driver: bridge
