@@ -13,11 +13,14 @@ export default {
         extend: {
             colors: {
                 'aqua': '#00ADB5',
-                'charcoal' : "#393E46",
-                'payment' : '#EEEEEE',
+                'charcoal': "#393E46",
+                'payment': '#EEEEEE',
             },
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
+            },
+            spacing: {
+                '21': '84px',
             },
         },
     },

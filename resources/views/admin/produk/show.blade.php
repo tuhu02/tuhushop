@@ -45,7 +45,11 @@
                 </div>
                 <div>
                     <label for="provider" class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                    <input type="text" id="provider" name="provider" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                    <select id="provider" name="provider" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="Digiflazz">Digiflazz</option>
+                        <option value="DuniaGames">DuniaGames</option>
+                        <option value="Unipin">Unipin</option>
+                    </select>
                 </div>
                 <div>
                     <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
@@ -68,26 +72,27 @@
     @if($product->priceLists->count())
         <div class="bg-white rounded-lg shadow p-6 mt-8">
             <h2 class="text-lg font-semibold mb-4">Daftar Denom</h2>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
+            <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border border-gray-300 rounded-lg">
+                <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">Nama Denom</th>
-                        <th class="px-4 py-2">Harga</th>
-                        <th class="px-4 py-2">Harga Member</th>
-                        <th class="px-4 py-2">Kategori</th>
-                        <th class="px-4 py-2">Provider</th>
-                        <th class="px-4 py-2">Aksi</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Nama Denom</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Member</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Kategori</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Provider</th>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($product->priceLists as $denom)
-                        <tr>
-                            <td class="px-4 py-2">{{ $denom->nama_produk }}</td>
-                            <td class="px-4 py-2">Rp{{ number_format($denom->harga) }}</td>
-                            <td class="px-4 py-2">Rp{{ number_format($denom->harga_member) }}</td>
-                            <td class="px-4 py-2">{{ $denom->kategori }}</td>
-                            <td class="px-4 py-2">{{ $denom->provider }}</td>
-                            <td class="px-4 py-2">
+                        <tr class="even:bg-gray-50 hover:bg-blue-50">
+                            <td class="px-4 py-2 border text-sm font-medium text-gray-900 text-center whitespace-nowrap">{{ $denom->nama_produk }}</td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga) }}</td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member) }}</td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->kategori }}</td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->provider }}</td>
+                            <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
                                 <a href="{{ route('admin.denom.edit', $denom->id) }}" class="text-green-600 hover:text-green-800 mr-2">Edit</a>
                                 <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin ingin menghapus denom ini?')">
                                     @csrf
@@ -99,6 +104,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     @else
         <div class="bg-white rounded-lg shadow p-6 mt-8">

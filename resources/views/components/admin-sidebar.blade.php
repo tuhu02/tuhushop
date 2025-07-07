@@ -61,6 +61,11 @@
                     <i class="fas fa-tags w-4 h-4 mr-2"></i>
                     Kelola Kategori
                 </a>
+                <a href="{{ url('admin/special-offers') }}" 
+                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->is('admin/special-offers*') ? 'bg-teal-50 text-teal-700' : '' }}">
+                    <i class="fas fa-bolt w-4 h-4 mr-2"></i>
+                    Kelola Promo/Offer
+                </a>
             </div>
         </div>
 

@@ -122,6 +122,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/kategoriProduk', [App\Http\Controllers\Admin\KategoriProdukController::class, 'index'])->name('kategoriProduk');
     Route::post('/kategoriProduk', [App\Http\Controllers\Admin\KategoriProdukController::class, 'store'])->name('kategoriProduk.store');
     Route::delete('/kategoriProduk/{id}', [App\Http\Controllers\Admin\KategoriProdukController::class, 'destroy'])->name('kategoriProduk.destroy');
+
+    // Special Offers Management
+    Route::resource('special-offers', \App\Http\Controllers\Admin\SpecialOfferController::class);
 });
 
 // Route publik produk (pastikan didefinisikan setelah group admin)

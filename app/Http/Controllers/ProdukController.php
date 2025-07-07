@@ -28,12 +28,20 @@ class ProdukController extends Controller
         return view('produk.' . $game, $data);
     }
 
-    public function showPublic($product_id)
+    public function showPublic($product_id, Request $request)
     {
+        $kategoriAktif = $request->get('kategori', 'diamond');
         $product = Produk::with(['kategori', 'priceLists'])->where('product_id', $product_id)->firstOrFail();
-        $diamondDenoms = $product->priceLists->where('kategori', 'diamond');
-        $nonDiamondDenoms = $product->priceLists->where('kategori', 'nondiamond');
-        return view('customer.product', compact('product', 'diamondDenoms', 'nonDiamondDenoms'));
+        $filteredDenoms = $product->priceLists->where('kategori', $kategoriAktif);
+        $allGame = Produk::all();
+        $specialOffers = $product->specialOffers;
+        return view('customer.product', [
+            'product' => $product,
+            'filteredDenoms' => $filteredDenoms,
+            'kategoriAktif' => $kategoriAktif,
+            'allGame' => $allGame,
+            'specialOffers' => $specialOffers,
+        ]);
     }
 
 }

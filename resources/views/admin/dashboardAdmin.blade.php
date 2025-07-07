@@ -174,11 +174,34 @@
         </div>
 
                     <!-- Transaction Status Chart -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-72">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-72 min-h-[250px] flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Status Transaksi</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Status Transaksi</h3>
                         </div>
-                        <canvas id="statusChart" class="w-full h-full"></canvas>
+                        <div class="flex-1 flex items-center justify-center relative">
+                            <canvas id="statusChart" class="w-full h-full"></canvas>
+                            <div id="statusChartPlaceholder" class="absolute inset-0 flex items-center justify-center text-gray-400 text-base hidden">
+                                Belum ada data
+                            </div>
+                        </div>
+                        <div class="flex justify-center gap-6 mt-6">
+                            <div class="flex items-center gap-1">
+                                <span class="inline-block w-6 h-3 rounded bg-green-500"></span>
+                                <span class="text-gray-700 text-sm">Sukses</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="inline-block w-6 h-3 rounded bg-yellow-400"></span>
+                                <span class="text-gray-700 text-sm">Pending</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="inline-block w-6 h-3 rounded bg-red-400"></span>
+                                <span class="text-gray-700 text-sm">Gagal</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="inline-block w-6 h-3 rounded bg-gray-500"></span>
+                                <span class="text-gray-700 text-sm">Dibatalkan</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -290,17 +313,18 @@
 
         // Status Chart
         const statusCtx = document.getElementById('statusChart').getContext('2d');
-        new Chart(statusCtx, {
+        const statusData = [
+            {{ $stats['successful_transactions'] }},
+            {{ $stats['pending_transactions'] }},
+            {{ $stats['failed_transactions'] }},
+            {{ $stats['cancelled_transactions'] }}
+        ];
+        const statusChart = new Chart(statusCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Sukses', 'Pending', 'Gagal', 'Dibatalkan'],
                 datasets: [{
-                    data: [
-                        {{ $stats['successful_transactions'] }},
-                        {{ $stats['pending_transactions'] }},
-                        {{ $stats['failed_transactions'] }},
-                        {{ $stats['cancelled_transactions'] }}
-                    ],
+                    data: statusData,
                     backgroundColor: [
                         'rgb(34, 197, 94)',
                         'rgb(234, 179, 8)',
@@ -314,11 +338,17 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: false
                     }
                 }
             }
         });
+
+        // Tampilkan placeholder jika semua data 0
+        if (statusData.reduce((a, b) => a + b, 0) === 0) {
+            document.getElementById('statusChart').style.display = 'none';
+            document.getElementById('statusChartPlaceholder').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>

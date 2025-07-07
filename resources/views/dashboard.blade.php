@@ -68,7 +68,7 @@
         <h1 class="text-white font-bold text-2xl mb-3 mt-5">POPULER</h1>
         <div class="grid grid-cols-3 gap-4">
             @foreach($populerGames as $game)
-            <a href="{{ url('produk/' . Str::slug($game->game_name)) }}">
+            <a href="{{ route('produk.public', $game->product_id) }}" class="block">
                 <div class="p-3 rounded-lg bg-charcoal flex items-center hover:bg-aqua hover:shadow-lg transition duration-200">
                     <img src="{{ asset('image/' . $game->thumbnail_url) }}" alt="" class="w-24 h-24 rounded-lg object-cover">
                     <div class="pl-3">

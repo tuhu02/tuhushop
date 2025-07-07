@@ -39,22 +39,30 @@ class ProdukController extends Controller
             'kategori_id' => 'required|exists:kategori_produks,id',
             'developer' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'kode_digiflazz' => 'nullable|string|max:255',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
         $data = $request->all();
         
-        // Handle logo upload
-        if ($request->hasFile('logo')) {
-            $logoFile = $request->file('logo');
-            $logoName = time() . '_' . $logoFile->getClientOriginalName();
-            $logoFile->move(public_path('image'), $logoName);
-            $data['thumbnail_url'] = $logoName;
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail if exists (untuk update)
+            if (isset($product) && $product->thumbnail_url && file_exists(public_path('image/' . $product->thumbnail_url))) {
+                unlink(public_path('image/' . $product->thumbnail_url));
+            }
+            $thumbFile = $request->file('thumbnail');
+            $thumbName = time() . '_' . $thumbFile->getClientOriginalName();
+            $thumbFile->move(public_path('image'), $thumbName);
+            $data['thumbnail_url'] = $thumbName;
         }
         // Handle banner upload
         if ($request->hasFile('banner')) {
+            // Delete old banner if exists
+            if ($product->banner_url && file_exists(public_path('image/' . $product->banner_url))) {
+                unlink(public_path('image/' . $product->banner_url));
+            }
             $bannerFile = $request->file('banner');
             $bannerName = time() . '_' . $bannerFile->getClientOriginalName();
             $bannerFile->move(public_path('image'), $bannerName);
@@ -82,23 +90,23 @@ class ProdukController extends Controller
             'kategori_id' => 'required|exists:kategori_produks,id',
             'developer' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'kode_digiflazz' => 'nullable|string|max:255',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
         $data = $request->all();
         
-        // Handle logo upload
-        if ($request->hasFile('logo')) {
-            // Delete old logo if exists (untuk update)
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail if exists (untuk update)
             if (isset($product) && $product->thumbnail_url && file_exists(public_path('image/' . $product->thumbnail_url))) {
                 unlink(public_path('image/' . $product->thumbnail_url));
             }
-            $logoFile = $request->file('logo');
-            $logoName = time() . '_' . $logoFile->getClientOriginalName();
-            $logoFile->move(public_path('image'), $logoName);
-            $data['thumbnail_url'] = $logoName;
+            $thumbFile = $request->file('thumbnail');
+            $thumbName = time() . '_' . $thumbFile->getClientOriginalName();
+            $thumbFile->move(public_path('image'), $thumbName);
+            $data['thumbnail_url'] = $thumbName;
         }
         // Handle banner upload
         if ($request->hasFile('banner')) {
@@ -121,7 +129,7 @@ class ProdukController extends Controller
     {
         $product = Produk::findOrFail($product);
         
-        // Delete logo if exists
+        // Delete thumbnail if exists
         if ($product->thumbnail_url && file_exists(public_path('image/' . $product->thumbnail_url))) {
             unlink(public_path('image/' . $product->thumbnail_url));
         }

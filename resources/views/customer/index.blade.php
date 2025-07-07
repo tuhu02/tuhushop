@@ -121,12 +121,12 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($popularProducts as $product)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                <a href="{{ route('customer.product', $product->product_id) }}" class="bg-white rounded-lg shadow-md overflow-hidden card-hover block group focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <div class="relative">
                         @if($product->logo)
                             <img src="{{ Storage::url($product->logo) }}" 
                                  alt="{{ $product->product_name }}" 
-                                 class="w-full h-48 object-cover">
+                                 class="w-full h-48 object-cover group-hover:opacity-90 transition">
                         @else
                             <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                                 <i class="fas fa-image text-gray-400 text-4xl"></i>
@@ -138,7 +138,6 @@
                             </div>
                         @endif
                     </div>
-                    
                     <div class="p-4">
                         <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $product->product_name }}</h3>
                         <p class="text-sm text-gray-500 mb-2">{{ $product->developer }}</p>
@@ -147,12 +146,11 @@
                                 {{ $product->kategori->nama }}
                             </span>
                         @endif
-                        <a href="{{ route('customer.product', $product->product_id) }}" 
-                           class="block w-full bg-purple-600 text-white text-center py-2 rounded-lg hover:bg-purple-700 transition-colors mt-2">
+                        <span class="block w-full bg-purple-600 text-white text-center py-2 rounded-lg mt-2 group-hover:bg-purple-700 transition-colors">
                             <i class="fas fa-shopping-cart mr-2"></i>Beli Sekarang
-                        </a>
+                        </span>
                     </div>
-                </div>
+                </a>
                 @endforeach
             </div>
         </section>

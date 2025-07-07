@@ -25,13 +25,18 @@
             </div>
             <div class="mb-4">
                 <label for="provider" class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                <input type="text" id="provider" name="provider" value="{{ old('provider', $denom->provider) }}" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                <select id="provider" name="provider" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                    <option value="Digiflazz" {{ old('provider', $denom->provider) == 'Digiflazz' ? 'selected' : '' }}>Digiflazz</option>
+                    <option value="DuniaGames" {{ old('provider', $denom->provider) == 'DuniaGames' ? 'selected' : '' }}>DuniaGames</option>
+                    <option value="Unipin" {{ old('provider', $denom->provider) == 'Unipin' ? 'selected' : '' }}>Unipin</option>
+                </select>
             </div>
             <div class="mb-4">
                 <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
                 <select id="kategori" name="kategori" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                    <option value="diamond" {{ old('kategori', $denom->kategori) == 'diamond' ? 'selected' : '' }}>Diamond</option>
-                    <option value="nondiamond" {{ old('kategori', $denom->kategori) == 'nondiamond' ? 'selected' : '' }}>Non Diamond</option>
+                    @foreach($kategoriDenoms as $kategori)
+                        <option value="{{ $kategori->slug }}" {{ old('kategori', $denom->kategori) == $kategori->slug ? 'selected' : '' }}>{{ $kategori->nama }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="mb-4">

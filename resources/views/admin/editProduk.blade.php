@@ -80,20 +80,20 @@
                         <p class="text-sm text-gray-500 mt-1">Digunakan untuk sync denom dari Digiflazz</p>
                     </div>
 
-                    <!-- Logo -->
+                    <!-- Thumbnail Produk -->
                     <div class="md:col-span-2">
-                        <label for="logo" class="block mb-2 font-semibold text-gray-700">Logo Produk</label>
+                        <label for="thumbnail" class="block mb-2 font-semibold text-gray-700">Thumbnail Produk</label>
                         <div class="flex items-center space-x-4">
                             @if($product->thumbnail_url)
                                 <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
                                     <img src="{{ asset('image/' . $product->thumbnail_url) }}" 
-                                         alt="Logo {{ $product->product_name }}" 
+                                         alt="Thumbnail {{ $product->product_name }}" 
                                          class="w-16 h-16 object-cover rounded">
                                 </div>
                             @endif
                             <input type="file" 
-                                   id="logo" 
-                                   name="logo" 
+                                   id="thumbnail" 
+                                   name="thumbnail" 
                                    accept="image/*"
                                    class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>

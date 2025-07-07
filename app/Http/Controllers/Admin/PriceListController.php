@@ -114,4 +114,11 @@ class PriceListController extends Controller
         $denom = PriceList::findOrFail($id);
         return view('admin.denom.edit', compact('denom'));
     }
+
+    public function create(Request $request)
+    {
+        $product_id = $request->get('product_id');
+        $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $product_id)->get();
+        return view('admin.denom.create', compact('product_id', 'kategoriDenoms'));
+    }
 } 

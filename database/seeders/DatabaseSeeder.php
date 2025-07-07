@@ -20,6 +20,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call(GameSeeder::class);
+        $this->call([
+            GameSeeder::class,
+            KategoriSeeder::class,
+            ProdukSeeder::class,
+            SpecialOfferSeeder::class,
+        ]);
+
+        // Tambahkan seeder kategori denom
+        $this->call(\Database\Seeders\KategoriDenomSeeder::class);
     }
 }

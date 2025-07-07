@@ -15,113 +15,284 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         .denom-card.selected {
-            border-color: #8b5cf6;
-            background-color: #f3f4f6;
+            border-color: #22d3ee !important; /* cyan-400 */
+            /* background-color: #cffafe !important;  HAPUS agar background tidak berubah saat selected */
+            /* color: #164e63 !important;  HAPUS agar warna text tidak berubah saat selected */
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .hide-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
         }
     </style>
 </head>
-<body class="bg-[#23272f] min-h-screen">
-    <x-navbar />
-    <div class="container mx-auto mt-24 p-5">
-        {{-- Banner Section dengan Logo Overlap --}}
-        <div class="relative w-full mb-8">
-            {{-- Banner dinamis --}}
-            <img src="{{ $product->banner_url ? asset('image/' . $product->banner_url) : asset('image/banner-mlbb.jpg') }}" alt="Banner {{ $product->product_name }}"
-                 class="w-full h-64 object-cover rounded-2xl shadow-md">
-            {{-- Logo Produk, overlap --}}
-            <div class="absolute left-8 -bottom-12 z-10">
-                <img src="{{ $product->logo ? Storage::url($product->logo) : asset('image/' . $product->thumbnail_url) }}"
-                     alt="{{ $product->product_name }}"
-                     class="w-40 h-40 object-cover rounded-xl border-4 border-white shadow-lg bg-white">
+<body class="bg-[#23272f] min-h-screen overflow-x-hidden pt-20">
+    <nav class="sticky top-0 left-0 w-full z-50">
+        <x-navbar />
+    </nav>
+    <!-- BANNER PRODUK -->
+    <div class="w-full h-80 md:h-96 relative">
+        <img src="{{ $product->banner_url ? asset('image/' . $product->banner_url) : asset('image/banner-mlbb.jpg') }}"
+             alt="Banner {{ $product->product_name }}"
+             class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#23272f]/80 to-transparent"></div>
+    </div>
+    <!-- END BANNER PRODUK -->
+    <!-- INFO PRODUK FLEX -->
+    <div class="w-full max-w-screen-xl flex flex-col md:flex-row items-start md:items-start gap-8 justify-start -mt-24 mb-8 z-20 relative px-2 md:ml-8 ml-2">
+        <!-- Card Gambar Produk -->
+        <div class="relative w-56 h-56 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-white flex-shrink-0">
+            <img src="{{ $product->logo ? Storage::url($product->logo) : asset('image/' . $product->thumbnail_url) }}"
+                 alt="{{ $product->product_name }}"
+                 class="w-full h-full object-cover">
+            <!-- Logo kecil di bawah -->
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2">
+                <img src="{{ asset('image/logo-baru.png') }}" alt="Logo" class="h-7 rounded bg-white px-1 py-1 shadow">
             </div>
         </div>
-        {{-- Box Info Produk --}}
-        <div class="bg-gray-800 rounded-lg shadow-md p-6 mb-8 mt-12 flex flex-col md:flex-row items-center md:items-start">
-            <div class="md:ml-48 flex-1">
-                <h1 class="text-3xl font-bold text-white mb-2">{{ $product->product_name }}</h1>
-                <p class="text-gray-300 mb-4"><i class="fas fa-building mr-2"></i>{{ $product->developer }}</p>
-                <div class="flex flex-wrap gap-6 text-sm">
-                    <div class="flex items-center gap-2 text-yellow-400">
-                        <i class="fas fa-bolt"></i> Proses Cepat
-                    </div>
-                    <div class="flex items-center gap-2 text-blue-400">
-                        <i class="fas fa-comments"></i> Layanan Chat 24/7
-                    </div>
-                    <div class="flex items-center gap-2 text-purple-400">
-                        <i class="fas fa-shield-alt"></i> Pembayaran Aman!
-                    </div>
-                </div>
+        <!-- Info Produk di kanan -->
+        <div class="flex-1 w-full min-w-0">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-1 text-left">{{ $product->product_name }}</h1>
+            <p class="text-lg text-gray-300 mb-3 font-medium flex items-center text-left"><i class="fas fa-building mr-2"></i>{{ $product->developer }}</p>
+            <div class="flex flex-wrap gap-x-4 gap-y-2 mb-4">
+                <span class="inline-flex items-center bg-yellow-400 text-gray-900 font-semibold px-4 py-1 rounded-full text-base shadow whitespace-nowrap"><i class="fas fa-star mr-2"></i>Layanan Terbaik</span>
+                <span class="inline-flex items-center bg-orange-400 text-gray-900 font-semibold px-4 py-1 rounded-full text-base shadow whitespace-nowrap"><i class="fas fa-shield-alt mr-2"></i>Pembayaran yang Aman</span>
+                <span class="inline-flex items-center bg-blue-400 text-gray-900 font-semibold px-4 py-1 rounded-full text-base shadow whitespace-nowrap"><i class="fas fa-headset mr-2"></i>Layanan Pelanggan 24/7</span>
+                <span class="inline-flex items-center bg-yellow-500 text-gray-900 font-semibold px-4 py-1 rounded-full text-base shadow whitespace-nowrap"><i class="fas fa-bolt mr-2"></i>Pengiriman Cepat</span>
             </div>
-        </div>
-        <!-- Denom Selection -->
-        <div class="bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-white mb-6">Pilih Nominal</h2>
-            <!-- Diamond Denoms -->
-            @if($diamondDenoms->count() > 0)
-            <div class="mb-8">
-                <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center">
-                    <i class="fas fa-gem text-blue-400 mr-2"></i>
-                    Diamond
-                </h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    @foreach($diamondDenoms as $denom)
-                    <div class="denom-card bg-gray-900 border-2 border-gray-700 rounded-lg p-4 cursor-pointer hover:border-purple-400"
-                         onclick="selectDenom({{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
-                        <div class="text-center">
-                            <h4 class="font-semibold text-white mb-2">{{ $denom->nama_denom ?: $denom->nama_produk }}</h4>
-                            <p class="text-2xl font-bold text-purple-400">Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}</p>
-                            @if($denom->harga_member && $denom->harga_member < ($denom->harga_jual ?: $denom->harga))
-                                <p class="text-sm text-green-400 font-medium">Member: Rp{{ number_format($denom->harga_member, 0, ',', '.') }}</p>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
+            <div class="text-gray-200 text-base md:text-lg font-normal text-left">
+                {{ $product->description ?? 'Beli Top Up ML Diamond Mobile Legends dan Weekly Diamond Pass MLBB Harga Termurah Se-Indonesia, Dijamin Aman, Cepat dan Terpercaya hanya ada di Tuhu Shop.' }}
             </div>
-            @endif
-            <!-- Non-Diamond Denoms -->
-            @if($nonDiamondDenoms->count() > 0)
-            <div>
-                <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center">
-                    <i class="fas fa-coins text-yellow-400 mr-2"></i>
-                    Lainnya
-                </h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    @foreach($nonDiamondDenoms as $denom)
-                    <div class="denom-card bg-gray-900 border-2 border-gray-700 rounded-lg p-4 cursor-pointer hover:border-purple-400"
-                         onclick="selectDenom({{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
-                        <div class="text-center">
-                            <h4 class="font-semibold text-white mb-2">{{ $denom->nama_denom ?: $denom->nama_produk }}</h4>
-                            <p class="text-2xl font-bold text-purple-400">Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}</p>
-                            @if($denom->harga_member && $denom->harga_member < ($denom->harga_jual ?: $denom->harga))
-                                <p class="text-sm text-green-400 font-medium">Member: Rp{{ number_format($denom->harga_member, 0, ',', '.') }}</p>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-            @if($diamondDenoms->count() == 0 && $nonDiamondDenoms->count() == 0)
-            <div class="text-center py-12">
-                <div class="text-gray-400 mb-4">
-                    <i class="fas fa-coins text-6xl"></i>
-                </div>
-                <h3 class="text-lg font-medium text-white mb-2">Belum ada denom tersedia</h3>
-                <p class="text-gray-300">Produk ini sedang dalam maintenance</p>
-            </div>
-            @endif
         </div>
     </div>
-    <!-- Footer -->
-    <footer class="relative bg-blueGray-200 pt-8 mt-10">
+    <!-- END INFO PRODUK FLEX -->
+    <!-- PILIH NOMINAL + FORM & PEMBAYARAN GRID -->
+    <div class="w-full px-2 mt-8 flex flex-col md:flex-row gap-4 min-h-[600px]">
+        <!-- KIRI: Denom, deskripsi, rekomendasi -->
+        <div class="w-full md:w-2/3">
+            <!-- Header Step -->
+            <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4">
+                <span class="font-bold text-2xl mr-2">1</span>
+                <span class="font-bold text-lg">Pilih Nominal</span>
+            </div>
+            <!-- Tab Pilihan Kategori -->
+            <div class="flex gap-4 mb-4">
+                <a href="?kategori=diamond" class="flex-1 text-center py-4 rounded-lg font-bold text-lg transition-all duration-200 {{ $kategoriAktif == 'diamond' ? 'bg-cyan-400 text-white' : 'bg-[#23232a] text-cyan-400' }}">Diamond</a>
+                <a href="?kategori=weekly" class="flex-1 text-center py-4 rounded-lg font-bold text-lg transition-all duration-200 {{ $kategoriAktif == 'weekly' ? 'bg-cyan-400 text-white' : 'bg-[#23232a] text-cyan-400' }}">Weekly</a>
+                <!-- Tambah tab lain jika perlu -->
+            </div>
+            <!-- Denom Selection Modern -->
+            <div class="bg-[#181820] rounded-lg shadow-md p-6">
+                @if($filteredDenoms->count() > 0)
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center">
+                        <i class="fas fa-gem text-blue-400 mr-2"></i>
+                        {{ ucfirst($kategoriAktif) }}
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        @foreach($filteredDenoms as $denom)
+                        <div class="bg-[#23232a] rounded-xl p-4 flex flex-col items-center justify-center shadow hover:shadow-lg transition cursor-pointer denom-card border-2 border-transparent hover:border-cyan-400 min-h-[100px] select-none"
+                             onclick="selectDenom(event, {{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
+                            <div class="font-bold text-white text-center mb-1">
+                                {{ $denom->nama_denom ?: $denom->nama_produk }}
+                            </div>
+                            <div class="text-cyan-300 font-bold text-center mb-1">Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}</div>
+                            @if($denom->harga_member && $denom->harga_member < ($denom->harga_jual ?: $denom->harga))
+                                <div class="text-xs text-green-400 font-medium text-center">Member: Rp{{ number_format($denom->harga_member, 0, ',', '.') }}</div>
+                            @endif
+                            <i class="fas fa-gem text-blue-400 text-2xl mt-2"></i>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @else
+                <div class="text-center py-12">
+                    <div class="text-gray-400 mb-4">
+                        <i class="fas fa-coins text-6xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-white mb-2">Belum ada denom tersedia</h3>
+                    <p class="text-gray-300">Produk ini sedang dalam maintenance</p>
+                </div>
+                @endif
+            </div>
+
+            <!-- DESKRIPSI & REKOMENDASI TOPUP GAME -->
+            <div class="mt-8">
+                <!-- Deskripsi Game -->
+                <div class="bg-[#181820] rounded-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-2">Deskripsi {{ $product->product_name }}</h2>
+                    <p class="text-gray-200 mb-2">
+                        {{ $product->long_description ?? 'Mobile Legends adalah salah satu game MOBA (Multiplayer Online Battle Arena) berbasis tim dimana pemain akan bermain sebagai salah satu hero. Hero disini merupakan karakter yang akan digunakan oleh pemain dalam game...'}}
+                    </p>
+                    <button class="text-yellow-400 font-semibold hover:underline text-left">Show more</button>
+                </div>
+                <!-- Rekomendasi Topup Game -->
+                <h2 class="text-2xl font-bold text-white mb-4">Rekomendasi Topup Game</h2>
+                <div id="rekomendasi-carousel" class="flex gap-8 overflow-x-auto pb-2 hide-scrollbar max-h-72 overflow-y-hidden">
+                    @foreach($allGame as $game)
+                        <a href="{{ route('produk.public', $game->product_id) }}" class="block">
+                            <div class="rounded-2xl overflow-hidden bg-[#23272f] w-60 h-60 flex-shrink-0">
+                                <img src="{{ asset('image/' . $game->thumbnail_url) }}" alt="{{ $game->product_name }}" class="w-full h-full object-cover">
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const carousel = document.getElementById('rekomendasi-carousel');
+                    if (!carousel) return;
+                    const card = carousel.querySelector('div');
+                    if (!card) return;
+                    const cardWidth = card.offsetWidth + 32; // 32px gap-8
+                    let scrollAmount = 0;
+                    let maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                    let autoScrollInterval;
+                    let autoScrollDelayTimeout;
+
+                    function startAutoScroll() {
+                        clearInterval(autoScrollInterval);
+                        autoScrollInterval = setInterval(() => {
+                            maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                            if (scrollAmount + cardWidth >= maxScroll) {
+                                scrollAmount = 0;
+                            } else {
+                                scrollAmount += cardWidth;
+                            }
+                            carousel.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+                        }, 2500);
+                    }
+
+                    function pauseAutoScroll() {
+                        clearInterval(autoScrollInterval);
+                        clearTimeout(autoScrollDelayTimeout);
+                        autoScrollDelayTimeout = setTimeout(() => {
+                            startAutoScroll();
+                        }, 10000);
+                    }
+
+                    ['pointerdown', 'touchstart', 'wheel', 'mousedown'].forEach(evt => {
+                        carousel.addEventListener(evt, pauseAutoScroll, { passive: true });
+                    });
+                    ['pointerup', 'touchend', 'mouseup'].forEach(evt => {
+                        carousel.addEventListener(evt, () => {
+                            clearTimeout(autoScrollDelayTimeout);
+                            autoScrollDelayTimeout = setTimeout(() => {
+                                startAutoScroll();
+                            }, 10000);
+                        }, { passive: true });
+                    });
+
+                    startAutoScroll();
+                });
+                </script>
+            </div>
+            <!-- END DESKRIPSI & REKOMENDASI -->
+        </div>
+        <!-- KANAN: Form & Pembayaran -->
+        <div class="w-full md:w-1/3 flex flex-col gap-6 md:sticky md:top-24 h-fit">
+            <!-- Step 2: Masukan Detil Akun -->
+            <div class="bg-[#181820] rounded-lg shadow-md">
+                <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4">
+                    <span class="font-bold text-2xl mr-2">2</span>
+                    <span class="font-bold text-lg">Masukan Detil Akun <i class='fas fa-question-circle text-base ml-1'></i></span>
+                </div>
+                <form class="p-4" method="POST" action="#">
+                    @csrf
+                    <input type="hidden" name="denom_id" id="denom_id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white mb-1">ID</label>
+                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan ID">
+                        </div>
+                        <div>
+                            <label class="block text-white mb-1">Server</label>
+                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan Server">
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-300 mt-2">
+                        MLBB KHUSUS REGION INDONESIA (ID), PASTIKAN CEK DULU REGION USER ID KALIAN BIAR GAK SALAH ISI DIAMONDS
+                    </div>
+                </form>
+            </div>
+            <!-- Step 3: Pilih Pembayaran -->
+            <div class="bg-[#181820] rounded-lg shadow-md">
+                <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4">
+                    <span class="font-bold text-2xl mr-2">3</span>
+                    <span class="font-bold text-lg">Pilih Pembayaran</span>
+                </div>
+                <div class="space-y-4 p-4">
+                    <div class="bg-white rounded-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition payment-method border-2 border-transparent">
+                        <span class="font-semibold text-gray-800">QRIS & Dompet Digital</span>
+                        <div class="flex gap-2">
+                            <i class="fab fa-cc-visa text-2xl text-gray-600"></i>
+                            <i class="fab fa-cc-mastercard text-2xl text-gray-600"></i>
+                            <i class="fab fa-cc-paypal text-2xl text-gray-600"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition payment-method border-2 border-transparent">
+                        <span class="font-semibold text-gray-800">Retail</span>
+                        <div class="flex gap-2">
+                            <i class="fas fa-store text-2xl text-gray-600"></i>
+                            <i class="fas fa-store-alt text-2xl text-gray-600"></i>
+                        </div>
+                    </div>
+                    <!-- Tambahkan metode pembayaran lain sesuai kebutuhan -->
+                </div>
+            </div>
+            <!-- STEP 4: Kode Promo -->
+            <div class="w-full px-2 mt-8">
+                <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4 max-w-xl">
+                    <span class="font-bold text-2xl mr-2">4</span>
+                    <span class="font-bold text-lg">Kode Promo</span>
+                </div>
+                <div class="bg-[#181820] rounded-lg shadow-md p-6 max-w-xl">
+                    <input type="text" class="rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 w-full" placeholder="Masukkan Kode Promo">
+                </div>
+            </div>
+            <!-- STEP 5: Selesaikan Pembayaran (Email/WhatsApp) -->
+            <div class="w-full px-2 mt-8 max-w-xl">
+                <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4">
+                    <span class="font-bold text-2xl mr-2">5</span>
+                    <span class="font-bold text-lg">Selesaikan Pembayaran</span>
+                </div>
+                <div class="bg-[#181820] rounded-lg shadow-md p-6">
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-white mb-1">Email (untuk notifikasi pembayaran)</label>
+                            <input type="email" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan Email">
+                        </div>
+                        <div>
+                            <label class="block text-white mb-1">WhatsApp (opsional)</label>
+                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="08xxxxxxxxxx">
+                        </div>
+                        <button type="submit" class="w-full bg-cyan-400 text-gray-900 font-bold py-2 rounded-lg hover:bg-cyan-500 transition">Selesaikan Pembayaran</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END PILIH NOMINAL + FORM & PEMBAYARAN GRID -->
+     <!-- Footer -->
+     <footer class="relative bg-blueGray-200 pt-8">
         <div class="mx-auto px-4 pt-2 text-white" style="background-color: #393E46;">
             <div class="flex flex-wrap text-left lg:text-left">
                 <div class="w-full lg:w-6/12 px-4">
                     <h4 class="text-2xl fonat-semibold text-blueGray-700 font-bold">TUHU SHOP</h4>
                     <h5 class="text-sm mt-0 mb-2 text-blueGray-600">
-                        Platform terpercaya untuk pembelian game voucher dan top up dengan harga terbaik.
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Saepe non, deserunt ipsum voluptatem sunt veniam consequatur delectus explicabo libero omnis vel nihil ipsam ex fugit aliquam quaerat impedit? Dignissimos, architecto.
                     </h5>
+                    <div class="mt-6 lg:mb-0 mb-6">
+                        <button class="bg-white text-lightBlue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                            <i class="fab fa-twitter text-blue-600"></i></button><button class="bg-white text-lightBlue-600 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                            <i class="fab fa-facebook-square text-blue-600"></i></button><button class="bg-white text-pink-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                            <i class="fab fa-dribbble"></i></button><button class="bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                            <i class="fab fa-github text-black"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="w-full lg:w-6/12 px-4">
                     <div class="flex flex-wrap items-top mb-6">
@@ -129,16 +300,33 @@
                             <span class="block uppercase text-blueGray-500 text-sm font-semibold mb-2">Useful Links</span>
                             <ul class="list-unstyled">
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="#">Home</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://www.creative-tim.com/presentation?ref=njs-profile">About Us</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="#">Topup</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="https://blog.creative-tim.com?ref=njs-profile">Blog</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="#">Cek Transaksi</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://www.github.com/creativetimofficial?ref=njs-profile">Github</a>
                                 </li>
                                 <li>
-                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="#">Kontak</a>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800  block pb-2 text-sm" href="https://www.creative-tim.com/bootstrap-themes/free?ref=njs-profile">Free Products</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-full lg:w-4/12 px-4">
+                            <span class="block uppercase text-blueGray-500 text-sm font-semibold mb-2">Other Resources</span>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://github.com/creativetimofficial/notus-js/blob/main/LICENSE.md?ref=njs-profile">MIT License</a>
+                                </li>
+                                <li>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/terms?ref=njs-profile">Terms &amp; Conditions</a>
+                                </li>
+                                <li>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/privacy?ref=njs-profile">Privacy Policy</a>
+                                </li>
+                                <li>
+                                    <a class="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm" href="https://creative-tim.com/contact-us?ref=njs-profile">Contact Us</a>
                                 </li>
                             </ul>
                         </div>
@@ -149,14 +337,15 @@
             <div class="flex flex-wrap items-center md:justify-between justify-center">
                 <div class="w-full md:w-4/12 px-4 mx-auto text-center">
                     <div class="text-sm text-blueGray-500 py-1">
-                        Copyright © <span id="get-current-year">2024</span> Tuhu Shop
+                        Copyright © <span id="get-current-year">2024</span><a href="https://www.creative-tim.com/product/notus-js" class="text-blueGray-500 hover:text-gray-800" target="_blank"> Tuhu Shop
+                        <a href="https://www.creative-tim.com?ref=njs-profile" class="text-blueGray-500 hover:text-blueGray-800">|| Tuhu Pangestu</a>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </footer>   
     <script>
-        function selectDenom(denomId, denomName, price) {
+        function selectDenom(event, denomId, denomName, price) {
             // Remove previous selection
             document.querySelectorAll('.denom-card').forEach(card => {
                 card.classList.remove('selected');
@@ -165,14 +354,16 @@
             event.currentTarget.classList.add('selected');
             // Update form
             document.getElementById('denom_id').value = denomId;
-            document.getElementById('selected-denom-name').textContent = denomName;
-            document.getElementById('selected-denom-price').textContent = 'Rp' + price.toLocaleString('id-ID');
-            
+            if(document.getElementById('selected-denom-name'))
+                document.getElementById('selected-denom-name').textContent = denomName;
+            if(document.getElementById('selected-denom-price'))
+                document.getElementById('selected-denom-price').textContent = 'Rp' + price.toLocaleString('id-ID');
             // Show checkout form
-            document.getElementById('checkout-form').classList.remove('hidden');
-            
+            if(document.getElementById('checkout-form'))
+                document.getElementById('checkout-form').classList.remove('hidden');
             // Scroll to checkout form
-            document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth' });
+            if(document.getElementById('checkout-form'))
+                document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth' });
         }
 
         // Payment method selection

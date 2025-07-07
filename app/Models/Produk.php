@@ -53,6 +53,16 @@ class Produk extends Model
         return $this->hasMany(Transaction::class, 'product_id', 'product_id');
     }
 
+    public function specialOffers()
+    {
+        return $this->hasMany(\App\Models\SpecialOffer::class, 'product_id', 'product_id');
+    }
+
+    public function kategoriDenoms()
+    {
+        return $this->hasMany(\App\Models\KategoriDenom::class, 'product_id', 'product_id');
+    }
+
     // Alias untuk backward compatibility
     public static function getFirstGame()
     {

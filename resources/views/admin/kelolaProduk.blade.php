@@ -232,159 +232,132 @@
 
             <!-- Denom Lists -->
             <div class="p-6">
-                <!-- Diamond Denoms -->
-                @if($diamond->count() > 0)
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                            <i class="fas fa-gem text-blue-500 mr-2"></i>
-                            Denom Diamond ({{ $diamond->count() }})
-                        </h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Denom</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Modal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Jual</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Member</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($diamond as $denom)
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Daftar Denom</h2>
+                    <!-- Diamond Denoms -->
+                    @if($diamond->count() > 0)
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-gem text-blue-500 mr-2"></i>
+                                Denom Diamond ({{ $diamond->count() }})
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full table-auto border border-gray-300 rounded-lg">
+                                    <thead class="bg-gray-100">
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $denom->nama_denom ?: $denom->nama_produk }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_modal ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_jual ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_member ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->profit ?: 0) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $denom->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $denom->status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                                        </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div class="flex space-x-2">
-                                                    <button onclick="editDenom({{ $denom->id }})" 
-                                                            class="text-blue-600 hover:text-blue-900">
-                                                        <i class="fas fa-edit"></i>
-                                </button>
-                                                    <form action="{{ route('admin.denom.destroy', $denom->id) }}" 
-                                                          method="POST" 
-                                                          onsubmit="return confirm('Yakin ingin menghapus denom ini?')"
-                                                          class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="text-red-600 hover:text-red-900">
-                                                            <i class="fas fa-trash"></i>
-                                </button>
-                                                    </form>
-                                    </div>
-                                            </td>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Nama Denom</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Modal</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Jual</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Member</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Profit</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Status</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Aksi</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                                </div>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($diamond as $denom)
+                                            <tr class="even:bg-gray-50 hover:bg-blue-50">
+                                                <td class="px-4 py-2 border text-sm font-medium text-gray-900 text-center whitespace-nowrap">{{ $denom->nama_denom ?: $denom->nama_produk }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_modal ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_jual ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->profit ?: 0) }}</td>
+                                                <td class="px-4 py-2 border text-center whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $denom->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                        {{ $denom->status === 'active' ? 'Aktif' : 'Nonaktif' }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
+                                                    <div class="flex justify-center space-x-2">
+                                                        <button onclick="editDenom({{ $denom->id }})" class="text-blue-600 hover:text-blue-900">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus denom ini?')" class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-600 hover:text-red-900">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
-                @endif
+                        </div>
+                    @endif
 
-                <!-- Non-Diamond Denoms -->
-                @if($nonDiamond->count() > 0)
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            Denom Non-Diamond ({{ $nonDiamond->count() }})
-                        </h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Denom</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Modal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Jual</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Member</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($nonDiamond as $denom)
+                    <!-- Non-Diamond Denoms -->
+                    @if($nonDiamond->count() > 0)
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                                Denom Non-Diamond ({{ $nonDiamond->count() }})
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full table-auto border border-gray-300 rounded-lg">
+                                    <thead class="bg-gray-100">
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $denom->nama_denom ?: $denom->nama_produk }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_modal ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_jual ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->harga_member ?: $denom->harga) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp{{ number_format($denom->profit ?: 0) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $denom->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $denom->status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                                        </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div class="flex space-x-2">
-                                                    <button onclick="editDenom({{ $denom->id }})" 
-                                                            class="text-blue-600 hover:text-blue-900">
-                                                        <i class="fas fa-edit"></i>
-                                </button>
-                                                    <form action="{{ route('admin.denom.destroy', $denom->id) }}" 
-                                                          method="POST" 
-                                                          onsubmit="return confirm('Yakin ingin menghapus denom ini?')"
-                                                          class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="text-red-600 hover:text-red-900">
-                                                            <i class="fas fa-trash"></i>
-                                </button>
-                                                    </form>
-                                    </div>
-                                            </td>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Nama Denom</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Modal</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Jual</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Member</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Profit</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Status</th>
+                                            <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Aksi</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($nonDiamond as $denom)
+                                            <tr class="even:bg-gray-50 hover:bg-blue-50">
+                                                <td class="px-4 py-2 border text-sm font-medium text-gray-900 text-center whitespace-nowrap">{{ $denom->nama_denom ?: $denom->nama_produk }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_modal ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_jual ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member ?: $denom->harga) }}</td>
+                                                <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->profit ?: 0) }}</td>
+                                                <td class="px-4 py-2 border text-center whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $denom->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                        {{ $denom->status === 'active' ? 'Aktif' : 'Nonaktif' }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
+                                                    <div class="flex justify-center space-x-2">
+                                                        <button onclick="editDenom({{ $denom->id }})" class="text-blue-600 hover:text-blue-900">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus denom ini?')" class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-600 hover:text-red-900">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
-                @if($diamond->count() == 0 && $nonDiamond->count() == 0)
-                    <div class="text-center py-12">
-                        <div class="text-gray-400 mb-4">
-                            <i class="fas fa-coins text-6xl"></i>
+                    @if($diamond->count() == 0 && $nonDiamond->count() == 0)
+                        <div class="text-center py-12">
+                            <div class="text-gray-400 mb-4">
+                                <i class="fas fa-coins text-6xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada denom</h3>
+                            <p class="text-gray-600 mb-4">Mulai dengan menambahkan denom pertama untuk produk ini</p>
+                            <button onclick="toggleDenomForm()" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>Tambah Denom Pertama
+                            </button>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada denom</h3>
-                        <p class="text-gray-600 mb-4">Mulai dengan menambahkan denom pertama untuk produk ini</p>
-                        <button onclick="toggleDenomForm()" 
-                                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            <i class="fas fa-plus mr-2"></i>Tambah Denom Pertama
-                        </button>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
     </div>

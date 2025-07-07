@@ -82,10 +82,11 @@
                     @foreach($products as $product)
                         <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-start space-x-4">
+                            <!--<div>{{ asset('image/' . $product->thumbnail_url) }}</div>-->
                                 <!-- Product Image -->
                                 <div class="flex-shrink-0">
                                     @if($product->thumbnail_url)
-                                    <img src="{{ asset('storage/'.$product->thumbnail_url) }}" 
+                                    <img src="{{ asset('image/'.$product->thumbnail_url) }}" 
                                         alt="{{ $product->product_name }}" 
                                         class="w-16 h-16 object-cover rounded-lg border">
                                     @else

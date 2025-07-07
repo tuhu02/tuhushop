@@ -67,4 +67,9 @@ class PriceList extends Model
     {
         return $query->where('status', 'active');
     }
+
+    public function kategoriDenom()
+    {
+        return $this->belongsTo(\App\Models\KategoriDenom::class, 'kategori_id', 'id');
+    }
 }
