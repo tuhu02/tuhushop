@@ -33,6 +33,7 @@ return new class extends Migration
             $table->foreignId('referred_by')->nullable()->constrained('resellers')->onDelete('set null');
             $table->timestamp('approved_at')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('level')->default('gold');
             $table->timestamps();
 
             // Indexes for performance

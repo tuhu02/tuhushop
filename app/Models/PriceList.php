@@ -10,22 +10,20 @@ class PriceList extends Model
     protected $fillable = [
         'product_id',
         'nama_produk',
-        'harga',
-        'kategori',
+        'harga_beli',
+        'kategori_id',
         'provider',
-        'harga_modal',
-        'harga_jual',
         'harga_member',
         'profit',
         'logo',
         'kode_digiflazz',
-        'status',
         'kode_produk',
         'denom',
+        'harga_jual',
     ];
 
     protected $casts = [
-        'harga' => 'decimal:2',
+        'harga_beli' => 'decimal:2',
         'harga_modal' => 'decimal:2',
         'harga_jual' => 'decimal:2',
         'harga_member' => 'decimal:2',
@@ -35,13 +33,6 @@ class PriceList extends Model
     public function produk()
     {
         return $this->belongsTo(Produk::class, 'product_id', 'product_id');
-    }
-
-    public function bundles()
-    {
-        return $this->belongsToMany(Bundle::class, 'bundle_product', 'product_id', 'bundle_id')
-            ->withPivot('quantity')
-            ->withTimestamps();
     }
 
     // Alias untuk backward compatibility

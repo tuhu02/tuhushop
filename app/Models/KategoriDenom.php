@@ -9,11 +9,11 @@ class KategoriDenom extends Model
 {
     use HasFactory;
     protected $table = 'kategori_denoms';
-    protected $fillable = ['nama', 'slug'];
+    protected $fillable = ['nama', 'slug', 'product_id'];
 
-    public function produk()
+    public function product()
     {
-        return $this->belongsTo(\App\Models\Produk::class, 'product_id', 'product_id');
+        return $this->belongsTo(\App\Models\Produk::class, 'product_id', 'id');
     }
 
     public function denoms()

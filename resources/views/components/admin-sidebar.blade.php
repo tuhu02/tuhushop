@@ -61,20 +61,12 @@
                     <i class="fas fa-tags w-4 h-4 mr-2"></i>
                     Kelola Kategori
                 </a>
-                <a href="{{ url('admin/special-offers') }}" 
-                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->is('admin/special-offers*') ? 'bg-teal-50 text-teal-700' : '' }}">
-                    <i class="fas fa-bolt w-4 h-4 mr-2"></i>
-                    Kelola Promo/Offer
+                <a href="{{ route('admin.denom.importApigames') }}" class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
+                    <i class="fas fa-cloud-download-alt w-5 h-5 mr-3"></i>
+                    Import Denom Apigames
                 </a>
             </div>
         </div>
-
-        <!-- Bundling Management -->
-        <a href="{{ route('admin.bundles.index') }}"
-           class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors {{ request()->routeIs('admin.bundles.*') ? 'bg-teal-50 text-teal-700 border border-teal-200' : '' }}">
-            <i class="fas fa-boxes w-5 h-5 mr-3"></i>
-            Bundling
-        </a>
 
         <!-- Transactions -->
         <a href="{{ route('admin.transactions') }}" 

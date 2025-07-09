@@ -81,9 +81,11 @@
             </div>
             <!-- Tab Pilihan Kategori -->
             <div class="flex gap-4 mb-4">
-                <a href="?kategori=diamond" class="flex-1 text-center py-4 rounded-lg font-bold text-lg transition-all duration-200 {{ $kategoriAktif == 'diamond' ? 'bg-cyan-400 text-white' : 'bg-[#23232a] text-cyan-400' }}">Diamond</a>
-                <a href="?kategori=weekly" class="flex-1 text-center py-4 rounded-lg font-bold text-lg transition-all duration-200 {{ $kategoriAktif == 'weekly' ? 'bg-cyan-400 text-white' : 'bg-[#23232a] text-cyan-400' }}">Weekly</a>
-                <!-- Tambah tab lain jika perlu -->
+                @foreach($kategoriDenoms as $kategori)
+                    <a href="?kategori={{ $kategori->slug }}" class="flex-1 text-center py-4 rounded-lg font-bold text-lg transition-all duration-200 {{ $kategoriAktif == $kategori->slug ? 'bg-cyan-400 text-white' : 'bg-[#23232a] text-cyan-400' }}">
+                        {{ $kategori->nama }}
+                    </a>
+                @endforeach
             </div>
             <!-- Denom Selection Modern -->
             <div class="bg-[#181820] rounded-lg shadow-md p-6">
@@ -204,6 +206,14 @@
                     @csrf
                     <input type="hidden" name="denom_id" id="denom_id">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        @if(!empty($accountFields) && is_array($accountFields))
+                            @foreach($accountFields as $field)
+                                <div>
+                                    <label class="block text-white mb-1">{{ $field['label'] }}</label>
+                                    <input type="{{ $field['type'] ?? 'text' }}" name="{{ $field['name'] }}" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan {{ $field['label'] }}">
+                                </div>
+                            @endforeach
+                        @else
                         <div>
                             <label class="block text-white mb-1">ID</label>
                             <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan ID">
@@ -212,6 +222,7 @@
                             <label class="block text-white mb-1">Server</label>
                             <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan Server">
                         </div>
+                        @endif
                     </div>
                     <div class="text-xs text-gray-300 mt-2">
                         MLBB KHUSUS REGION INDONESIA (ID), PASTIKAN CEK DULU REGION USER ID KALIAN BIAR GAK SALAH ISI DIAMONDS

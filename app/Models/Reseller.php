@@ -31,7 +31,8 @@ class Reseller extends Model
         'referral_code',
         'referred_by',
         'approved_at',
-        'approved_by'
+        'approved_by',
+        'level',
     ];
 
     protected $casts = [

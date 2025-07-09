@@ -34,6 +34,7 @@
                         <th>Saldo</th>
                         <th>Total Transaksi</th>
                         <th>Komisi</th>
+                        <th class="px-4 py-2">Level</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -55,6 +56,7 @@
                         <td>Rp {{ number_format($reseller->balance) }}</td>
                         <td>{{ $reseller->total_transactions }}</td>
                         <td>{{ $reseller->commission_rate }}%</td>
+                        <td class="px-4 py-2">{{ ucfirst($reseller->level) }}</td>
                         <td class="flex gap-2 flex-wrap">
                             <a href="{{ route('admin.resellers.show', $reseller) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">Detail</a>
                             @if($reseller->status === 'pending')

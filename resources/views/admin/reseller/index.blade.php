@@ -21,6 +21,7 @@
                                     <th class="py-2">Nama</th>
                                     <th>Email</th>
                                     <th>Telepon</th>
+                                    <th class="px-4 py-2">Level</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -31,6 +32,7 @@
                                     <td class="py-2">{{ $reseller->user->name }}</td>
                                     <td>{{ $reseller->user->email }}</td>
                                     <td>{{ $reseller->phone }}</td>
+                                    <td class="px-4 py-2">{{ ucfirst($reseller->level) }}</td>
                                     <td><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Pending</span></td>
                                     <td>
                                         <form method="POST" action="{{ route('admin.resellers.approve', $reseller) }}" style="display:inline">

@@ -32,6 +32,10 @@
                     <li><span class="font-semibold text-white">Total Transaksi:</span> {{ $reseller->total_transactions }}</li>
                     <li><span class="font-semibold text-white">Tanggal Registrasi:</span> {{ $reseller->created_at->format('d M Y H:i') }}</li>
                     <li><span class="font-semibold text-white">Tanggal Disetujui:</span> {{ $reseller->approved_at ? $reseller->approved_at->format('d M Y H:i') : '-' }}</li>
+                    <tr>
+                        <th class="px-4 py-2">Level</th>
+                        <td class="px-4 py-2">{{ ucfirst($reseller->level) }}</td>
+                    </tr>
                 </ul>
             </div>
             <div class="bg-gray-800 rounded-lg p-6">

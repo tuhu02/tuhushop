@@ -12,25 +12,42 @@ class PriceListController extends Controller
 {
     public function store(Request $request)
     {
+        \Log::info('Store denom called', $request->all());
         $request->validate([
             'product_id' => 'required|exists:products,product_id',
-            'nama_produk' => 'required|string|max:255',
-            'harga' => 'required|numeric|min:0',
+            'nama_denom' => 'required|string|max:255',
+            'harga_beli' => 'required|numeric|min:0',
+            'harga_jual' => 'required|numeric|min:0',
             'harga_member' => 'nullable|numeric|min:0',
             'profit' => 'nullable|numeric|min:0',
             'provider' => 'nullable|string|max:255',
-            'kategori' => 'nullable|string|max:255',
+            'kategori_id' => 'required|exists:kategori_denoms,id',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->only(['product_id','nama_produk','harga','harga_member','profit','provider','kategori']);
-        // Handle logo upload
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('denoms', 'public');
-            $data['logo'] = $logoPath;
+        \Log::info('Harga jual dari form:', ['harga_jual' => $request->harga_jual]);
+
+        try {
+            $data = [
+                'product_id'    => $request->product_id,
+                'nama_produk'   => $request->nama_denom,
+                'harga_beli'    => $request->harga_beli,
+                'harga_jual'    => $request->harga_jual,
+                'harga_member'  => $request->harga_member,
+                'profit'        => $request->profit,
+                'provider'      => $request->provider,
+                'kategori_id'   => $request->kategori_id,
+            ];
+            // Handle logo upload
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('denoms', 'public');
+                $data['logo'] = $logoPath;
+            }
+            PriceList::create($data);
+            return back()->with('success', 'Denom berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Gagal menambahkan denom: ' . $e->getMessage());
         }
-        PriceList::create($data);
-        return back()->with('success', 'Denom berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
@@ -38,14 +55,15 @@ class PriceListController extends Controller
         $denom = PriceList::findOrFail($id);
         $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'harga' => 'required|numeric|min:0',
+            'harga_beli' => 'required|numeric|min:0',
+            'harga_jual' => 'required|numeric|min:0',
             'harga_member' => 'nullable|numeric|min:0',
             'profit' => 'nullable|numeric|min:0',
             'provider' => 'nullable|string|max:255',
-            'kategori' => 'nullable|string|max:255',
+            'kategori_id' => 'required|exists:kategori_denoms,id',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $data = $request->only(['nama_produk','harga','harga_member','profit','provider','kategori']);
+        $data = $request->only(['nama_produk','harga_beli','harga_jual','harga_member','profit','provider','kategori_id']);
         if ($request->hasFile('logo')) {
             if ($denom->logo) {
                 \Storage::disk('public')->delete($denom->logo);
@@ -112,7 +130,8 @@ class PriceListController extends Controller
     public function edit($id)
     {
         $denom = PriceList::findOrFail($id);
-        return view('admin.denom.edit', compact('denom'));
+        $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $denom->product_id)->get();
+        return view('admin.denom.edit', compact('denom', 'kategoriDenoms'));
     }
 
     public function create(Request $request)

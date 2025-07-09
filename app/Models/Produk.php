@@ -33,6 +33,10 @@ class Produk extends Model
         'logo',
     ];
 
+    protected $casts = [
+        'account_fields' => 'array',
+    ];
+
     public function kategori()
     {
         return $this->belongsTo(KategoriProduk::class, 'kategori_id');
@@ -51,11 +55,6 @@ class Produk extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'product_id', 'product_id');
-    }
-
-    public function specialOffers()
-    {
-        return $this->hasMany(\App\Models\SpecialOffer::class, 'product_id', 'product_id');
     }
 
     public function kategoriDenoms()

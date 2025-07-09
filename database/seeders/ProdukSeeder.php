@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Models\Produk;
 use App\Models\KategoriProduk;
 
@@ -18,40 +20,69 @@ class ProdukSeeder extends Seeder
 
         // Mobile Games
         if ($mobileGames) {
-            Produk::create([
-                'product_name' => 'Mobile Legends: Bang Bang',
-                'description' => 'Top up Diamond Mobile Legends dengan harga termurah dan proses instan',
-                'developer' => 'Moonton',
-                'kategori_id' => $mobileGames->id,
-                'is_active' => 1,
-                'is_popular' => 1,
-            ]);
-
-            Produk::create([
-                'product_name' => 'PUBG Mobile',
-                'description' => 'Top up UC PUBG Mobile dengan harga termurah dan proses instan',
-                'developer' => 'PUBG Corporation',
-                'kategori_id' => $mobileGames->id,
-                'is_active' => 1,
-                'is_popular' => 1,
-            ]);
-
-            Produk::create([
-                'product_name' => 'Free Fire',
-                'description' => 'Top up Diamond Free Fire dengan harga termurah dan proses instan',
-                'developer' => 'Garena',
-                'kategori_id' => $mobileGames->id,
-                'is_active' => 1,
-                'is_popular' => 0,
-            ]);
-
-            Produk::create([
-                'product_name' => 'Genshin Impact',
-                'description' => 'Top up Genesis Crystal Genshin Impact dengan harga termurah',
-                'developer' => 'miHoYo',
-                'kategori_id' => $mobileGames->id,
-                'is_active' => 1,
-                'is_popular' => 1,
+            DB::table('products')->insert([
+                [
+                    'product_name' => 'Mobile Legends',
+                    'developer' => 'Moonton',
+                    'description' => 'Beli Top up ML Diamond Mobile Legends dan Weekly Diamond Pass MLBB Harga Termurah Se-Indonesia, Dijamin Aman, Cepat dan Terpercaya hanya ada di Tuhu Shop',
+                    'thumbnail_url' => 'mlbbhuhu.jpg',
+                    'banner_url' => '1751754368_lunox_nature_s_harmony_skin_mobile_legends_by_k1ng011011_djfdmtz.jpg',
+                    'logo' => null,
+                    'is_active' => 1,
+                    'is_popular' => 1,
+                    'kategori_id' => $mobileGames->id,
+                    'kode_digiflazz' => 'mlbb',
+                    'account_fields' => json_encode([
+                        ['label' => 'ID', 'name' => 'user_id', 'type' => 'text'],
+                        ['label' => 'Server', 'name' => 'server', 'type' => 'text']
+                    ]),
+                ],
+                [
+                    'product_name' => 'Free Fire',
+                    'developer' => 'Garena',
+                    'description' => 'Top up Free Fire termurah dan tercepat.',
+                    'thumbnail_url' => 'freefire.jpg',
+                    'banner_url' => '1751860449_fanny_10_blade_of_kibou_by_clpfs21_djnw214.jpg',
+                    'logo' => null,
+                    'is_active' => 1,
+                    'is_popular' => 1,
+                    'kategori_id' => $mobileGames->id,
+                    'kode_digiflazz' => 'freefire',
+                    'account_fields' => json_encode([
+                        ['label' => 'User ID', 'name' => 'user_id', 'type' => 'text']
+                    ]),
+                ],
+                [
+                    'product_name' => 'PUBG Mobile',
+                    'developer' => 'Tencent',
+                    'description' => 'Top up UC PUBG Mobile murah dan cepat.',
+                    'thumbnail_url' => 'pubgm.jpg',
+                    'banner_url' => 'apex.jpg',
+                    'logo' => null,
+                    'is_active' => 1,
+                    'is_popular' => 1,
+                    'kategori_id' => $mobileGames->id,
+                    'kode_digiflazz' => 'pubgm',
+                    'account_fields' => json_encode([
+                        ['label' => 'Character ID', 'name' => 'user_id', 'type' => 'text']
+                    ]),
+                ],
+                [
+                    'product_name' => 'Genshin Impact',
+                    'developer' => 'miHoYo',
+                    'description' => 'Top up Genesis Crystal Genshin Impact termurah.',
+                    'thumbnail_url' => 'kleeGenshin.jpeg',
+                    'banner_url' => 'genshin.jpg',
+                    'logo' => null,
+                    'is_active' => 1,
+                    'is_popular' => 0,
+                    'kategori_id' => $mobileGames->id,
+                    'kode_digiflazz' => 'genshin',
+                    'account_fields' => json_encode([
+                        ['label' => 'UID', 'name' => 'uid', 'type' => 'text'],
+                        ['label' => 'Server', 'name' => 'server', 'type' => 'text']
+                    ]),
+                ],
             ]);
         }
 

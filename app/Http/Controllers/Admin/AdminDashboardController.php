@@ -9,7 +9,6 @@ use App\Models\Transaction;
 use App\Models\Game;
 use App\Models\Reseller;
 use App\Models\Withdrawal;
-use App\Models\Bundle;
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
@@ -40,7 +39,6 @@ class AdminDashboardController extends Controller
             'total_games' => Game::count(),
             'total_withdrawals' => Withdrawal::count(),
             'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
-            'total_bundles' => Bundle::count(),
             
             // Transaction status counts
             'failed_transactions' => Transaction::where('status', Transaction::STATUS_FAILED)->count(),

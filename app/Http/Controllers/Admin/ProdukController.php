@@ -12,10 +12,44 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Produk::with('kategori')->get();
-        return view('admin.kelolaProdukList', compact('products'));
+        $sort = $request->query('sort', 'nama_asc');
+        $kategori_id = $request->query('kategori_id');
+        $products = Produk::query();
+
+        // Filter kategori jika dipilih
+        if ($kategori_id) {
+            $products->where('kategori_id', $kategori_id);
+        }
+
+        switch ($sort) {
+            case 'nama_asc':
+                $products->orderBy('product_name', 'asc');
+                break;
+            case 'nama_desc':
+                $products->orderBy('product_name', 'desc');
+                break;
+            case 'populer':
+                $products->orderBy('is_popular', 'desc');
+                break;
+            case 'aktif':
+                $products->orderBy('is_active', 'desc');
+                break;
+            case 'kategori_asc':
+                $products->orderBy('kategori_id', 'asc');
+                break;
+            case 'kategori_desc':
+                $products->orderBy('kategori_id', 'desc');
+                break;
+            default:
+                $products->orderBy('product_name', 'asc');
+        }
+
+        $products = $products->get();
+        $kategoris = \App\Models\KategoriProduk::all();
+
+        return view('admin.kelolaProdukList', compact('products', 'kategoris'));
     }
 
     public function show($product)
@@ -23,7 +57,8 @@ class ProdukController extends Controller
         $product = Produk::with(['priceLists', 'kategori'])->findOrFail($product);
         $diamond = $product->priceLists->where('kategori', 'diamond');
         $nonDiamond = $product->priceLists->where('kategori', 'nondiamond');
-        return view('admin.produk.show', compact('product', 'diamond', 'nonDiamond'));
+        $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $product->product_id)->get();
+        return view('admin.kelolaProduk', compact('product', 'diamond', 'nonDiamond', 'kategoriDenoms'));
     }
 
     public function create()
@@ -199,5 +234,38 @@ class ProdukController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
+    }
+
+    public function createDenom($product_id)
+    {
+        $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $product_id)->get();
+        return view('admin.denom.create', compact('kategoriDenoms', 'product_id'));
+    }
+
+    public function editAccountFields($product_id)
+    {
+        $product = \App\Models\Produk::findOrFail($product_id);
+        return view('admin.editAccountFields', compact('product'));
+    }
+
+    public function updateAccountFields(Request $request, $product_id)
+    {
+        $product = \App\Models\Produk::findOrFail($product_id);
+        $request->validate([
+            'account_fields' => 'required|string',
+        ]);
+        // Validasi JSON
+        $json = $request->input('account_fields');
+        try {
+            $parsed = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            if (!is_array($parsed)) {
+                throw new \Exception('Format JSON tidak valid.');
+            }
+        } catch (\Throwable $e) {
+            return back()->withInput()->withErrors(['account_fields' => 'Format JSON tidak valid: ' . $e->getMessage()]);
+        }
+        $product->account_fields = $parsed;
+        $product->save();
+        return back()->with('success', 'Struktur form akun berhasil diperbarui!');
     }
 } 

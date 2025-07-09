@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             GameSeeder::class,
             KategoriSeeder::class,
             ProdukSeeder::class,
-            SpecialOfferSeeder::class,
         ]);
 
         // Tambahkan seeder kategori denom

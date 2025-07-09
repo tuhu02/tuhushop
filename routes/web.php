@@ -85,7 +85,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/denom/bulk-update', [App\Http\Controllers\Admin\PriceListController::class, 'bulkUpdate'])->name('denom.bulkUpdate');
 
     // Bundle Management
-    Route::resource('bundles', App\Http\Controllers\Admin\BundleController::class);
+    // Route::resource('bundles', App\Http\Controllers\Admin\BundleController::class);
 
     // Transaction Management
     Route::get('/transactions', function () {
@@ -123,8 +123,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/kategoriProduk', [App\Http\Controllers\Admin\KategoriProdukController::class, 'store'])->name('kategoriProduk.store');
     Route::delete('/kategoriProduk/{id}', [App\Http\Controllers\Admin\KategoriProdukController::class, 'destroy'])->name('kategoriProduk.destroy');
 
-    // Special Offers Management
-    Route::resource('special-offers', \App\Http\Controllers\Admin\SpecialOfferController::class);
+    // Route untuk edit struktur form akun (account_fields) produk/game
+    Route::get('/produk/{product_id}/edit-account-fields', [App\Http\Controllers\Admin\ProdukController::class, 'editAccountFields'])->name('admin.account_fields.edit');
+    Route::put('/produk/{product_id}/update-account-fields', [App\Http\Controllers\Admin\ProdukController::class, 'updateAccountFields'])->name('admin.account_fields.update');
+
+    // Import denom dari apigames
+    Route::get('denom/import-apigames', [App\Http\Controllers\Admin\DenomController::class, 'importFromApigames'])->name('denom.importApigames');
+    Route::post('denom/store-import', [App\Http\Controllers\Admin\DenomController::class, 'storeImport'])->name('denom.storeImport');
 });
 
 // Route publik produk (pastikan didefinisikan setelah group admin)

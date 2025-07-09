@@ -82,38 +82,6 @@
             @endforeach
         </div>
 
-        <!-- Bundling Section -->
-        @if(isset($bundles) && count($bundles) > 0)
-        <h1 class="text-white font-bold text-2xl mb-3 mt-10">PAKET BUNDLING HEMAT</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            @foreach($bundles as $bundle)
-            <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-                @if($bundle->image)
-                    <img src="{{ asset('storage/' . $bundle->image) }}" alt="{{ $bundle->name }}" class="w-full h-48 object-cover">
-                @else
-                    <div class="w-full h-48 bg-gray-700 flex items-center justify-center text-gray-400">No Image</div>
-                @endif
-                <div class="p-5 flex-1 flex flex-col">
-                    <h2 class="text-xl font-bold text-aqua mb-2">{{ $bundle->name }}</h2>
-                    <p class="text-white mb-2">{{ $bundle->description }}</p>
-                    <div class="mb-2">
-                        <span class="text-lg font-semibold text-green-400">Rp{{ number_format($bundle->price,0,',','.') }}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-sm text-gray-300 font-semibold">Termasuk:</span>
-                        <ul class="list-disc list-inside text-white text-sm mt-1">
-                            @foreach($bundle->products as $product)
-                                <li>{{ $product->product_name }} <span class="text-gray-400">x{{ $product->pivot->quantity }}</span></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <a href="#" class="mt-auto inline-block bg-aqua text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-200 text-center">Beli Paket</a>
-                </div>
-            </div>
-            @endforeach
-        </div>
-        @endif
-
         <!-- Kategori Produk -->
         <div class="flex gap-2 my-7">
             <div id="topup" class="bg-charcoal border border-aqua text-center font-semibold text-white p-2 px-3 w-fit rounded-lg hover:bg-aqua cursor-pointer">Topup</div>

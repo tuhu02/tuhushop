@@ -4,6 +4,20 @@
 <div class="ml-64 p-8">
     <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
         <h1 class="text-2xl font-bold mb-4">Tambah Denom</h1>
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-lg">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
         <form action="{{ route('admin.denom.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product_id }}">
@@ -12,8 +26,12 @@
                 <input type="text" id="nama_produk" name="nama_produk" value="{{ old('nama_produk') }}" required class="w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
             <div class="mb-4">
-                <label for="harga" class="block text-sm font-medium text-gray-700 mb-1">Harga *</label>
-                <input type="number" id="harga" name="harga" value="{{ old('harga') }}" required min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                <label for="harga_beli" class="block text-sm font-medium text-gray-700 mb-1">Harga Beli *</label>
+                <input type="number" id="harga_beli" name="harga_beli" value="{{ old('harga_beli') }}" required min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
+            </div>
+            <div class="mb-4">
+                <label for="harga_jual" class="block text-sm font-medium text-gray-700 mb-1">Harga Jual *</label>
+                <input type="number" id="harga_jual" name="harga_jual" value="{{ old('harga_jual') }}" required min="0" class="w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
             <div class="mb-4">
                 <label for="harga_member" class="block text-sm font-medium text-gray-700 mb-1">Harga Member</label>
@@ -32,10 +50,11 @@
                 </select>
             </div>
             <div class="mb-4">
-                <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                <select id="kategori" name="kategori" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                <label for="kategori_id" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                <select id="kategori_id" name="kategori_id" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                    <option value="">Pilih Kategori</option>
                     @foreach($kategoriDenoms as $kategori)
-                        <option value="{{ $kategori->slug }}" {{ old('kategori') == $kategori->slug ? 'selected' : '' }}>{{ $kategori->nama }}</option>
+                        <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama }}</option>
                     @endforeach
                 </select>
             </div>

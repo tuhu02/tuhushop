@@ -30,17 +30,25 @@ class ProdukController extends Controller
 
     public function showPublic($product_id, Request $request)
     {
-        $kategoriAktif = $request->get('kategori', 'diamond');
-        $product = Produk::with(['kategori', 'priceLists'])->where('product_id', $product_id)->firstOrFail();
-        $filteredDenoms = $product->priceLists->where('kategori', $kategoriAktif);
+        $kategoriAktif = $request->get('kategori');
+        $product = Produk::with(['kategori', 'priceLists', 'kategoriDenoms'])->where('product_id', $product_id)->firstOrFail();
+        $kategoriDenoms = $product->kategoriDenoms;
+        // Jika tidak ada kategori aktif di query, pakai kategori pertama
+        if (!$kategoriAktif && $kategoriDenoms->count() > 0) {
+            $kategoriAktif = $kategoriDenoms->first()->slug;
+        }
+        $kategoriDenom = $kategoriDenoms->firstWhere('slug', $kategoriAktif);
+        $filteredDenoms = $kategoriDenom
+            ? $product->priceLists->where('kategori_id', $kategoriDenom->id)
+            : collect();
         $allGame = Produk::all();
-        $specialOffers = $product->specialOffers;
         return view('customer.product', [
             'product' => $product,
             'filteredDenoms' => $filteredDenoms,
             'kategoriAktif' => $kategoriAktif,
+            'kategoriDenoms' => $kategoriDenoms,
             'allGame' => $allGame,
-            'specialOffers' => $specialOffers,
+            'accountFields' => $product->account_fields,
         ]);
     }
 
