@@ -148,5 +148,20 @@ class ProdukSeeder extends Seeder
                 'is_popular' => 0,
             ]);
         }
+
+        // Seeder untuk Free Fire
+        \App\Models\Produk::updateOrCreate(
+            [
+                'product_name' => 'Free Fire',
+            ],
+            [
+                'kategori_id'   => 1, // sesuaikan dengan kategori Free Fire
+                'developer'     => 'Garena',
+                'is_active'     => 1,
+                'is_popular'    => 1,
+                'description'   => 'Game battle royale populer dari Garena.',
+                'thumbnail_url' => 'freefire.jpg',
+            ]
+        );
     }
 } 

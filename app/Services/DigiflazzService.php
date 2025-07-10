@@ -154,4 +154,79 @@ class DigiflazzService
             'errors' => $errors
         ];
     }
+
+    /**
+     * Import denoms from Digiflazz to PriceList
+     */
+    public function importDenoms($gameName = null)
+    {
+        $priceList = $this->getPriceList();
+        $importedCount = 0;
+        $errors = [];
+
+        foreach ($priceList as $item) {
+            try {
+                // Filter by game name if provided
+                if ($gameName && stripos($item['name'], $gameName) === false) {
+                    continue;
+                }
+
+                // Find or create product
+                $product = \App\Models\Produk::where('product_name', $item['name'])->first();
+                
+                if (!$product) {
+                    // Create product if it doesn't exist
+                    $product = \App\Models\Produk::create([
+                        'product_name' => $item['name'],
+                        'product_description' => $item['desc'] ?? '',
+                        'product_image' => $item['icon_url'] ?? 'default-game.jpg',
+                        'is_active' => 1,
+                        'digiflazz_id' => $item['buyer_sku_code'] ?? null,
+                    ]);
+                }
+
+                // Create or update price list item
+                \App\Models\PriceList::updateOrCreate(
+                    [
+                        'kode_produk' => $item['buyer_sku_code'],
+                        'product_id' => $product->product_id,
+                    ],
+                    [
+                        'nama_produk' => $item['name'],
+                        'harga_beli' => $item['price'] ?? 0,
+                        'harga_jual' => ($item['price'] ?? 0) + 1000, // Add 1000 profit
+                        'denom' => $item['desc'] ?? null,
+                        'provider' => 'Digiflazz',
+                        'is_active' => 1,
+                    ]
+                );
+                
+                $importedCount++;
+            } catch (\Exception $e) {
+                $errors[] = "Error importing {$item['name']}: " . $e->getMessage();
+            }
+        }
+
+        return [
+            'imported_count' => $importedCount,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * Get denoms for specific game
+     */
+    public function getGameDenoms($gameName)
+    {
+        $priceList = $this->getPriceList();
+        $gameDenoms = [];
+
+        foreach ($priceList as $item) {
+            if (stripos($item['name'], $gameName) !== false) {
+                $gameDenoms[] = $item;
+            }
+        }
+
+        return $gameDenoms;
+    }
 } 

@@ -8,38 +8,232 @@ use Illuminate\Http\Request;
 
 class DenomController extends Controller
 {
-    public function importFromApigames(ApigamesService $apigames)
+    public function importFromApigames(Request $request, ApigamesService $apigames)
     {
-        $denoms = $apigames->getVoucherDetail();
-        return view('admin.denom.import', compact('denoms'));
+        // Test connection first
+        if ($request->has('test_connection')) {
+            $connectionTest = $apigames->testConnection();
+            dd($connectionTest);
+        }
+        
+        // Test voucher detail parameters
+        if ($request->has('test_voucher_params')) {
+            $testResults = $apigames->testVoucherDetailParams(1); // Test with Free Fire ID
+            echo "<h2>Voucher Detail Parameter Testing Results:</h2>";
+            echo "<pre>";
+            print_r($testResults);
+            echo "</pre>";
+            die();
+        }
+        
+        // Check all available endpoints
+        if ($request->has('check_endpoints')) {
+            $endpointResults = $apigames->checkAvailableEndpoints();
+            echo "<h2>Available Endpoints Check:</h2>";
+            echo "<pre>";
+            print_r($endpointResults);
+            echo "</pre>";
+            die();
+        }
+        
+        // Test voucher detail with form data
+        if ($request->has('test_voucher_form')) {
+            $voucherTest = $apigames->getVoucherDetail(1); // Test with Free Fire ID
+            echo "<h2>Voucher Detail Test with Form Data:</h2>";
+            echo "<pre>";
+            print_r($voucherTest);
+            echo "</pre>";
+            die();
+        }
+        
+        // Test different API structures
+        if ($request->has('test_api_structures')) {
+            $structureTest = $apigames->testApiStructures();
+            echo "<h2>API Structure Test:</h2>";
+            echo "<pre>";
+            print_r($structureTest);
+            echo "</pre>";
+            die();
+        }
+        
+        // Comprehensive voucher test
+        if ($request->has('comprehensive_test')) {
+            $comprehensiveTest = $apigames->comprehensiveVoucherTest();
+            echo "<h2>Comprehensive Voucher Test:</h2>";
+            echo "<pre>";
+            print_r($comprehensiveTest);
+            echo "</pre>";
+            die();
+        }
+        
+        // Fetch project list from Apigames first
+        $projectList = $apigames->getProjectList();
+        
+        // If API fails, use fallback project list
+        if (isset($projectList['error_msg']) || $projectList['status'] == 0) {
+            $projectList = [
+                'status' => 1,
+                'data' => [
+                    ['id' => '1', 'name' => 'Free Fire'],
+                    ['id' => '2', 'name' => 'Mobile Legends'],
+                    ['id' => '3', 'name' => 'PUBG Mobile'],
+                    ['id' => '4', 'name' => 'Genshin Impact'],
+                    ['id' => '5', 'name' => 'Call of Duty Mobile'],
+                    // Add more as needed
+                ]
+            ];
+        }
+        
+        // Debug: cek response project list
+        if ($request->has('debug_projects')) {
+            echo "<h2>Project List Response:</h2>";
+            echo "<pre>";
+            print_r($projectList);
+            echo "</pre>";
+            
+            if (isset($projectList['data']) && is_array($projectList['data'])) {
+                echo "<h2>Available Projects:</h2>";
+                echo "<ul>";
+                foreach ($projectList['data'] as $index => $project) {
+                    echo "<li>Index {$index}: ";
+                    print_r($project);
+                    echo "</li>";
+                }
+                echo "</ul>";
+            }
+            die();
+        }
+        
+        $projectid = $request->input('projectid');
+        $denoms = null;
+        
+        if ($projectid) {
+            $denoms = $apigames->getVoucherDetail($projectid);
+            // Cari product_id berdasarkan nama game
+            $gameName = '';
+            foreach ($projectList['data'] as $project) {
+                if ($project['id'] == $projectid) {
+                    $gameName = $project['name'];
+                    break;
+                }
+            }
+            
+            $product = \App\Models\Produk::where('product_name', $gameName)->first();
+            $product_id = $product ? $product->product_id : null;
+            // Simpan product_id ke session agar bisa dipakai di storeImport
+            session(['import_product_id' => $product_id]);
+            
+            // Debug: cek response denom dari Apigames
+            if ($request->has('debug_denoms')) {
+                echo "<h2>Voucher Detail Response for Project ID: {$projectid} ({$gameName})</h2>";
+                echo "<pre>";
+                print_r($denoms);
+                echo "</pre>";
+                die();
+            }
+        }
+        
+        return view('admin.denom.import', [
+            'projectList' => $projectList,
+            'projectid' => $projectid,
+            'denoms' => $denoms
+        ]);
     }
 
     public function storeImport(Request $request)
     {
         $denoms = $request->input('denoms', []);
-        dd($denoms); // Debug: cek apakah data dari form ada
+        $product_id = session('import_product_id');
         foreach ($denoms as $denomJson) {
             $denom = json_decode($denomJson, true);
-            dd($denom); // Debug: tampilkan isi data denom dari Apigames
             if (!$denom) continue;
             \App\Models\PriceList::updateOrCreate(
-                ['kode_produk' => $denom['id'] ?? null],
+                [
+                    'kode_produk' => $denom['id'] ?? null,
+                    'product_id'  => $product_id,
+                ],
                 [
                     'nama_produk'     => $denom['name'] ?? '',
-                    'harga_beli'     => $denom['price'] ?? 0,
-                    'provider'       => 'Apigames',
-                    'logo'           => $denom['image'] ?? null,
-                    'denom'          => $denom['denom'] ?? null,
-                    'harga_jual'     => $denom['harga_jual'] ?? null,
-                    'profit'         => $denom['profit'] ?? null,
-                    'harga_member'   => $denom['harga_member'] ?? null,
-                    'harga_platinum' => $denom['harga_platinum'] ?? null,
-                    'harga_gold'     => $denom['harga_gold'] ?? null,
-                    'provider_id'    => $denom['provider_id'] ?? null,
-                    // Anda bisa tambahkan mapping lain jika field tersedia di response Apigames
+                    'harga_beli'      => $denom['price'] ?? 0,
+                    'provider'        => 'Apigames',
+                    'logo'            => $denom['image'] ?? null,
+                    'denom'           => $denom['denom'] ?? null,
+                    'harga_jual'      => $denom['harga_jual'] ?? null,
+                    'profit'          => $denom['profit'] ?? null,
+                    'harga_member'    => $denom['harga_member'] ?? null,
+                    'harga_platinum'  => $denom['harga_platinum'] ?? null,
+                    'harga_gold'      => $denom['harga_gold'] ?? null,
+                    'provider_id'     => $denom['provider_id'] ?? null,
                 ]
             );
         }
         return redirect()->route('admin.produk.index')->with('success', 'Denom berhasil diimport!');
+    }
+
+    public function importFromDigiflazz(Request $request)
+    {
+        $digiflazz = new \App\Services\DigiflazzService();
+        
+        // Test connection first
+        if ($request->has('test_connection')) {
+            $connectionTest = $digiflazz->checkConnection();
+            dd($connectionTest);
+        }
+        
+        // Import denoms
+        if ($request->has('import')) {
+            $gameName = $request->input('game_name');
+            $importResult = $digiflazz->importDenoms($gameName);
+            
+            if ($request->has('debug')) {
+                dd($importResult);
+            }
+            
+            $message = "Berhasil import {$importResult['imported_count']} denom dari Digiflazz!";
+            if (!empty($importResult['errors'])) {
+                $message .= " Errors: " . implode(', ', $importResult['errors']);
+            }
+            
+            return redirect()->route('admin.produk.index')->with('success', $message);
+        }
+        
+        // Get available games from Digiflazz
+        $priceList = $digiflazz->getPriceList();
+        $games = [];
+        foreach ($priceList as $item) {
+            $games[] = $item['name'];
+        }
+        
+        return view('admin.denom.importDigiflazz', compact('games'));
+    }
+
+    public function manualDenomForm()
+    {
+        $products = \App\Models\Produk::all();
+        return view('admin.denom.manual', compact('products'));
+    }
+
+    public function storeManualDenom(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,product_id',
+            'kode_produk' => 'required|string',
+            'nama_produk' => 'required|string',
+            'harga_beli' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+            'denom' => 'nullable|string',
+        ]);
+
+        \App\Models\PriceList::create([
+            'product_id' => $request->product_id,
+            'kode_produk' => $request->kode_produk,
+            'nama_produk' => $request->nama_produk,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+            'denom' => $request->denom,
+            'provider' => 'Manual',
+        ]);
+
+        return redirect()->route('admin.produk.index')->with('success', 'Denom berhasil ditambahkan secara manual!');
     }
 } 

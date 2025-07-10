@@ -130,7 +130,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Import denom dari apigames
     Route::get('denom/import-apigames', [App\Http\Controllers\Admin\DenomController::class, 'importFromApigames'])->name('denom.importApigames');
     Route::post('denom/store-import', [App\Http\Controllers\Admin\DenomController::class, 'storeImport'])->name('denom.storeImport');
+    
+    // Manual denom management
+    Route::get('denom/manual', [App\Http\Controllers\Admin\DenomController::class, 'manualDenomForm'])->name('denom.manual');
+    Route::post('denom/manual', [App\Http\Controllers\Admin\DenomController::class, 'storeManualDenom'])->name('denom.storeManual');
+    
+    // Import denom from Digiflazz
+    Route::get('denom/import-digiflazz', [App\Http\Controllers\Admin\DenomController::class, 'importFromDigiflazz'])->name('denom.importDigiflazz');
 });
 
 // Route publik produk (pastikan didefinisikan setelah group admin)
 Route::get('/produk/{product_id}', [App\Http\Controllers\ProdukController::class, 'showPublic'])->name('produk.public');
+Route::get('/debug-apigames', [App\Http\Controllers\DebugController::class, 'debugApigames']);
