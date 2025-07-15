@@ -46,7 +46,7 @@
     <div class="w-full max-w-screen-xl flex flex-col md:flex-row items-start md:items-start gap-8 justify-start -mt-24 mb-8 z-20 relative px-2 md:ml-8 ml-2">
         <!-- Card Gambar Produk -->
         <div class="relative w-56 h-56 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-white flex-shrink-0">
-            <img src="{{ $product->logo ? Storage::url($product->logo) : asset('image/' . $product->thumbnail_url) }}"
+            <img src="{{ asset('image/' . $product->thumbnail_url) }}"
                  alt="{{ $product->product_name }}"
                  class="w-full h-full object-cover">
             <!-- Logo kecil di bawah -->
@@ -100,7 +100,10 @@
                         <div class="bg-[#23232a] rounded-xl p-4 flex flex-col items-center justify-center shadow hover:shadow-lg transition cursor-pointer denom-card border-2 border-transparent hover:border-cyan-400 min-h-[100px] select-none"
                              onclick="selectDenom(event, {{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
                             <div class="font-bold text-white text-center mb-1">
-                                {{ $denom->nama_denom ?: $denom->nama_produk }}
+                                {{ $denom->nama_produk ?? $denom->denom ?? $denom->desc ?? '-' }}
+                            </div>
+                            <div class="text-xs text-gray-400 text-center mb-1">
+                                {{ $denom->nama_produk }}
                             </div>
                             <div class="text-cyan-300 font-bold text-center mb-1">Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}</div>
                             @if($denom->harga_member && $denom->harga_member < ($denom->harga_jual ?: $denom->harga))

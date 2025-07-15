@@ -67,7 +67,7 @@ class DenomController extends Controller
         }
         
         // Fetch project list from Apigames first
-        $projectList = $apigames->getProjectList();
+        $projectList = $apigames->getProductList();
         
         // If API fails, use fallback project list
         if (isset($projectList['error_msg']) || $projectList['status'] == 0) {
@@ -235,5 +235,48 @@ class DenomController extends Controller
         ]);
 
         return redirect()->route('admin.produk.index')->with('success', 'Denom berhasil ditambahkan secara manual!');
+    }
+
+    public function create()
+    {
+        return view('admin.denom.create');
+    }
+
+    public function importApigames()
+    {
+        $apigames = new ApigamesService();
+        $result = $apigames->getProductList();
+
+        if ($result['status'] !== 'sukses') {
+            return back()->with('error', 'Gagal mengambil data dari Apigames: ' . ($result['error_msg'] ?? ''));
+        }
+
+        return view('admin.denom.importApigames', [
+            'products' => $result['data']
+        ]);
+    }
+
+    public function doImportApigames(Request $request)
+    {
+        $products = $request->input('products', []);
+        $imported = 0;
+
+        foreach ($products as $productJson) {
+            $product = json_decode($productJson, true);
+            if (!$product) continue;
+            // Mapping dan simpan ke database, sesuaikan dengan struktur tabel Denom Anda
+            \App\Models\Denom::updateOrCreate(
+                ['kode' => $product['kode'] ?? $product['code'] ?? null],
+                [
+                    'nama' => $product['nama'] ?? $product['name'] ?? null,
+                    'brand' => $product['brand'] ?? null,
+                    'harga' => $product['harga'] ?? $product['price'] ?? null,
+                    // tambahkan field lain sesuai kebutuhan
+                ]
+            );
+            $imported++;
+        }
+
+        return redirect()->route('admin.denom.index')->with('success', "$imported denom berhasil diimport dari Apigames.");
     }
 } 

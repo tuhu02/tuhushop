@@ -13,7 +13,7 @@ class KategoriDenom extends Model
 
     public function product()
     {
-        return $this->belongsTo(\App\Models\Produk::class, 'product_id', 'id');
+        return $this->belongsTo(\App\Models\Produk::class, 'product_id', 'product_id');
     }
 
     public function denoms()

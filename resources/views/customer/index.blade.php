@@ -238,6 +238,55 @@
                 </div>
             </div>
         </section>
+
+        <!-- Produk & Denom Terkelompok -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-gamepad text-purple-600 mr-2"></i>
+                Semua Produk & Denom
+            </h2>
+            <div class="space-y-8">
+                @foreach($products as $product)
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center mb-2">
+                            @if($product->thumbnail_url)
+                                <img src="{{ asset('image/'.$product->thumbnail_url) }}" alt="{{ $product->product_name }}" class="w-12 h-12 object-cover rounded-lg border border-gray-200 mr-4">
+                            @else
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border mr-4">
+                                    <i class="fas fa-image text-gray-400 text-xl"></i>
+                                </div>
+                            @endif
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $product->product_name }}</h3>
+                                @if($product->is_popular)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-star mr-1.5"></i>Populer
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="ml-16">
+                            <h4 class="font-semibold text-gray-700 mb-2">Pilih Nominal/Denom:</h4>
+                            @if($product->priceLists->isNotEmpty())
+                                <ul class="list-disc ml-5">
+                                    @foreach($product->priceLists as $denom)
+                                        <li class="mb-1">
+                                            <a href="{{ route('customer.denom.show', $denom->id) }}" class="text-blue-700 hover:underline font-medium">
+                                                {{ $denom->nama_produk }}
+                                            </a>
+                                            <span class="text-gray-500">({{ $denom->denom }})</span>
+                                            <span class="ml-2 text-green-600 font-semibold">Rp {{ number_format($denom->harga_jual,0,',','.') }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-gray-400 italic">Belum ada denom.</p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->

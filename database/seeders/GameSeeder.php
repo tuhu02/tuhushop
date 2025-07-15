@@ -10,6 +10,9 @@ class GameSeeder extends Seeder
 {
     public function run(): void
     {
+        // Hapus semua data lama agar tidak double
+        \DB::table('products')->delete();
+
         DB::table('products')->insert([
             [
                 'product_name' => 'Mobile Legends',

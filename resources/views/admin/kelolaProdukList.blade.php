@@ -82,93 +82,56 @@
                     </form>
                 </div>
             </div>
-            
             <div class="p-6">
                 @if($products->isNotEmpty())
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div class="space-y-8">
                         @foreach($products as $product)
-                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
-                                <div class="p-5 flex-grow">
-                                    <div class="flex items-start space-x-4">
-                                        {{-- Gambar Produk --}}
-                                        <div class="flex-shrink-0">
-                                            @if($product->thumbnail_url)
-                                                <img src="{{ asset('image/'.$product->thumbnail_url) }}" alt="{{ $product->product_name }}" class="w-20 h-20 object-cover rounded-lg border border-gray-200">
-                                            @else
-                                                <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center border">
-                                                    <i class="fas fa-image text-gray-400 text-2xl"></i>
-                                                </div>
-                                            @endif
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-sm p-6">
+                                <div class="flex items-center mb-2">
+                                    @if($product->thumbnail_url)
+                                        <img src="{{ asset('image/'.$product->thumbnail_url) }}" alt="{{ $product->product_name }}" class="w-16 h-16 object-cover rounded-lg border border-gray-200 mr-4">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border mr-4">
+                                            <i class="fas fa-image text-gray-400 text-2xl"></i>
                                         </div>
-
-                                        {{-- Info Produk --}}
-                                        <div class="flex-1 min-w-0">
-                                            <h3 class="text-lg font-bold text-gray-800 truncate leading-tight">
-                                                <a href="{{ route('admin.produk.show', $product->product_id) }}" class="hover:text-blue-600 transition-colors">
-                                                    {{ $product->product_name }}
-                                                </a>
-                                            </h3>
-                                            
-                                            @if($product->kategori)
-                                                <p class="text-sm text-gray-500 mt-1 flex items-center">
-                                                    <i class="fas fa-tag mr-2 text-gray-400"></i>{{ $product->kategori->nama }}
-                                                </p>
-                                            @endif
-                                            
-                                            @if($product->developer)
-                                                <p class="text-sm text-gray-500 mt-1 flex items-center">
-                                                    <i class="fas fa-building mr-2 text-gray-400"></i>{{ $product->developer }}
-                                                </p>
-                                            @endif
-
-                                            {{-- Badge Status --}}
-                                            <div class="flex flex-wrap gap-2 mt-3">
-                                                <span @class([
-                                                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                                                    'bg-green-100 text-green-800' => $product->is_active,
-                                                    'bg-red-100 text-red-800' => !$product->is_active,
-                                                ])>
-                                                    <i @class(['fas mr-1.5', 'fa-check-circle' => $product->is_active, 'fa-times-circle' => !$product->is_active])></i>
-                                                    {{ $product->is_active ? 'Aktif' : 'Nonaktif' }}
+                                    @endif
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $product->product_name }}</h3>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-check-circle mr-1.5"></i>Aktif
+                                            </span>
+                                            @if($product->is_popular)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    <i class="fas fa-star mr-1.5"></i>Populer
                                                 </span>
-
-                                                @if($product->is_popular)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                        <i class="fas fa-star mr-1.5"></i>Populer
-                                                    </span>
-                                                @endif
-
-                                                @if($product->kode_digiflazz)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                        <i class="fas fa-sync-alt mr-1.5"></i>Digiflazz
-                                                    </span>
-                                                @endif
-                                            </div>
+                                            @endif
+                                            <a href="{{ route('admin.produk.show', $product->product_id) }}" class="ml-4 text-blue-600 hover:underline text-xs"><i class="fas fa-edit mr-1"></i>Edit Produk</a>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                {{-- Tombol Aksi --}}
-                                <div class="px-5 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-end space-x-3">
-                                    <a href="{{ route('admin.produk.show', $product->product_id) }}" class="text-gray-500 hover:text-blue-600 transition-colors" title="Detail">
-                                        <i class="fas fa-eye fa-fw"></i>
-                                    </a>
-                                    <a href="{{ route('admin.produk.edit', $product->product_id) }}" class="text-gray-500 hover:text-green-600 transition-colors" title="Edit">
-                                        <i class="fas fa-edit fa-fw"></i>
-                                    </a>
-                                    <form action="{{ route('admin.produk.destroy', $product->product_id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus produk ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-gray-500 hover:text-red-600 transition-colors" title="Hapus">
-                                            <i class="fas fa-trash fa-fw"></i>
-                                        </button>
-                                    </form>
+                                {{-- Daftar Denom --}}
+                                <div class="ml-20">
+                                    <h4 class="font-semibold text-gray-700 mb-2">Daftar Denom:</h4>
+                                    @if($product->priceLists->isNotEmpty())
+                                        <ul class="list-disc ml-5">
+                                            @foreach($product->priceLists as $denom)
+                                                <li class="mb-1">
+                                                    <span class="font-medium">{{ $denom->nama_produk }}</span>
+                                                    <span class="text-gray-500">({{ $denom->denom }})</span>
+                                                    <span class="ml-2 text-blue-600 font-semibold">Rp {{ number_format($denom->harga_jual,0,',','.') }}</span>
+                                                    {{-- <a href="{{ route('admin.denom.edit', $denom->id) }}" class="ml-2 text-blue-600 hover:underline text-xs"><i class="fas fa-edit mr-1"></i>Edit</a> --}}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <p class="text-gray-400 italic">Belum ada denom.</p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    {{-- Kondisi Jika Produk Kosong --}}
                     <div class="text-center py-16">
                         <div class="text-gray-400 mb-4">
                             <i class="fas fa-box-open fa-4x"></i>

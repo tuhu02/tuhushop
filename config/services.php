@@ -48,9 +48,4 @@ return [
         ],
     ],
 
-    'apigames' => [
-        'merchant_id' => env('APIGAMES_MERCHANT_ID'),
-        'secret_key' => env('APIGAMES_SECRET_KEY'),
-    ],
-
 ];

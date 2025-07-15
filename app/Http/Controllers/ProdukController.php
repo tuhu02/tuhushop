@@ -38,9 +38,12 @@ class ProdukController extends Controller
             $kategoriAktif = $kategoriDenoms->first()->slug;
         }
         $kategoriDenom = $kategoriDenoms->firstWhere('slug', $kategoriAktif);
-        $filteredDenoms = $kategoriDenom
-            ? $product->priceLists->where('kategori_id', $kategoriDenom->id)
-            : collect();
+        if ($kategoriDenom) {
+            $filteredDenoms = $product->priceLists->where('kategori_id', $kategoriDenom->id);
+        } else {
+            // Jika tidak ada kategoriDenom, tampilkan semua denom
+            $filteredDenoms = $product->priceLists;
+        }
         $allGame = Produk::all();
         return view('customer.product', [
             'product' => $product,

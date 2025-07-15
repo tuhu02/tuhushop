@@ -58,10 +58,6 @@
     <div class="mt-8 pt-6 border-t">
         <h2 class="text-xl font-bold mb-4">Opsi Lainnya:</h2>
         <div class="flex gap-4">
-            <a href="{{ route('admin.denom.importApigames') }}" 
-               class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-                Import dari Apigames
-            </a>
             <a href="{{ route('admin.denom.manual') }}" 
                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                 Tambah Manual

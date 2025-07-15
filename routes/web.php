@@ -6,6 +6,7 @@ use App\Http\Controllers\cekTransaksiController;
 use App\http\Controllers\kontakController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use Illuminate\Support\Facades\Http;
 
 
 // Authentication Routes
@@ -127,18 +128,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/produk/{product_id}/edit-account-fields', [App\Http\Controllers\Admin\ProdukController::class, 'editAccountFields'])->name('admin.account_fields.edit');
     Route::put('/produk/{product_id}/update-account-fields', [App\Http\Controllers\Admin\ProdukController::class, 'updateAccountFields'])->name('admin.account_fields.update');
 
-    // Import denom dari apigames
-    Route::get('denom/import-apigames', [App\Http\Controllers\Admin\DenomController::class, 'importFromApigames'])->name('denom.importApigames');
-    Route::post('denom/store-import', [App\Http\Controllers\Admin\DenomController::class, 'storeImport'])->name('denom.storeImport');
-    
     // Manual denom management
     Route::get('denom/manual', [App\Http\Controllers\Admin\DenomController::class, 'manualDenomForm'])->name('denom.manual');
     Route::post('denom/manual', [App\Http\Controllers\Admin\DenomController::class, 'storeManualDenom'])->name('denom.storeManual');
     
     // Import denom from Digiflazz
     Route::get('denom/import-digiflazz', [App\Http\Controllers\Admin\DenomController::class, 'importFromDigiflazz'])->name('denom.importDigiflazz');
+    Route::get('/admin/denom/create', [\App\Http\Controllers\Admin\DenomController::class, 'create'])->name('admin.denom.create');
+    Route::get('/denom/create', [\App\Http\Controllers\Admin\DenomController::class, 'create'])->name('denom.create');
 });
 
 // Route publik produk (pastikan didefinisikan setelah group admin)
 Route::get('/produk/{product_id}', [App\Http\Controllers\ProdukController::class, 'showPublic'])->name('produk.public');
-Route::get('/debug-apigames', [App\Http\Controllers\DebugController::class, 'debugApigames']);
+
+// Route untuk testing koneksi API Digiflazz
+Route::get('/test-digiflazz', function () {
+    $username = config('services.digiflazz.username');
+    $apiKey = config('services.digiflazz.api_key');
+    $baseUrl = config('services.digiflazz.base_url');
+    $sign = md5($username . $apiKey . 'pricelist');
+
+    $response = Http::post($baseUrl . '/price-list', [
+        'cmd' => 'prepaid',
+        'username' => $username,
+        'sign' => $sign,
+    ]);
+
+    return $response->json();
+});
+
+Route::resource('admin/kategori-denom', App\Http\Controllers\Admin\KategoriDenomController::class)->names('admin.kategori-denom');

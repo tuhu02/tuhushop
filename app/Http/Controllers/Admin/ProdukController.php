@@ -54,11 +54,9 @@ class ProdukController extends Controller
 
     public function show($product)
     {
-        $product = Produk::with(['priceLists', 'kategori'])->findOrFail($product);
-        $diamond = $product->priceLists->where('kategori', 'diamond');
-        $nonDiamond = $product->priceLists->where('kategori', 'nondiamond');
-        $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $product->product_id)->get();
-        return view('admin.kelolaProduk', compact('product', 'diamond', 'nonDiamond', 'kategoriDenoms'));
+        $product = Produk::with(['priceLists', 'kategori', 'kategoriDenoms'])->findOrFail($product);
+        $kategoriDenoms = $product->kategoriDenoms;
+        return view('admin.produk.show', compact('product', 'kategoriDenoms'));
     }
 
     public function create()
