@@ -89,41 +89,49 @@
             </div>
             <!-- Denom Selection Modern -->
             <div class="bg-[#181820] rounded-lg shadow-md p-6">
-                @if($filteredDenoms->count() > 0)
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center">
-                        <i class="fas fa-gem text-blue-400 mr-2"></i>
-                        {{ ucfirst($kategoriAktif) }}
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        @foreach($filteredDenoms as $denom)
-                        <div class="bg-[#23232a] rounded-xl p-4 flex flex-col items-center justify-center shadow hover:shadow-lg transition cursor-pointer denom-card border-2 border-transparent hover:border-cyan-400 min-h-[100px] select-none"
-                             onclick="selectDenom(event, {{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
-                            <div class="font-bold text-white text-center mb-1">
-                                {{ $denom->nama_produk ?? $denom->denom ?? $denom->desc ?? '-' }}
-                            </div>
-                            <div class="text-xs text-gray-400 text-center mb-1">
-                                {{ $denom->nama_produk }}
-                            </div>
-                            <div class="text-cyan-300 font-bold text-center mb-1">Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}</div>
-                            @if($denom->harga_member && $denom->harga_member < ($denom->harga_jual ?: $denom->harga))
-                                <div class="text-xs text-green-400 font-medium text-center">Member: Rp{{ number_format($denom->harga_member, 0, ',', '.') }}</div>
-                            @endif
-                            <i class="fas fa-gem text-blue-400 text-2xl mt-2"></i>
-                        </div>
-                        @endforeach
+    @if($filteredDenoms->count() > 0)
+    <div class="mb-8">
+        <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center">
+            {{ ucfirst($kategoriAktif) }}
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach($filteredDenoms as $denom)
+            <div class="bg-[#23232a] rounded-xl p-0 flex overflow-hidden shadow hover:shadow-lg transition cursor-pointer denom-card border-2 border-transparent hover:border-cyan-400 min-h-[100px] select-none"
+                 onclick="selectDenom(event, {{ $denom->id }}, '{{ $denom->nama_denom ?: $denom->nama_produk }}', {{ $denom->harga_jual ?: $denom->harga }})">
+                <!-- Gaya Layout Baru -->
+                <div class="flex-1 flex flex-col justify-center px-4 py-3">
+                    <!-- Nama Denom -->
+                    <div class="text-white font-bold text-sm mb-2">
+                        {{ $denom->nama_produk ?? $denom->denom ?? $denom->desc ?? '-' }}
+                    </div>
+                    <!-- Harga -->
+                    <div class="text-cyan-300 font-semibold text-base">
+                        Rp{{ number_format($denom->harga_jual ?: $denom->harga, 0, ',', '.') }}
                     </div>
                 </div>
-                @else
-                <div class="text-center py-12">
-                    <div class="text-gray-400 mb-4">
-                        <i class="fas fa-coins text-6xl"></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-white mb-2">Belum ada denom tersedia</h3>
-                    <p class="text-gray-300">Produk ini sedang dalam maintenance</p>
+                <!-- Gambar Logo -->
+                <div class="flex items-center justify-center bg-[#23232a] px-4">
+                    @if(!empty($denom->logo))
+                        <img src="{{ asset('storage/' . $denom->logo) }}" alt="Logo {{ $denom->nama_denom ?? $denom->nama_produk }}" class="w-12 h-12 object-contain rounded">
+                    @else
+                        
+                    @endif
                 </div>
-                @endif
             </div>
+            @endforeach
+        </div>
+    </div>
+    @else
+    <div class="text-center py-12">
+        <div class="text-gray-400 mb-4">
+            <i class="fas fa-coins text-6xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-white mb-2">Belum ada denom tersedia</h3>
+        <p class="text-gray-300">Produk ini sedang dalam maintenance</p>
+    </div>
+    @endif
+</div>
+
 
             <!-- DESKRIPSI & REKOMENDASI TOPUP GAME -->
             <div class="mt-8">
@@ -131,9 +139,11 @@
                 <div class="bg-[#181820] rounded-lg p-6 mb-6">
                     <h2 class="text-2xl font-bold text-white mb-2">Deskripsi {{ $product->product_name }}</h2>
                     <p class="text-gray-200 mb-2">
-                        {{ $product->long_description ?? 'Mobile Legends adalah salah satu game MOBA (Multiplayer Online Battle Arena) berbasis tim dimana pemain akan bermain sebagai salah satu hero. Hero disini merupakan karakter yang akan digunakan oleh pemain dalam game...'}}
+                        {{ $product->description ?? ''}}
                     </p>
-                    <button class="text-yellow-400 font-semibold hover:underline text-left">Show more</button>
+                    @if(!empty($product->description) && strlen(strip_tags($product->description)) > 120)
+                        <button class="text-cyan-400 font-semibold hover:underline text-left">Show more</button>
+                    @endif
                 </div>
                 <!-- Rekomendasi Topup Game -->
                 <h2 class="text-2xl font-bold text-white mb-4">Rekomendasi Topup Game</h2>
@@ -208,27 +218,33 @@
                 <form class="p-4" method="POST" action="#">
                     @csrf
                     <input type="hidden" name="denom_id" id="denom_id">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        @if(!empty($accountFields) && is_array($accountFields))
+                    @if(!empty($accountFields) && is_array($accountFields))
+                        @if(count($accountFields) === 1)
                             @foreach($accountFields as $field)
-                                <div>
-                                    <label class="block text-white mb-1">{{ $field['label'] }}</label>
-                                    <input type="{{ $field['type'] ?? 'text' }}" name="{{ $field['name'] }}" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan {{ $field['label'] }}">
+                                <div class="mb-4">
+                                    @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
+                                    <label for="{{ $name }}" class="block mb-2 font-semibold">{{ $field['label'] ?? $name }}</label>
+                                    <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                 </div>
                             @endforeach
                         @else
-                        <div>
-                            <label class="block text-white mb-1">ID</label>
-                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan ID">
-                        </div>
-                        <div>
-                            <label class="block text-white mb-1">Server</label>
-                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan Server">
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                @foreach($accountFields as $field)
+                                    <div>
+                                        @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
+                                        <label for="{{ $name }}" class="block mb-2 font-semibold text-gray-700">{{ $field['label'] ?? $name }}</label>
+                                        <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                    </div>
+                                @endforeach
+                            </div>
                         @endif
-                    </div>
-                    <div class="text-xs text-gray-300 mt-2">
-                        MLBB KHUSUS REGION INDONESIA (ID), PASTIKAN CEK DULU REGION USER ID KALIAN BIAR GAK SALAH ISI DIAMONDS
+                    @else
+                        <div>
+                            <input type="text" name="account" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan data akun">
+                        </div>
+                    @endif
+                    <div class="text-xs text-gray-400 mt-2">
+                        {{ $product->account_instruction ?? '' }}
                     </div>
                 </form>
             </div>

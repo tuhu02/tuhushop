@@ -75,6 +75,7 @@ class ProdukController extends Controller
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'kode_digiflazz' => 'nullable|string|max:255',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'account_instruction' => 'nullable|string',
         ]);
 
         $data = $request->all();
@@ -126,9 +127,11 @@ class ProdukController extends Controller
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'kode_digiflazz' => 'nullable|string|max:255',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'account_instruction' => 'nullable|string',
         ]);
 
         $data = $request->all();
+        $data['account_instruction'] = $request->account_instruction;
         
         // Handle thumbnail upload
         if ($request->hasFile('thumbnail')) {

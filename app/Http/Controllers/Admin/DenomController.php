@@ -279,4 +279,39 @@ class DenomController extends Controller
 
         return redirect()->route('admin.denom.index')->with('success', "$imported denom berhasil diimport dari Apigames.");
     }
+
+    public function update(Request $request, $id)
+    {
+        $denom = \App\Models\PriceList::findOrFail($id);
+
+        // Validasi input lain sesuai kebutuhan...
+        $request->validate([
+            'nama_produk' => 'required|string',
+            'harga_beli' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+            // tambahkan validasi lain sesuai kebutuhan
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            // Pastikan folder public/image/denoms sudah ada
+            if (!file_exists(public_path('image/denoms'))) {
+                mkdir(public_path('image/denoms'), 0777, true);
+            }
+            $file->move(public_path('image/denoms'), $filename); // simpan di public/image/denoms/
+            $denom->logo = 'denoms/' . $filename; // simpan path folder di database
+        }
+
+        // Update field lain
+        $denom->nama_produk = $request->nama_produk;
+        $denom->harga_beli = $request->harga_beli;
+        $denom->harga_jual = $request->harga_jual;
+        $denom->denom = $request->denom;
+        // tambahkan field lain sesuai kebutuhan
+
+        $denom->save();
+
+        return redirect()->back()->with('success', 'Denom berhasil diupdate!');
+    }
 } 

@@ -6,24 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->json('account_fields')->nullable();
             $table->text('account_instruction')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('account_fields');
             $table->dropColumn('account_instruction');
         });
     }

@@ -101,7 +101,15 @@
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_beli) }}</td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_jual) }}</td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member) }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->kategori }}</td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">
+                                @if($denom->kategori)
+                                    {{ ucfirst($denom->kategori) }}
+                                @elseif($denom->kategoriDenom)
+                                    {{ $denom->kategoriDenom->nama }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->provider }}</td>
                             <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
                                 <a href="javascript:void(0);" class="text-blue-600 hover:underline mr-2"

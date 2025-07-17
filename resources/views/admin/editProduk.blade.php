@@ -66,7 +66,7 @@
 
                     <!-- Developer -->
                     <div>
-                        <label for="developer" class="block mb-2 font-semibold text-gray-700">Developer</label>
+                        <label for="developer" class="block mb-2 font-semibold text-gray-700">Developer / Provider</label>
                         <input type="text" 
                                id="developer" 
                                name="developer" 
@@ -82,7 +82,7 @@
                                name="kode_digiflazz" 
                                value="{{ old('kode_digiflazz', $product->kode_digiflazz) }}"
                                placeholder="Contoh: mlbb, freefire, pubgm"
-                               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" readonly>
                         <p class="text-sm text-gray-500 mt-1">Digunakan untuk sync denom dari Digiflazz</p>
                     </div>
 
@@ -155,6 +155,11 @@
                             <option value="1" {{ old('is_popular', $product->is_popular) == 1 ? 'selected' : '' }}>Ya</option>
                             <option value="0" {{ old('is_popular', $product->is_popular) == 0 ? 'selected' : '' }}>Tidak</option>
                         </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="account_instruction">Instruksi Akun (Akan tampil di halaman pembeli)</label>
+                        <textarea name="account_instruction" id="account_instruction" class="form-control" rows="2">{{ old('account_instruction', $product->account_instruction) }}</textarea>
                     </div>
                 </div>
 

@@ -31,6 +31,7 @@ class Produk extends Model
         'kode_digiflazz',
         'deskripsi',
         'logo',
+        'account_instruction',
     ];
 
     protected $casts = [

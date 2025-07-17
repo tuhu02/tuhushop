@@ -143,6 +143,16 @@
                                   placeholder="Deskripsi singkat tentang produk..."
                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
                     </div>
+
+                    <!-- Instruksi Akun -->
+                    <div class="md:col-span-2">
+                        <label for="account_instruction" class="block mb-2 font-semibold text-gray-700">Instruksi Akun (Akan tampil di halaman pembeli)</label>
+                        <textarea id="account_instruction"
+                                  name="account_instruction"
+                                  rows="2"
+                                  placeholder="Contoh: Masukkan User ID dan Server sesuai petunjuk di aplikasi."
+                                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('account_instruction') }}</textarea>
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-4 mt-8">
