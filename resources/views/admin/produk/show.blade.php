@@ -1,11 +1,53 @@
 @extends('layouts.admin')
 
 @section('content')
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-<div x-data="{ openEdit: false, denom: {} }">
-    <button @click="openEdit = !openEdit" class="bg-red-500 text-white px-4 py-2 rounded mb-4">Test Toggle Modal</button>
-<div class="ml-64 p-8">
-    <div class="bg-white rounded-lg shadow p-6">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<style>
+    #sortableDenoms tr {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+    .fa-grip-vertical {
+        cursor: grab !important;
+        color: #6b7280 !important;
+        font-size: 16px !important;
+        padding: 4px !important;
+        border-radius: 4px !important;
+        transition: all 0.2s !important;
+    }
+    .fa-grip-vertical:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+    .fa-grip-vertical:active {
+        cursor: grabbing !important;
+        background-color: #d1d5db !important;
+    }
+    .sortable-ghost {
+        opacity: 0.5;
+        background-color: #dbeafe !important;
+    }
+    .sortable-chosen {
+        background-color: #bfdbfe !important;
+    }
+    .sortable-drag {
+        background-color: #93c5fd !important;
+        transform: rotate(5deg);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .sortable-fallback {
+        background-color: #fef3c7 !important;
+        border: 2px dashed #f59e0b !important;
+    }
+</style>
+
+<div class="ml-64 p-4">
+    <div class="bg-white rounded-lg shadow p-4">
         <h1 class="text-2xl font-bold mb-4">Detail Produk</h1>
         <div class="flex items-start space-x-6">
             <div>
@@ -23,8 +65,9 @@
             </div>
         </div>
     </div>
+    
     <!-- Form Tambah Denom -->
-    <div class="bg-white rounded-lg shadow p-6 mt-8">
+    <div class="bg-white rounded-lg shadow p-4">
         <h2 class="text-lg font-semibold mb-4">Tambah Denom</h2>
         <form action="{{ route('admin.denom.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -71,14 +114,26 @@
             </div>
         </form>
     </div>
+    
     <!-- Tabel Daftar Denom -->
     @if($product->priceLists->count())
-        <div class="bg-white rounded-lg shadow p-6 mt-8">
-            <h2 class="text-lg font-semibold mb-4">Daftar Denom</h2>
+        <div class="bg-white rounded-lg shadow p-4 mt-4">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Daftar Denom</h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-500">Drag & drop untuk mengurutkan</span>
+                    <button id="saveOrder" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                        <i class="fas fa-save mr-1"></i>Simpan Urutan
+                    </button>
+                </div>
+            </div>
             <div class="overflow-x-auto">
             <table class="min-w-full table-auto border border-gray-300 rounded-lg">
                 <thead class="bg-gray-100">
                     <tr>
+                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center w-12">
+                            <i class="fas fa-grip-vertical text-gray-400"></i>
+                        </th>
                         <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Logo</th>
                         <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Nama Denom</th>
                         <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Beli</th>
@@ -89,9 +144,12 @@
                         <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($product->priceLists as $denom)
-                        <tr class="even:bg-gray-50 hover:bg-blue-50">
+                <tbody id="sortableDenoms" class="bg-white divide-y divide-gray-200">
+                    @foreach($product->priceLists->sortBy('sort_order') as $denom)
+                        <tr class="even:bg-gray-50 hover:bg-blue-50 cursor-move" data-id="{{ $denom->id }}">
+                            <td class="px-4 py-2 border text-sm text-center">
+                                <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
+                            </td>
                             <td class="px-4 py-2 border text-sm text-center">
                                 @if($denom->logo)
                                     <img src="{{ Storage::url($denom->logo) }}" alt="Logo" class="h-8 mx-auto">
@@ -101,19 +159,10 @@
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_beli) }}</td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_jual) }}</td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member) }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">
-                                @if($denom->kategori)
-                                    {{ ucfirst($denom->kategori) }}
-                                @elseif($denom->kategoriDenom)
-                                    {{ $denom->kategoriDenom->nama }}
-                                @else
-                                    -
-                                @endif
-                            </td>
+                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->kategoriDenom->nama ?? '-' }}</td>
                             <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->provider }}</td>
                             <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
-                                <a href="javascript:void(0);" class="text-blue-600 hover:underline mr-2"
-                                   @click="openEdit = true; denom = {{ $denom->toJson() }};">Edit</a>
+                                <a href="javascript:void(0);" class="text-blue-600 hover:underline mr-2">Edit</a>
                                 <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin ingin menghapus denom ini?')">
                                     @csrf
                                     @method('DELETE')
@@ -127,69 +176,143 @@
             </div>
         </div>
     @else
-        <div class="bg-white rounded-lg shadow p-6 mt-8">
+        <div class="bg-white rounded-lg shadow p-4 mt-4">
             <p class="text-gray-500">Belum ada denom untuk produk ini.</p>
         </div>
     @endif
-    <!-- Modal Edit Denom -->
-    <div x-show="openEdit" x-cloak class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-lg relative">
-            <button @click="openEdit = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-            <h2 class="text-xl font-bold mb-4">Edit Denom</h2>
-            <form :action="'/admin/denom/' + denom.id" method="POST" enctype="multipart/form-data" @submit="openEdit = false">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="product_id" :value="denom.product_id">
-                <div class="mb-4">
-                    <label class="block mb-1">Nama Denom</label>
-                    <input type="text" name="nama_produk" class="w-full border rounded px-2 py-1" x-model="denom.nama_produk">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Harga Beli</label>
-                    <input type="number" name="harga_beli" class="w-full border rounded px-2 py-1" x-model="denom.harga_beli">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Harga Jual</label>
-                    <input type="number" name="harga_jual" class="w-full border rounded px-2 py-1" x-model="denom.harga_jual">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Harga Member</label>
-                    <input type="number" name="harga_member" class="w-full border rounded px-2 py-1" x-model="denom.harga_member">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Profit</label>
-                    <input type="number" name="profit" class="w-full border rounded px-2 py-1" x-model="denom.profit">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Provider</label>
-                    <input type="text" name="provider" class="w-full border rounded px-2 py-1" x-model="denom.provider">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Kategori</label>
-                    <select name="kategori_id" class="w-full border rounded px-2 py-1" x-model="denom.kategori_id">
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoriDenoms as $kategori)
-                            <option value="{{ $kategori->id }}">{{ $kategori->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-1">Logo Denom</label>
-                    <input type="file" name="logo" class="w-full border rounded px-2 py-1">
-                    <template x-if="denom.logo">
-                        <img :src="'/storage/' + denom.logo" alt="Logo Denom" class="h-12 mt-2">
-                    </template>
-                    @error('logo')
-                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button type="button" @click="openEdit = false" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
-</div>
+
+<script>
+    // Initialize Sortable
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded');
+        
+        const sortableList = document.getElementById('sortableDenoms');
+        console.log('SortableList element:', sortableList);
+        
+        if (sortableList) {
+            // Test if Sortable is available
+            if (typeof Sortable === 'undefined') {
+                console.error('Sortable is not loaded!');
+                // Fallback to jQuery UI
+                if (typeof $ !== 'undefined' && $.fn.sortable) {
+                    console.log('Using jQuery UI Sortable as fallback');
+                    $('#sortableDenoms').sortable({
+                        handle: '.fa-grip-vertical',
+                        axis: 'y',
+                        opacity: 0.6,
+                        cursor: 'move',
+                        start: function(event, ui) {
+                            console.log('jQuery UI drag started');
+                        },
+                        stop: function(event, ui) {
+                            console.log('jQuery UI drag stopped');
+                        }
+                    });
+                }
+                return;
+            }
+            
+            console.log('Creating Sortable instance...');
+            
+            const sortable = new Sortable(sortableList, {
+                animation: 150,
+                handle: '.fa-grip-vertical',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                delay: 100,
+                delayOnTouchOnly: false,
+                preventOnFilter: false,
+                forceFallback: true,
+                fallbackClass: 'sortable-fallback',
+                onStart: function(evt) {
+                    console.log('Drag started on item:', evt.item);
+                    evt.item.style.userSelect = 'none';
+                },
+                onMove: function(evt) {
+                    console.log('Drag moving');
+                    return true;
+                },
+                onEnd: function(evt) {
+                    console.log('Drag ended');
+                    evt.item.style.userSelect = '';
+                }
+            });
+            
+            console.log('Sortable instance created:', sortable);
+            
+            // Test if handle elements exist
+            const handles = document.querySelectorAll('.fa-grip-vertical');
+            console.log('Found', handles.length, 'drag handles');
+            
+            handles.forEach((handle, index) => {
+                console.log('Handle', index, ':', handle);
+                handle.style.cursor = 'grab';
+                
+                // Add click event to test if handle is clickable
+                handle.addEventListener('click', function(e) {
+                    console.log('Handle clicked:', e.target);
+                });
+            });
+            
+        } else {
+            console.error('SortableList element not found');
+        }
+
+        // Save order button
+        const saveButton = document.getElementById('saveOrder');
+        if (saveButton) {
+            saveButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Save button clicked');
+                
+                const rows = document.querySelectorAll('#sortableDenoms tr');
+                const order = Array.from(rows).map((row, index) => ({
+                    id: row.dataset.id,
+                    sort_order: index + 1
+                }));
+
+                console.log('Order to save:', order);
+
+                // Send to server
+                fetch('{{ route("admin.denom.updateOrder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ order: order })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Urutan berhasil disimpan!');
+                    } else {
+                        alert('Gagal menyimpan urutan: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menyimpan urutan');
+                });
+            });
+        }
+
+        // Prevent text selection on drag handle
+        document.querySelectorAll('.fa-grip-vertical').forEach(handle => {
+            handle.addEventListener('mousedown', function(e) {
+                console.log('Handle mousedown');
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            
+            handle.addEventListener('click', function(e) {
+                console.log('Handle click');
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+    });
+</script>
 @endsection 

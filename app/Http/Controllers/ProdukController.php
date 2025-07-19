@@ -39,10 +39,10 @@ class ProdukController extends Controller
         }
         $kategoriDenom = $kategoriDenoms->firstWhere('slug', $kategoriAktif);
         if ($kategoriDenom) {
-            $filteredDenoms = $product->priceLists->where('kategori_id', $kategoriDenom->id);
+            $filteredDenoms = $product->priceLists->where('kategori_id', $kategoriDenom->id)->sortBy('sort_order');
         } else {
             // Jika tidak ada kategoriDenom, tampilkan semua denom
-            $filteredDenoms = $product->priceLists;
+            $filteredDenoms = $product->priceLists->sortBy('sort_order');
         }
         $allGame = Produk::all();
         return view('customer.product', [

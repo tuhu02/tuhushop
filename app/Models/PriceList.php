@@ -20,6 +20,7 @@ class PriceList extends Model
         'kode_produk',
         'denom',
         'harga_jual',
+        'sort_order',
     ];
 
     protected $casts = [

@@ -140,4 +140,29 @@ class PriceListController extends Controller
         $kategoriDenoms = \App\Models\KategoriDenom::where('product_id', $product_id)->get();
         return view('admin.denom.create', compact('product_id', 'kategoriDenoms'));
     }
+
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'order' => 'required|array',
+            'order.*.id' => 'required|exists:price_lists,id',
+            'order.*.sort_order' => 'required|integer|min:1',
+        ]);
+
+        try {
+            foreach ($request->order as $item) {
+                PriceList::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Urutan denom berhasil disimpan!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan urutan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 } 

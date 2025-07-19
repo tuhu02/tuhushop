@@ -215,9 +215,10 @@
                     <span class="font-bold text-2xl mr-2">2</span>
                     <span class="font-bold text-lg">Masukan Detil Akun <i class='fas fa-question-circle text-base ml-1'></i></span>
                 </div>
-                <form class="p-4" method="POST" action="#">
+                <form id="pay-form" class="p-4" method="POST" action="{{ route('checkout') }}">
                     @csrf
                     <input type="hidden" name="denom_id" id="denom_id">
+                    <input type="hidden" name="payment_method" id="payment_method">
                     @if(!empty($accountFields) && is_array($accountFields))
                         @if(count($accountFields) === 1)
                             @foreach($accountFields as $field)
@@ -243,34 +244,56 @@
                             <input type="text" name="account" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan data akun">
                         </div>
                     @endif
+
                     <div class="text-xs text-gray-400 mt-2">
                         {{ $product->account_instruction ?? '' }}
                     </div>
                 </form>
             </div>
             <!-- Step 3: Pilih Pembayaran -->
-            <div class="bg-[#181820] rounded-lg shadow-md">
+            <div class="bg-[#181820] rounded-lg shadow-md mt-6">
                 <div class="flex items-center bg-cyan-400 rounded-t-lg px-4 py-2 mb-4">
                     <span class="font-bold text-2xl mr-2">3</span>
                     <span class="font-bold text-lg">Pilih Pembayaran</span>
                 </div>
-                <div class="space-y-4 p-4">
-                    <div class="bg-white rounded-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition payment-method border-2 border-transparent">
-                        <span class="font-semibold text-gray-800">QRIS & Dompet Digital</span>
-                        <div class="flex gap-2">
-                            <i class="fab fa-cc-visa text-2xl text-gray-600"></i>
-                            <i class="fab fa-cc-mastercard text-2xl text-gray-600"></i>
-                            <i class="fab fa-cc-paypal text-2xl text-gray-600"></i>
+                <div class="mb-4 px-4 pb-4">
+                    <!-- Kelompok utama -->
+                    <div onclick="toggleGroup('ewallet')" class="cursor-pointer bg-white rounded-lg p-4 flex items-center justify-between shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition mb-4">
+                        <span class="font-semibold text-gray-800 flex items-center">QRIS & Dompet Digital</span>
+                        <span class="flex gap-2"><img src='{{ asset('image/qris.png') }}' class='h-6'><img src='{{ asset('image/dana.jpg') }}' class='h-6'><img src='{{ asset('image/shopeepay.png') }}' class='h-6'><img src='{{ asset('image/gopay.png') }}' class='h-6'></span>
+                    </div>
+                    <div id="ewallet-channels" style="display:none;" class="mb-4">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div onclick="selectPayment('qris')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">QRIS</div>
+                            <div onclick="selectPayment('shopeepay')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">ShopeePay</div>
+                            <div onclick="selectPayment('gopay')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">GoPay</div>
+                            <div onclick="selectPayment('ovo')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">OVO</div>
+                            <div onclick="selectPayment('dana')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">DANA</div>
+                            <div onclick="selectPayment('linkaja')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">LinkAja</div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-lg p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition payment-method border-2 border-transparent">
-                        <span class="font-semibold text-gray-800">Retail</span>
-                        <div class="flex gap-2">
-                            <i class="fas fa-store text-2xl text-gray-600"></i>
-                            <i class="fas fa-store-alt text-2xl text-gray-600"></i>
+                    <div onclick="toggleGroup('retail')" class="cursor-pointer bg-white rounded-lg p-4 flex items-center justify-between shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition mb-4">
+                        <span class="font-semibold text-gray-800 flex items-center">Retail</span>
+                        <span class="flex gap-2"><img src='{{ asset('image/alfamart.png') }}' class='h-6'><img src='{{ asset('image/indomaret.png') }}' class='h-6'></span>
+                    </div>
+                    <div id="retail-channels" style="display:none;" class="mb-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div onclick="selectPayment('alfamart')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">Alfamart</div>
+                            <div onclick="selectPayment('indomaret')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">Indomaret</div>
                         </div>
                     </div>
-                    <!-- Tambahkan metode pembayaran lain sesuai kebutuhan -->
+                    <div onclick="toggleGroup('va')" class="cursor-pointer bg-white rounded-lg p-4 flex items-center justify-between shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition mb-4">
+                        <span class="font-semibold text-gray-800 flex items-center">Virtual Account</span>
+                        <span class="flex gap-2"><img src='{{ asset('image/bri.png') }}' class='h-6'><img src='{{ asset('image/bni.png') }}' class='h-6'><img src='{{ asset('image/permata.png') }}' class='h-6'><img src='{{ asset('image/mandiri.png') }}' class='h-6'></span>
+                    </div>
+                    <div id="va-channels" style="display:none;" class="mb-4">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div onclick="selectPayment('bri_va')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">BRI VA</div>
+                            <div onclick="selectPayment('bni_va')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">BNI VA</div>
+                            <div onclick="selectPayment('permata_va')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">PERMATA VA</div>
+                            <div onclick="selectPayment('mandiri_va')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">MANDIRI VA</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- STEP 4: Kode Promo -->
@@ -409,5 +432,17 @@
             });
         });
     </script>
+    <script>
+function toggleGroup(group) {
+    document.getElementById('ewallet-channels').style.display = 'none';
+    document.getElementById('retail-channels').style.display = 'none';
+    document.getElementById('va-channels').style.display = 'none';
+    document.getElementById(group + '-channels').style.display = 'block';
+}
+function selectPayment(channel) {
+    document.getElementById('payment_method').value = channel;
+    document.getElementById('pay-form').submit();
+}
+</script>
 </body>
 </html> 

@@ -17,17 +17,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Customer Routes
-// Route::prefix('shop')->name('customer.')->group(function () {
-//     Route::get('/', [CustomerController::class, 'index'])->name('index');
-//     Route::get('/product/{productId}', [CustomerController::class, 'showProduct'])->name('product');
-//     Route::get('/category/{categoryId}', [CustomerController::class, 'showCategory'])->name('category');
-//     Route::get('/search', [CustomerController::class, 'search'])->name('search');
-//     // Checkout & Payment
-//     Route::post('/checkout', [CustomerController::class, 'checkout'])->name('checkout');
-//     Route::get('/payment/{orderId}', [CustomerController::class, 'payment'])->name('payment');
-//     Route::get('/payment/success/{orderId}', [CustomerController::class, 'paymentSuccess'])->name('payment.success');
-//     Route::get('/payment/failed/{orderId}', [CustomerController::class, 'paymentFailed'])->name('payment.failed');
-// });
+Route::post('/checkout', [App\Http\Controllers\CustomerController::class, 'checkout'])->name('checkout');
+Route::get('/payment/{orderId}', [App\Http\Controllers\CustomerController::class, 'payment'])->name('payment');
+Route::get('/payment/success/{orderId}', [App\Http\Controllers\CustomerController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/failed/{orderId}', [App\Http\Controllers\CustomerController::class, 'paymentFailed'])->name('payment.failed');
 
 // Reseller Routes
 Route::prefix('reseller')->name('reseller.')->group(function () {
@@ -84,6 +77,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/denom/{id}', [App\Http\Controllers\Admin\PriceListController::class, 'destroy'])->name('denom.destroy');
     Route::patch('/denom/{id}/toggle-status', [App\Http\Controllers\Admin\PriceListController::class, 'toggleStatus'])->name('denom.toggleStatus');
     Route::post('/denom/bulk-update', [App\Http\Controllers\Admin\PriceListController::class, 'bulkUpdate'])->name('denom.bulkUpdate');
+    Route::post('/denom/update-order', [App\Http\Controllers\Admin\PriceListController::class, 'updateOrder'])->name('denom.updateOrder');
 
     // Bundle Management
     // Route::resource('bundles', App\Http\Controllers\Admin\BundleController::class);
