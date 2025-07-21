@@ -167,7 +167,7 @@
                     </div>
 
                     <p class="text-white mb-3">Masukkan alamat email untuk mendapatkan Coda Rewards sampai dengan 2% pada pembelian kamu. Kamu juga akan mendapatkan bukti pembayaran dan berhak untuk mendapatkan promosi.</p>
-                    <input type="email" class="w-full rounded-lg p-2 bg-gray-700 focus:ring-2 focus:ring-cyan-400 focus:outline-none" placeholder="Masukan emailmu disini!...">
+                    <input type="email" class="w-full rounded-lg p-2 bg-gray-700 text-white focus:ring-2 focus:ring-cyan-400 focus:outline-none" placeholder="Masukan emailmu disini!...">
                     <button class="w-full bg-cyan-500 mt-2 rounded-md p-2 font-semibold">
                         <i class="fas fa-shopping-basket mr-2"></i>Beli Sekarang
                     </button>

@@ -27,6 +27,7 @@ class Produk extends Model
         'icon_url',
         'status',
         'is_popular',
+        'sort_order',
         'kategori_id',
         'kode_digiflazz',
         'deskripsi',

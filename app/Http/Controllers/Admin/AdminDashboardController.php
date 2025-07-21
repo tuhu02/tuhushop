@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Transaction;
-use App\Models\Game;
+use App\Models\Produk;
 use App\Models\Reseller;
 use App\Models\Withdrawal;
 use Carbon\Carbon;
@@ -36,7 +36,7 @@ class AdminDashboardController extends Controller
             'total_resellers' => Reseller::count(),
             'total_transactions' => Transaction::count(),
             'total_revenue' => Transaction::where('status', 'success')->sum('amount'),
-            'total_games' => Game::count(),
+            'total_games' => Produk::count(),
             'total_withdrawals' => Withdrawal::count(),
             'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
             
@@ -50,31 +50,27 @@ class AdminDashboardController extends Controller
             'today_revenue' => Transaction::where('status', Transaction::STATUS_SUCCESS)
                 ->whereDate('created_at', $today)
                 ->sum('amount'),
-            'month_revenue' => Transaction::where('status', Transaction::STATUS_SUCCESS)
-                ->where('created_at', '>=', $thisMonth)
+            
+            'this_month_revenue' => Transaction::where('status', Transaction::STATUS_SUCCESS)
+                ->whereMonth('created_at', $thisMonth->month)
+                ->whereYear('created_at', $thisMonth->year)
                 ->sum('amount'),
             
-            // Today's statistics
-            'today_transactions' => Transaction::whereDate('created_at', $today)->count(),
-            'today_visitors' => 98, // Mock data for now
-            'today_page_views' => 991, // Mock data for now
-            'online_users' => 98, // Mock data for now
-            
             // Recent transactions
-            'recent_transactions' => Transaction::with(['user', 'reseller'])
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
+            'recent_transactions' => Transaction::with(['user', 'game'])
+                ->latest()
+                ->take(5)
                 ->get(),
             
-            // Top performing games
-            'top_games' => Game::withCount(['transactions' => function($query) {
+            // Top games by transaction count
+            'top_games' => Produk::withCount(['transactions' => function($query) {
                 $query->where('status', Transaction::STATUS_SUCCESS);
             }])
             ->orderBy('transactions_count', 'desc')
             ->take(5)
-            ->get()
+            ->get(),
         ];
-
+        
         return $stats;
     }
 }

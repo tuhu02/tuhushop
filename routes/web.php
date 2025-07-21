@@ -64,6 +64,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{product}', [App\Http\Controllers\Admin\ProdukController::class, 'destroy'])->name('produk.destroy');
     Route::post('/produk/{product}/sync-digiflazz', [App\Http\Controllers\Admin\ProdukController::class, 'syncDigiflazzDenom'])->name('produk.syncDigiflazz');
+    Route::post('/produk/update-order', [App\Http\Controllers\Admin\ProdukController::class, 'updateOrder'])->name('produk.updateOrder');
 
     // Kategori Management
     Route::get('/kategori', [App\Http\Controllers\Admin\KategoriProdukController::class, 'index'])->name('kategori.index');

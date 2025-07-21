@@ -14,7 +14,7 @@ class ProdukController extends Controller
 {
     public function index(Request $request)
     {
-        $sort = $request->query('sort', 'nama_asc');
+        $sort = $request->query('sort', 'sort_order');
         $kategori_id = $request->query('kategori_id');
         $products = Produk::query();
 
@@ -42,8 +42,9 @@ class ProdukController extends Controller
             case 'kategori_desc':
                 $products->orderBy('kategori_id', 'desc');
                 break;
+            case 'sort_order':
             default:
-                $products->orderBy('product_name', 'asc');
+                $products->orderBy('sort_order', 'asc')->orderBy('product_name', 'asc');
         }
 
         $products = $products->get();
@@ -257,16 +258,46 @@ class ProdukController extends Controller
         ]);
         // Validasi JSON
         $json = $request->input('account_fields');
+        
         try {
-            $parsed = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-            if (!is_array($parsed)) {
-                throw new \Exception('Format JSON tidak valid.');
+            $decoded = json_decode($json, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Invalid JSON format');
             }
-        } catch (\Throwable $e) {
-            return back()->withInput()->withErrors(['account_fields' => 'Format JSON tidak valid: ' . $e->getMessage()]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Format JSON tidak valid!');
         }
-        $product->account_fields = $parsed;
-        $product->save();
-        return back()->with('success', 'Struktur form akun berhasil diperbarui!');
+        
+        $product->update([
+            'account_fields' => $decoded,
+            'account_instruction' => $request->input('account_instruction'),
+        ]);
+        
+        return back()->with('success', 'Field akun berhasil diperbarui!');
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'order' => 'required|array',
+            'order.*.id' => 'required|exists:products,product_id',
+            'order.*.sort_order' => 'required|integer|min:1',
+        ]);
+
+        try {
+            foreach ($request->order as $item) {
+                Produk::where('product_id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Urutan produk berhasil disimpan!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan urutan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 } 

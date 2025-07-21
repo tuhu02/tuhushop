@@ -69,10 +69,10 @@
             <div class="w-full rounded-md p-2">
                   <div class="d-flex gap-3">
                   <input type="text" 
-                        class="rounded-md p-2 border border-gray-400 text-center" 
+                        class="rounded-md p-2 border border-gray-400 text-center bg-gray-700 text-white" 
                         placeholder="Masukan user ID">
                   <input type="text" 
-                        class="rounded-md p-2 border border-gray-400 text-center" 
+                        class="rounded-md p-2 border border-gray-400 text-center bg-gray-700 text-white" 
                         placeholder="( Masukan Server )">
                         <i class="fa fa-question-circle text-aqua" style="font-size:24px"></i>
               </div>

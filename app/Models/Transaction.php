@@ -65,7 +65,7 @@ class Transaction extends Model
      */
     public function game(): BelongsTo
     {
-        return $this->belongsTo(Game::class, 'game_id', 'game_id');
+        return $this->belongsTo(Produk::class, 'game_id', 'product_id');
     }
 
     /**

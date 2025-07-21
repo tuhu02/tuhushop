@@ -25,7 +25,7 @@
     </div>
     <div class="bg-gray-800 h-fit w-96 mx-auto mt-2 rounded-lg p-2 text-white p-5 border-2 border-transparent hover:border-cyan-400">
         <p class="font-semibold">Cari detail pembelian kamu disini</p>
-        <input type="text" placeholder="Cari invoice kamu disini (Contoh : 08xxxxxxx)" class="w-full rounded-lg p-2 border-2 border-aqua mt-4 bg-gray-500 placeholder-white "> 
+        <input type="text" placeholder="Cari invoice kamu disini (Contoh : 08xxxxxxx)" class="w-full rounded-lg p-2 border-2 border-aqua mt-4 bg-gray-500 text-white placeholder-white "> 
         <button class="w-full bg-aqua rounded-md font-semibold mt-2 py-2">Cari Invoice</button>
     </div>
 

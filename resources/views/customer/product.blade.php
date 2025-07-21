@@ -224,8 +224,8 @@
                             @foreach($accountFields as $field)
                                 <div class="mb-4">
                                     @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
-                                    <label for="{{ $name }}" class="block mb-2 font-semibold">{{ $field['label'] ?? $name }}</label>
-                                    <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                    <label for="{{ $name }}" class="block mb-2 font-semibold text-white">{{ $field['label'] ?? $name }}</label>
+                                    <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                 </div>
                             @endforeach
                         @else
@@ -233,15 +233,15 @@
                                 @foreach($accountFields as $field)
                                     <div>
                                         @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
-                                        <label for="{{ $name }}" class="block mb-2 font-semibold text-gray-700">{{ $field['label'] ?? $name }}</label>
-                                        <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <label for="{{ $name }}" class="block mb-2 font-semibold text-white">{{ $field['label'] ?? $name }}</label>
+                                        <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                     </div>
                                 @endforeach
                             </div>
                         @endif
                     @else
                         <div>
-                            <input type="text" name="account" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan data akun">
+                            <input type="text" name="account" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" placeholder="Masukkan data akun">
                         </div>
                     @endif
 

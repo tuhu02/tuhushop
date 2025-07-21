@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Game; // Pastikan model sudah diimport
+use App\Models\Produk; // Update to use Produk model
 use App\Models\Favorit; 
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Mengambil satu data game (misalnya, yang pertama)
-        $game = Game::first(); // Mengambil record pertama dari tabel products
-        $allGames = Game::getAllGame();
-        $favorites = Favorit::with('game')->get();
+        // Mengambil satu data produk (misalnya, yang pertama)
+        $product = Produk::orderBy('sort_order', 'asc')->first(); // Mengambil record pertama dari tabel products
+        $allProducts = Produk::orderBy('sort_order', 'asc')->get(); // Order by sort_order
+        $favorites = Favorit::with('produk')->get(); // Update relationship name
         
-        // Ambil game yang populer
-        $populerGames = Game::where('is_popular', true)->get();
+        // Ambil produk yang populer
+        $populerProducts = Produk::where('is_popular', true)->orderBy('sort_order', 'asc')->get();
         
         $data = [
             'title' => 'Dashboard Pengguna',
-            'games' => $game, // Mengirimkan satu game ke view
-            'allGame' => $allGames,
+            'games' => $product, // Keep variable name for backward compatibility
+            'allGame' => $allProducts, // Keep variable name for backward compatibility
             'favorites' => $favorites,
-            'populerGames' => $populerGames,
+            'populerGames' => $populerProducts, // Keep variable name for backward compatibility
         ];
     
         return view('dashboard', $data);

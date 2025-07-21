@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Game;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,16 +11,16 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games = Game::all();
+        $games = Produk::orderBy('sort_order', 'asc')->get();
         return view('admin.kelolaGame', compact('games'));
     }
 
-    public function edit(Game $product)
+    public function edit(Produk $product)
     {
         return view('admin.games.edit', compact('product'));
     }
 
-    public function update(Request $request, Game $product)
+    public function update(Request $request, Produk $product)
     {
         $request->validate([
             'product_name' => 'required|string|max:255',
@@ -52,7 +52,7 @@ class GameController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
-    public function destroy(Game $product)
+    public function destroy(Produk $product)
     {
         // Hapus thumbnail jika ada
         if ($product->thumbnail_url && Storage::disk('public')->exists('image/' . $product->thumbnail_url)) {
@@ -64,7 +64,7 @@ class GameController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
     }
 
-    public function togglePopular(Game $product)
+    public function togglePopular(Produk $product)
     {
         $product->update(['is_popular' => !$product->is_popular]);
         

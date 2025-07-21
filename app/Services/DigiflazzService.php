@@ -129,12 +129,12 @@ class DigiflazzService
 
         foreach ($priceList as $item) {
             try {
-                // Check if game already exists
-                $existingGame = \App\Models\Game::where('game_name', $item['name'])->first();
+                // Check if product already exists
+                $existingProduct = \App\Models\Produk::where('product_name', $item['name'])->first();
                 
-                if (!$existingGame) {
-                    \App\Models\Game::create([
-                        'game_name' => $item['name'],
+                if (!$existingProduct) {
+                    \App\Models\Produk::create([
+                        'product_name' => $item['name'],
                         'developer' => $item['brand'] ?? 'Unknown',
                         'description' => $item['desc'] ?? '',
                         'thumbnail_url' => $item['icon_url'] ?? 'default-game.jpg',
