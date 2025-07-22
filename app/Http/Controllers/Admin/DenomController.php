@@ -280,38 +280,36 @@ class DenomController extends Controller
         return redirect()->route('admin.denom.index')->with('success', "$imported denom berhasil diimport dari Apigames.");
     }
 
-    public function update(Request $request, $id)
+    public function destroy($id)
     {
         $denom = \App\Models\PriceList::findOrFail($id);
+        $denom->delete();
 
-        // Validasi input lain sesuai kebutuhan...
+        return redirect()->back()->with('success', 'Denom berhasil dihapus.');
+    }
+
+    public function edit($id)
+    {
+        $denom = \App\Models\PriceList::findOrFail($id);
+        return view('admin.denom.edit', compact('denom'));
+    }
+
+    public function update(Request $request, $id)
+    {
         $request->validate([
-            'nama_produk' => 'required|string',
+            'nama_produk' => 'required|string|max:255',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
-            // tambahkan validasi lain sesuai kebutuhan
+            'kategori_id' => 'nullable|exists:kategori_denoms,id',
         ]);
 
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            // Pastikan folder public/image/denoms sudah ada
-            if (!file_exists(public_path('image/denoms'))) {
-                mkdir(public_path('image/denoms'), 0777, true);
-            }
-            $file->move(public_path('image/denoms'), $filename); // simpan di public/image/denoms/
-            $denom->logo = 'denoms/' . $filename; // simpan path folder di database
-        }
+        $denom = PriceList::findOrFail($id);
+        $validatedData = $request->validated();
+        $denom->update($validatedData);
 
-        // Update field lain
-        $denom->nama_produk = $request->nama_produk;
-        $denom->harga_beli = $request->harga_beli;
-        $denom->harga_jual = $request->harga_jual;
-        $denom->denom = $request->denom;
-        // tambahkan field lain sesuai kebutuhan
-
-        $denom->save();
-
-        return redirect()->back()->with('success', 'Denom berhasil diupdate!');
+        return response()->json([
+            'success' => true,
+            'denom' => $denom->load('kategoriDenom') // Muat relasi untuk data terbaru
+        ]);
     }
 } 

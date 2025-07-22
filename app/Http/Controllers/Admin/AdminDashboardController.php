@@ -40,6 +40,8 @@ class AdminDashboardController extends Controller
             'total_withdrawals' => Withdrawal::count(),
             'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
             
+            'today_transactions' => Transaction::whereDate('created_at', $today)->count(),
+
             // Transaction status counts
             'failed_transactions' => Transaction::where('status', Transaction::STATUS_FAILED)->count(),
             'pending_transactions' => Transaction::where('status', Transaction::STATUS_PENDING)->count(),

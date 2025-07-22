@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produk; // Import model Produk
 use App\Models\PriceList;
+use Illuminate\Support\Facades\Http;
 class ProdukController extends Controller
 {
     // Method untuk menampilkan semua data produk
@@ -55,4 +56,31 @@ class ProdukController extends Controller
         ]);
     }
 
+    // Cek nickname Mobile Legends via DigiFlazz
+    public function cekMLBBUsername(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $server = $request->input('server');
+        $customerNo = $userId . $server;
+        $refId = uniqid('cekmlbb_');
+        $username = env('DIGIFLAZZ_USERNAME');
+        $apiKey = env('DIGIFLAZZ_API_KEY');
+        $sign = md5($username . $apiKey . $refId);
+
+        $response = Http::post('https://api.digiflazz.com/v1/transaction', [
+            'username' => $username,
+            'buyer_sku_code' => 'unametuhu',
+            'customer_no' => $customerNo,
+            'ref_id' => $refId,
+            'sign' => $sign,
+        ]);
+
+        $json = $response->json();
+        // Cek nickname di response (bisa di message atau customer_name tergantung API)
+        $nickname = $json['data']['customer_name'] ?? ($json['data']['message'] ?? null);
+        return response()->json([
+            'nickname' => $nickname,
+            'raw' => $json
+        ]);
+    }
 }

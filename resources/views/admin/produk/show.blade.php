@@ -2,49 +2,6 @@
 
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<style>
-    #sortableDenoms tr {
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-    }
-    .fa-grip-vertical {
-        cursor: grab !important;
-        color: #6b7280 !important;
-        font-size: 16px !important;
-        padding: 4px !important;
-        border-radius: 4px !important;
-        transition: all 0.2s !important;
-    }
-    .fa-grip-vertical:hover {
-        background-color: #e5e7eb !important;
-        color: #374151 !important;
-    }
-    .fa-grip-vertical:active {
-        cursor: grabbing !important;
-        background-color: #d1d5db !important;
-    }
-    .sortable-ghost {
-        opacity: 0.5;
-        background-color: #dbeafe !important;
-    }
-    .sortable-chosen {
-        background-color: #bfdbfe !important;
-    }
-    .sortable-drag {
-        background-color: #93c5fd !important;
-        transform: rotate(5deg);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
-    .sortable-fallback {
-        background-color: #fef3c7 !important;
-        border: 2px dashed #f59e0b !important;
-    }
-</style>
 
 <div class="ml-64 p-4">
     <div class="bg-white rounded-lg shadow p-4">
@@ -120,199 +77,163 @@
         <div class="bg-white rounded-lg shadow p-4 mt-4">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold">Daftar Denom</h2>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-500">Drag & drop untuk mengurutkan</span>
-                    <button id="saveOrder" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
-                        <i class="fas fa-save mr-1"></i>Simpan Urutan
-                    </button>
-                </div>
+                <button id="saveOrder" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Simpan Urutan</button>
             </div>
             <div class="overflow-x-auto">
-            <table class="min-w-full table-auto border border-gray-300 rounded-lg">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center w-12">
-                            <i class="fas fa-grip-vertical text-gray-400"></i>
-                        </th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Logo</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Nama Denom</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Beli</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Jual</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Harga Member</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Kategori</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Provider</th>
-                        <th class="px-4 py-2 border text-xs font-semibold text-gray-700 uppercase tracking-wider text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="sortableDenoms" class="bg-white divide-y divide-gray-200">
-                    @foreach($product->priceLists->sortBy('sort_order') as $denom)
-                        <tr class="even:bg-gray-50 hover:bg-blue-50 cursor-move" data-id="{{ $denom->id }}">
-                            <td class="px-4 py-2 border text-sm text-center">
-                                <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
-                            </td>
-                            <td class="px-4 py-2 border text-sm text-center">
-                                @if($denom->logo)
-                                    <img src="{{ Storage::url($denom->logo) }}" alt="Logo" class="h-8 mx-auto">
-                                @endif
-                            </td>
-                            <td class="px-4 py-2 border text-sm font-medium text-gray-900 text-center whitespace-nowrap">{{ $denom->nama_produk }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_beli) }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_jual) }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">Rp{{ number_format($denom->harga_member) }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->kategoriDenom->nama ?? '-' }}</td>
-                            <td class="px-4 py-2 border text-sm text-gray-900 text-center whitespace-nowrap">{{ $denom->provider }}</td>
-                            <td class="px-4 py-2 border text-sm font-medium text-center whitespace-nowrap">
-                                <a href="javascript:void(0);" class="text-blue-600 hover:underline mr-2">Edit</a>
-                                <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin ingin menghapus denom ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
-                                </form>
-                            </td>
+                <table class="min-w-full table-auto border border-gray-300 rounded-lg">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-2 border"></th>
+                            <th class="px-4 py-2 border">Nama Denom</th>
+                            <th class="px-4 py-2 border">Harga Beli</th>
+                            <th class="px-4 py-2 border">Harga Jual</th>
+                            <th class="px-4 py-2 border">Kategori</th>
+                            <th class="px-4 py-2 border">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="sortableDenoms">
+                        @foreach($product->priceLists->sortBy('sort_order') as $denom)
+                            <tr id="denom-row-{{ $denom->id }}" data-id="{{ $denom->id }}">
+                                <td class="px-4 py-2 border text-center cursor-move"><i class="fas fa-grip-vertical"></i></td>
+                                <td class="px-4 py-2 border">
+                                    <span class="view-mode">{{ $denom->nama_produk }}</span>
+                                    <input type="text" name="nama_produk" class="edit-mode hidden w-full" value="{{ $denom->nama_produk }}">
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <span class="view-mode">Rp{{ number_format($denom->harga_beli) }}</span>
+                                    <input type="number" name="harga_beli" class="edit-mode hidden w-full" value="{{ $denom->harga_beli }}">
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <span class="view-mode">Rp{{ number_format($denom->harga_jual) }}</span>
+                                    <input type="number" name="harga_jual" class="edit-mode hidden w-full" value="{{ $denom->harga_jual }}">
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <span class="view-mode">{{ $denom->kategoriDenom->nama ?? '-' }}</span>
+                                    <select name="kategori_id" class="edit-mode hidden w-full">
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach($kategoriDenoms as $kategori)
+                                            <option value="{{ $kategori->id }}" {{ $denom->kategori_id == $kategori->id ? 'selected' : '' }}>
+                                                {{ $kategori->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-4 py-2 border text-center">
+                                    <div class="view-actions">
+                                        <form action="{{ route('admin.denom.destroy', $denom->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus denom ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">Hapus</button>
+                                        </form>
+                                    </div>
+                                    <div class="edit-actions hidden">
+                                        <!-- Save/Cancel buttons are removed for autosave -->
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
-    @else
-        <div class="bg-white rounded-lg shadow p-4 mt-4">
-            <p class="text-gray-500">Belum ada denom untuk produk ini.</p>
         </div>
     @endif
 </div>
 
 <script>
-    // Initialize Sortable
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded');
-        
-        const sortableList = document.getElementById('sortableDenoms');
-        console.log('SortableList element:', sortableList);
-        
-        if (sortableList) {
-            // Test if Sortable is available
-            if (typeof Sortable === 'undefined') {
-                console.error('Sortable is not loaded!');
-                // Fallback to jQuery UI
-                if (typeof $ !== 'undefined' && $.fn.sortable) {
-                    console.log('Using jQuery UI Sortable as fallback');
-                    $('#sortableDenoms').sortable({
-                        handle: '.fa-grip-vertical',
-                        axis: 'y',
-                        opacity: 0.6,
-                        cursor: 'move',
-                        start: function(event, ui) {
-                            console.log('jQuery UI drag started');
-                        },
-                        stop: function(event, ui) {
-                            console.log('jQuery UI drag stopped');
-                        }
-                    });
-                }
-                return;
-            }
-            
-            console.log('Creating Sortable instance...');
-            
-            const sortable = new Sortable(sortableList, {
-                animation: 150,
-                handle: '.fa-grip-vertical',
-                ghostClass: 'sortable-ghost',
-                chosenClass: 'sortable-chosen',
-                dragClass: 'sortable-drag',
-                delay: 100,
-                delayOnTouchOnly: false,
-                preventOnFilter: false,
-                forceFallback: true,
-                fallbackClass: 'sortable-fallback',
-                onStart: function(evt) {
-                    console.log('Drag started on item:', evt.item);
-                    evt.item.style.userSelect = 'none';
-                },
-                onMove: function(evt) {
-                    console.log('Drag moving');
-                    return true;
-                },
-                onEnd: function(evt) {
-                    console.log('Drag ended');
-                    evt.item.style.userSelect = '';
-                }
-            });
-            
-            console.log('Sortable instance created:', sortable);
-            
-            // Test if handle elements exist
-            const handles = document.querySelectorAll('.fa-grip-vertical');
-            console.log('Found', handles.length, 'drag handles');
-            
-            handles.forEach((handle, index) => {
-                console.log('Handle', index, ':', handle);
-                handle.style.cursor = 'grab';
-                
-                // Add click event to test if handle is clickable
-                handle.addEventListener('click', function(e) {
-                    console.log('Handle clicked:', e.target);
-                });
-            });
-            
-        } else {
-            console.error('SortableList element not found');
+document.addEventListener('DOMContentLoaded', function() {
+    const tableBody = document.getElementById('sortableDenoms');
+    let activeEditRow = null;
+
+    // --- Enter Edit Mode on Click ---
+    tableBody.addEventListener('click', function(e) {
+        const target = e.target;
+        const row = target.closest('tr');
+        if (!row || target.closest('button, form, a, input, select')) return;
+
+        if (activeEditRow && activeEditRow !== row) {
+            toggleEditMode(activeEditRow, false); // Revert previous row
         }
-
-        // Save order button
-        const saveButton = document.getElementById('saveOrder');
-        if (saveButton) {
-            saveButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Save button clicked');
-                
-                const rows = document.querySelectorAll('#sortableDenoms tr');
-                const order = Array.from(rows).map((row, index) => ({
-                    id: row.dataset.id,
-                    sort_order: index + 1
-                }));
-
-                console.log('Order to save:', order);
-
-                // Send to server
-                fetch('{{ route("admin.denom.updateOrder") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ order: order })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Urutan berhasil disimpan!');
-                    } else {
-                        alert('Gagal menyimpan urutan: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menyimpan urutan');
-                });
-            });
+        
+        if (activeEditRow !== row) {
+            toggleEditMode(row, true);
+            activeEditRow = row;
         }
-
-        // Prevent text selection on drag handle
-        document.querySelectorAll('.fa-grip-vertical').forEach(handle => {
-            handle.addEventListener('mousedown', function(e) {
-                console.log('Handle mousedown');
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            
-            handle.addEventListener('click', function(e) {
-                console.log('Handle click');
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
     });
+
+    // --- Autosave on Change ---
+    tableBody.addEventListener('change', function(e) {
+        if (e.target.matches('.edit-mode')) {
+            const row = e.target.closest('tr');
+            if (row && row === activeEditRow) {
+                saveDenomChanges(row);
+            }
+        }
+    });
+
+    // --- Cancel with Escape key ---
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && activeEditRow) {
+            toggleEditMode(activeEditRow, false);
+            activeEditRow = null;
+        }
+    });
+
+    function toggleEditMode(row, isEditing) {
+        if (isEditing) {
+            row.querySelectorAll('.edit-mode').forEach(input => {
+                input.setAttribute('data-original-value', input.value);
+            });
+        } else {
+            row.querySelectorAll('.edit-mode').forEach(input => {
+                if (input.hasAttribute('data-original-value')) {
+                    input.value = input.getAttribute('data-original-value');
+                }
+            });
+        }
+        row.querySelectorAll('.view-mode, .edit-mode').forEach(el => el.classList.toggle('hidden'));
+    }
+
+    function saveDenomChanges(row) {
+        const id = row.dataset.id;
+        const form = new FormData();
+        form.append('_method', 'PUT');
+        form.append('nama_produk', row.querySelector('[name="nama_produk"]').value);
+        form.append('harga_beli', row.querySelector('[name="harga_beli"]').value);
+        form.append('harga_jual', row.querySelector('[name="harga_jual"]').value);
+        form.append('kategori_id', row.querySelector('[name="kategori_id"]').value);
+
+        fetch(`/admin/denom/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+            body: form
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const denom = data.denom;
+                row.querySelector('td:nth-child(2) .view-mode').textContent = denom.nama_produk;
+                row.querySelector('td:nth-child(3) .view-mode').textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(denom.harga_beli);
+                row.querySelector('td:nth-child(4) .view-mode').textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(denom.harga_jual);
+                row.querySelector('td:nth-child(5) .view-mode').textContent = denom.kategori_denom ? denom.kategori_denom.nama : '-';
+                
+                toggleEditMode(row, false);
+                activeEditRow = null;
+            } else {
+                alert('Gagal memperbarui: ' + (data.message || 'Error'));
+                toggleEditMode(row, false); // Revert on failure
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan koneksi.');
+            toggleEditMode(row, false); // Revert on failure
+        });
+    }
+
+    new Sortable(tableBody, { animation: 150, handle: '.fa-grip-vertical' });
+});
 </script>
 @endsection 

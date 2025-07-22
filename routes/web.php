@@ -131,6 +131,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('denom/import-digiflazz', [App\Http\Controllers\Admin\DenomController::class, 'importFromDigiflazz'])->name('denom.importDigiflazz');
     Route::get('/admin/denom/create', [\App\Http\Controllers\Admin\DenomController::class, 'create'])->name('admin.denom.create');
     Route::get('/denom/create', [\App\Http\Controllers\Admin\DenomController::class, 'create'])->name('denom.create');
+    Route::post('/admin/denom/update-order', [App\Http\Controllers\Admin\DenomController::class, 'updateOrder'])->name('admin.denom.updateOrder');
+    Route::post('/admin/denom', [App\Http\Controllers\Admin\DenomController::class, 'store'])->name('admin.denom.store');
+    Route::delete('/admin/denom/{id}', [App\Http\Controllers\Admin\DenomController::class, 'destroy'])->name('admin.denom.destroy');
+    Route::get('/admin/denom/{id}/edit', [App\Http\Controllers\Admin\DenomController::class, 'edit'])->name('admin.denom.edit');
+    Route::put('/admin/denom/{id}', [App\Http\Controllers\Admin\DenomController::class, 'update'])->name('admin.denom.update');
 });
 
 // Route publik produk (pastikan didefinisikan setelah group admin)
@@ -153,3 +158,4 @@ Route::get('/test-digiflazz', function () {
 });
 
 Route::resource('admin/kategori-denom', App\Http\Controllers\Admin\KategoriDenomController::class)->names('admin.kategori-denom');
+Route::post('/api/mlbb-nickname', [App\Http\Controllers\ProdukController::class, 'cekMLBBUsername']);

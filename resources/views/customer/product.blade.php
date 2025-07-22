@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $product->product_name }} - Tuhu Shop</title>
     @vite('resources/css/app.css')
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -219,6 +220,9 @@
                     @csrf
                     <input type="hidden" name="denom_id" id="denom_id">
                     <input type="hidden" name="payment_method" id="payment_method">
+                    @php
+                        $isMLBB = strtolower($product->product_name) === 'mobile legends' || strtolower($product->product_name) === 'mobile legends bang bang';
+                    @endphp
                     @if(!empty($accountFields) && is_array($accountFields))
                         @if(count($accountFields) === 1)
                             @foreach($accountFields as $field)
@@ -238,6 +242,9 @@
                                     </div>
                                 @endforeach
                             </div>
+                        @endif
+                        @if($isMLBB)
+                            <div id="nickname-result" class="text-cyan-400 font-bold mt-2"></div>
                         @endif
                     @else
                         <div>
@@ -262,14 +269,38 @@
                         <span class="font-semibold text-gray-800 flex items-center">QRIS & Dompet Digital</span>
                         <span class="flex gap-2"><img src='{{ asset('image/qris.png') }}' class='h-6'><img src='{{ asset('image/dana.jpg') }}' class='h-6'><img src='{{ asset('image/shopeepay.png') }}' class='h-6'><img src='{{ asset('image/gopay.png') }}' class='h-6'></span>
                     </div>
-                    <div id="ewallet-channels" style="display:none;" class="mb-4">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div onclick="selectPayment('qris')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">QRIS</div>
-                            <div onclick="selectPayment('shopeepay')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">ShopeePay</div>
-                            <div onclick="selectPayment('gopay')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">GoPay</div>
-                            <div onclick="selectPayment('ovo')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">OVO</div>
-                            <div onclick="selectPayment('dana')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">DANA</div>
-                            <div onclick="selectPayment('linkaja')" class="cursor-pointer bg-gray-100 rounded-lg p-4 flex items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">LinkAja</div>
+                    <div id="ewallet-channels" style="display:block;" class="mb-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <!-- QRIS -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/qris.png') }}" class="h-6 mb-2" alt="QRIS">
+                                <span class="font-bold">QRIS</span>
+                            </div>
+                            <!-- ShopeePay -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/shopeepay.png') }}" class="h-6 mb-2" alt="ShopeePay">
+                                <span class="font-bold">ShopeePay</span>
+                            </div>
+                            <!-- GoPay -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/gopay.png') }}" class="h-6 mb-2" alt="GoPay">
+                                <span class="font-bold">GoPay</span>
+                            </div>
+                            <!-- OVO -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/ovo.png') }}" class="h-6 mb-2" alt="OVO">
+                                <span class="font-bold">OVO</span>
+                            </div>
+                            <!-- DANA -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/dana.jpg') }}" class="h-6 mb-2" alt="DANA">
+                                <span class="font-bold">DANA</span>
+                            </div>
+                            <!-- LinkAja -->
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                                <img src="{{ asset('image/linkaja.png') }}" class="h-6 mb-2" alt="LinkAja">
+                                <span class="font-bold">LinkAja</span>
+                            </div>
                         </div>
                     </div>
                     <div onclick="toggleGroup('retail')" class="cursor-pointer bg-white rounded-lg p-4 flex items-center justify-between shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition mb-4">
@@ -443,6 +474,45 @@ function selectPayment(channel) {
     document.getElementById('payment_method').value = channel;
     document.getElementById('pay-form').submit();
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userIdInput = document.getElementById('user_id');
+    const serverInput = document.getElementById('server');
+    const nicknameResult = document.getElementById('nickname-result');
+    if (userIdInput && serverInput && nicknameResult) {
+        function fetchNickname() {
+            const userId = userIdInput.value.trim();
+            const server = serverInput.value.trim();
+            if (userId && server) {
+                nicknameResult.textContent = 'Mengecek nickname...';
+                fetch('/api/mlbb-nickname', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ user_id: userId, server: server })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.nickname) {
+                        nicknameResult.textContent = 'Nickname: ' + data.nickname;
+                    } else {
+                        nicknameResult.textContent = 'Nickname tidak ditemukan';
+                    }
+                })
+                .catch(() => {
+                    nicknameResult.textContent = 'Gagal mengambil nickname';
+                });
+            } else {
+                nicknameResult.textContent = '';
+            }
+        }
+        userIdInput.addEventListener('blur', fetchNickname);
+        serverInput.addEventListener('blur', fetchNickname);
+    }
+});
 </script>
 </body>
 </html> 
