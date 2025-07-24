@@ -67,20 +67,14 @@ class ProdukController extends Controller
         $apiKey = env('DIGIFLAZZ_API_KEY');
         $sign = md5($username . $apiKey . $refId);
 
-        $response = Http::post('https://api.digiflazz.com/v1/transaction', [
-            'username' => $username,
-            'buyer_sku_code' => 'unametuhu',
-            'customer_no' => $customerNo,
-            'ref_id' => $refId,
-            'sign' => $sign,
-        ]);
-
-        $json = $response->json();
-        // Cek nickname di response (bisa di message atau customer_name tergantung API)
-        $nickname = $json['data']['customer_name'] ?? ($json['data']['message'] ?? null);
+        // Debug: tampilkan semua value yang akan dikirim
         return response()->json([
-            'nickname' => $nickname,
-            'raw' => $json
+            'username' => $username,
+            'apiKey_first5' => substr($apiKey, 0, 5), // demi keamanan, hanya tampilkan 5 karakter awal
+            'refId' => $refId,
+            'sign' => $sign,
+            'customerNo' => $customerNo,
+            'buyer_sku_code' => 'unametuhu',
         ]);
     }
 }

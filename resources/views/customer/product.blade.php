@@ -272,32 +272,32 @@
                     <div id="ewallet-channels" style="display:block;" class="mb-4">
                         <div class="grid grid-cols-3 gap-4">
                             <!-- QRIS -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="qris" onclick="selectPayment('qris', this)">
                                 <img src="{{ asset('image/qris.png') }}" class="h-6 mb-2" alt="QRIS">
                                 <span class="font-bold">QRIS</span>
                             </div>
                             <!-- ShopeePay -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="shopeepay" onclick="selectPayment('shopeepay', this)">
                                 <img src="{{ asset('image/shopeepay.png') }}" class="h-6 mb-2" alt="ShopeePay">
                                 <span class="font-bold">ShopeePay</span>
                             </div>
                             <!-- GoPay -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="gopay" onclick="selectPayment('gopay', this)">
                                 <img src="{{ asset('image/gopay.png') }}" class="h-6 mb-2" alt="GoPay">
                                 <span class="font-bold">GoPay</span>
                             </div>
                             <!-- OVO -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="ovo" onclick="selectPayment('ovo', this)">
                                 <img src="{{ asset('image/ovo.png') }}" class="h-6 mb-2" alt="OVO">
                                 <span class="font-bold">OVO</span>
                             </div>
                             <!-- DANA -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="dana" onclick="selectPayment('dana', this)">
                                 <img src="{{ asset('image/dana.jpg') }}" class="h-6 mb-2" alt="DANA">
                                 <span class="font-bold">DANA</span>
                             </div>
                             <!-- LinkAja -->
-                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition">
+                            <div class="cursor-pointer bg-gray-100 text-gray-800 rounded-lg p-4 flex flex-col items-center justify-center shadow hover:shadow-lg border-2 border-transparent hover:border-cyan-400 transition payment-option" data-method="linkaja" onclick="selectPayment('linkaja', this)">
                                 <img src="{{ asset('image/linkaja.png') }}" class="h-6 mb-2" alt="LinkAja">
                                 <span class="font-bold">LinkAja</span>
                             </div>
@@ -451,15 +451,15 @@
         }
 
         // Payment method selection
-        document.querySelectorAll('.payment-method').forEach(method => {
+        document.querySelectorAll('.payment-option').forEach(method => {
             method.addEventListener('click', function() {
                 // Remove previous selection
-                document.querySelectorAll('.payment-method').forEach(m => {
-                    m.classList.remove('border-purple-500', 'bg-purple-50');
+                document.querySelectorAll('.payment-option').forEach(m => {
+                    m.classList.remove('border-cyan-400', 'ring-2', 'ring-cyan-400');
                 });
                 
                 // Add selection to clicked method
-                this.classList.add('border-purple-500', 'bg-purple-50');
+                this.classList.add('border-cyan-400', 'ring-2', 'ring-cyan-400');
             });
         });
     </script>
@@ -470,9 +470,18 @@ function toggleGroup(group) {
     document.getElementById('va-channels').style.display = 'none';
     document.getElementById(group + '-channels').style.display = 'block';
 }
-function selectPayment(channel) {
+function selectPayment(channel, el) {
     document.getElementById('payment_method').value = channel;
-    document.getElementById('pay-form').submit();
+    // Remove active border from all
+    document.querySelectorAll('.payment-option').forEach(function(opt) {
+        opt.classList.remove('border-cyan-400');
+        opt.classList.remove('ring-2');
+        opt.classList.remove('ring-cyan-400');
+    });
+    // Add active border to selected
+    el.classList.add('border-cyan-400');
+    el.classList.add('ring-2');
+    el.classList.add('ring-cyan-400');
 }
 </script>
 <script>
