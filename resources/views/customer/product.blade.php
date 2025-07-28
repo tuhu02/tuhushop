@@ -71,6 +71,9 @@
         </div>
     </div>
     <!-- END INFO PRODUK FLEX -->
+    @php
+        $isMLBB = strtolower($product->product_name) === 'mobile legends' || strtolower($product->product_name) === 'mobile legends bang bang';
+    @endphp
     <!-- PILIH NOMINAL + FORM & PEMBAYARAN GRID -->
     <div class="w-full px-2 mt-8 flex flex-col md:flex-row gap-4 min-h-[600px]">
         <!-- KIRI: Denom, deskripsi, rekomendasi -->
@@ -216,20 +219,14 @@
                     <span class="font-bold text-2xl mr-2">2</span>
                     <span class="font-bold text-lg">Masukan Detil Akun <i class='fas fa-question-circle text-base ml-1'></i></span>
                 </div>
-                <form id="pay-form" class="p-4" method="POST" action="{{ route('checkout') }}">
-                    @csrf
-                    <input type="hidden" name="denom_id" id="denom_id">
-                    <input type="hidden" name="payment_method" id="payment_method">
-                    @php
-                        $isMLBB = strtolower($product->product_name) === 'mobile legends' || strtolower($product->product_name) === 'mobile legends bang bang';
-                    @endphp
+                <div class="p-4 space-y-4">
                     @if(!empty($accountFields) && is_array($accountFields))
                         @if(count($accountFields) === 1)
                             @foreach($accountFields as $field)
                                 <div class="mb-4">
                                     @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
                                     <label for="{{ $name }}" class="block mb-2 font-semibold text-white">{{ $field['label'] ?? $name }}</label>
-                                    <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                    <input type="text" name="{{ $name }}" id="preview_{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                 </div>
                             @endforeach
                         @else
@@ -238,7 +235,7 @@
                                     <div>
                                         @php $name = $field['name'] ?? $field['label'] ?? 'field'; @endphp
                                         <label for="{{ $name }}" class="block mb-2 font-semibold text-white">{{ $field['label'] ?? $name }}</label>
-                                        <input type="text" name="{{ $name }}" id="{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <input type="text" name="{{ $name }}" id="preview_{{ $name }}" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white" value="{{ old($name) }}" placeholder="{{ $field['placeholder'] ?? '' }}">
                                     </div>
                                 @endforeach
                             </div>
@@ -248,14 +245,13 @@
                         @endif
                     @else
                         <div>
-                            <input type="text" name="account" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400" placeholder="Masukkan data akun">
+                            <input type="text" name="account" id="preview_account" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white" placeholder="Masukkan data akun">
                         </div>
                     @endif
-
                     <div class="text-xs text-gray-400 mt-2">
                         {{ $product->account_instruction ?? '' }}
                     </div>
-                </form>
+                </div>
             </div>
             <!-- Step 3: Pilih Pembayaran -->
             <div class="bg-[#181820] rounded-lg shadow-md mt-6">
@@ -343,18 +339,41 @@
                     <span class="font-bold text-2xl mr-2">5</span>
                     <span class="font-bold text-lg">Selesaikan Pembayaran</span>
                 </div>
-                <div class="bg-[#181820] rounded-lg shadow-md p-6">
-                    <form class="space-y-4">
-                        <div>
-                            <label class="block text-white mb-1">Email (untuk notifikasi pembayaran)</label>
-                            <input type="email" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Masukkan Email">
-                        </div>
-                        <div>
-                            <label class="block text-white mb-1">WhatsApp (opsional)</label>
-                            <input type="text" class="w-full rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="08xxxxxxxxxx">
-                        </div>
-                        <button type="submit" class="w-full bg-cyan-400 text-gray-900 font-bold py-2 rounded-lg hover:bg-cyan-500 transition">Selesaikan Pembayaran</button>
+                <div class="bg-[#181820] rounded-lg shadow-md p-6 flex flex-col items-center">
+                    <form id="pay-form" class="w-full" method="POST" action="{{ route('checkout') }}">
+                        @csrf
+                        <input type="hidden" name="denom_id" id="denom_id">
+                        <input type="hidden" name="payment_method" id="payment_method">
+                        <!-- Tambahkan hidden field untuk user id dan server -->
+                        <input type="hidden" name="user_id" id="hidden_user_id">
+                        <input type="hidden" name="server" id="hidden_server">
+                        <input type="email" name="email" id="email" class="rounded-lg px-4 py-2 bg-[#23232a] text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 w-full mb-4" placeholder="Masukkan Email Anda" required>
+                        <button type="submit" class="bg-cyan-400 hover:bg-cyan-500 text-white font-bold py-3 px-8 rounded-lg text-lg shadow transition w-full mt-4">
+                            Selesaikan Pembayaran
+                        </button>
                     </form>
+                    <p class="text-gray-400 mt-4 text-center text-sm">Pastikan data sudah benar sebelum melanjutkan pembayaran.</p>
+                    <script>
+                    // Copy value dari preview ke hidden field saat submit
+                    // Tambahkan validasi agar user_id tidak kosong
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var payForm = document.getElementById('pay-form');
+                        if(payForm) {
+                            payForm.addEventListener('submit', function(e) {
+                                var userId = document.getElementById('preview_user_id')?.value || '';
+                                var server = document.getElementById('preview_server')?.value || '';
+                                document.getElementById('hidden_user_id').value = userId;
+                                document.getElementById('hidden_server').value = server;
+                                if(!userId) {
+                                    alert('User ID wajib diisi!');
+                                    e.preventDefault();
+                                    return false;
+                                }
+                            });
+                        }
+                    });
+                    </script>
                 </div>
             </div>
         </div>

@@ -18,6 +18,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Customer Routes
 Route::post('/checkout', [App\Http\Controllers\CustomerController::class, 'checkout'])->name('checkout');
+Route::get('/invoice/{orderId}', [App\Http\Controllers\CustomerController::class, 'invoice'])->name('invoice');
 Route::get('/payment/{orderId}', [App\Http\Controllers\CustomerController::class, 'payment'])->name('payment');
 Route::get('/payment/success/{orderId}', [App\Http\Controllers\CustomerController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('/payment/failed/{orderId}', [App\Http\Controllers\CustomerController::class, 'paymentFailed'])->name('payment.failed');
