@@ -9,10 +9,95 @@
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     
     <style>
+        /* Global scaling to match 80% zoom preference */
+        html {
+            font-size: 80%; /* This will scale everything down to match 80% zoom */
+        }
+        
+        /* Ensure body maintains proper scaling */
+        body {
+            font-size: 1.25rem; /* Compensate for the 80% html scaling */
+        }
+        
+        /* Specific adjustments for better proportions */
+        .text-2xl { font-size: 1.5rem !important; }
+        .text-3xl { font-size: 1.875rem !important; }
+        .text-4xl { font-size: 2.25rem !important; }
+        .text-lg { font-size: 1.125rem !important; }
+        .text-base { font-size: 1rem !important; }
+        .text-sm { font-size: 0.875rem !important; }
+        
+        /* Game cards adjustments */
+        .game-item {
+            min-height: 120px !important;
+        }
+        
+        /* Carousel adjustments */
+        .carousel-container {
+            max-height: 300px !important;
+        }
+        
+        /* Navigation adjustments */
+        .nav-link {
+            font-size: 0.9rem !important;
+        }
+        
+        /* Button adjustments */
+        .btn-primary {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+        
         .hover-effect::after {
             display: none !important;
             background: none !important;
             content: none !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            html {
+                font-size: 85%; /* Slightly larger on mobile */
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            html {
+                font-size: 75%; /* Slightly smaller on large screens */
+            }
+        }
+
+            /* Kategori Produk Modern Responsive */
+        .kategori-group {
+            margin-bottom: 0.5rem;
+        }
+        .kategori-btn {
+            background: #181820;
+            border: 2px solid #22d3ee;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.15rem;
+            border-radius: 0.75rem;
+            padding: 0.75rem 2.2rem;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(34,211,238,0.08);
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+            outline: none;
+            min-width: 120px;
+            display: inline-block;
+        }
+        .kategori-btn:hover, .kategori-btn.active {
+            background: #22d3ee;
+            color: #181820;
+            border-color: #22d3ee;
+            box-shadow: 0 4px 16px rgba(34,211,238,0.18);
+        }
+        @media (max-width: 600px) {
+            .kategori-btn {
+                font-size: 1rem;
+                padding: 0.6rem 1.2rem;
+                min-width: 90px;
+            }
         }
     </style>
 </head>
@@ -84,12 +169,13 @@
 
         <!-- Kategori Produk -->
         <div class="flex gap-2 my-7">
-            <div id="topup" class="bg-charcoal border border-aqua text-center font-semibold text-white p-2 px-3 w-fit rounded-lg hover:bg-aqua cursor-pointer">Topup</div>
-            <div id="voucher" class="bg-charcoal border border-aqua text-center font-semibold text-white p-2 px-3 w-20 rounded-lg hover:bg-aqua cursor-pointer">Voucher</div>
-            <div id="joki" class="bg-charcoal border border-aqua text-center font-semibold text-white p-2 px-3 w-20 rounded-lg hover:bg-aqua cursor-pointer">Joki</div>
-            <div id="tagihan" class="bg-charcoal border border-aqua text-center font-semibold text-white p-2 px-3 w-20 rounded-lg hover:bg-aqua cursor-pointer">Tagihan</div>
+            <div class="flex flex-wrap gap-4 justify-start kategori-group">
+                <button id="topup" class="kategori-btn active">Topup</button>
+                <button id="voucher" class="kategori-btn">Voucher</button>
+                <button id="joki" class="kategori-btn">Joki</button>
+                <button id="tagihan" class="kategori-btn">Tagihan</button>
+            </div>
         </div>
-
         <!-- Daftar Produk Berdasarkan Kategori -->
         <div id="topup-products" class="grid grid-cols-5 gap-7">
             @foreach($allGame as $index => $game)
@@ -246,12 +332,8 @@
 
         setInterval(nextSlide, 5000); // Auto-slide every 5 seconds
 
-        // JavaScript untuk Menampilkan Produk Berdasarkan Kategori
-        const topupButton = document.getElementById('topup');
-        const voucherButton = document.getElementById('voucher');
-        const jokiButton = document.getElementById('joki');
-        const tagihanButton = document.getElementById('tagihan');
-
+        // JavaScript untuk Menampilkan Produk Berdasarkan Kategori & efek active
+        const kategoriButtons = document.querySelectorAll('.kategori-btn');
         const topupProducts = document.getElementById('topup-products');
         const voucherProducts = document.getElementById('voucher-products');
         const jokiProducts = document.getElementById('joki-products');
@@ -268,24 +350,16 @@
         hideAllProducts();
         topupProducts.classList.remove('hidden');
 
-        topupButton.addEventListener('click', () => {
-            hideAllProducts();
-            topupProducts.classList.remove('hidden');
-        });
-
-        voucherButton.addEventListener('click', () => {
-            hideAllProducts();
-            voucherProducts.classList.remove('hidden');
-        });
-
-        jokiButton.addEventListener('click', () => {
-            hideAllProducts();
-            jokiProducts.classList.remove('hidden');
-        });
-
-        tagihanButton.addEventListener('click', () => {
-            hideAllProducts();
-            tagihanProducts.classList.remove('hidden');
+        kategoriButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                kategoriButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                hideAllProducts();
+                if(this.id === 'topup') topupProducts.classList.remove('hidden');
+                if(this.id === 'voucher') voucherProducts.classList.remove('hidden');
+                if(this.id === 'joki') jokiProducts.classList.remove('hidden');
+                if(this.id === 'tagihan') tagihanProducts.classList.remove('hidden');
+            });
         });
 
 

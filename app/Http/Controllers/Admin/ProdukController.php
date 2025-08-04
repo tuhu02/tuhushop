@@ -106,7 +106,7 @@ class ProdukController extends Controller
 
         Produk::create($data);
         
-        return redirect()->route('admin.kelolaProduk')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function edit($product)
@@ -173,7 +173,7 @@ class ProdukController extends Controller
         
         $product->delete();
         
-        return redirect()->route('admin.kelolaProduk')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus!');
     }
 
     public function syncDigiflazzDenom(Request $request, $product)

@@ -75,4 +75,29 @@ class AdminDashboardController extends Controller
         
         return $stats;
     }
+
+    public function transactions()
+    {
+        $transactions = Transaction::with(['user', 'game'])
+            ->latest()
+            ->paginate(20);
+        
+        return view('admin.kelolaTransaksi', compact('transactions'));
+    }
+
+    public function withdrawals()
+    {
+        $withdrawals = Withdrawal::with(['reseller'])
+            ->latest()
+            ->paginate(20);
+        
+        return view('admin.withdrawals', compact('withdrawals'));
+    }
+
+    public function statistics()
+    {
+        $stats = $this->getDashboardStats();
+        
+        return view('admin.statistics', compact('stats'));
+    }
 }

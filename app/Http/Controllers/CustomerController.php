@@ -21,56 +21,43 @@ class CustomerController extends Controller
 
     public function checkout(Request $request)
     {
-        // Validasi input
-        $request->validate([
-            'denom_id' => 'required|integer',
-            'email' => 'required|email',
-            'user_id' => 'required|string', // Add validation for user_id
+        // 1. Validasi input untuk memastikan semua data aman dan bertipe string
+        $validatedData = $request->validate([
+            'denom_id'       => 'required|integer|exists:price_lists,id',
+            'email'          => 'required|email',
+            'user_id'        => 'required|string',
+            'server'         => 'nullable|string', // <-- Ini kunci perbaikannya
+            'payment_method' => 'required|string',
         ]);
-
-        // Ambil data denom
-        $denom = PriceList::findOrFail($request->denom_id);
-        $orderId = uniqid('ORDER-');
-
-        // Determine user_id - use authenticated user if available, otherwise null for guest users
-        $userId = Auth::id(); // This will be null for guest users
-
-        // Handle server field safely
-        $serverValue = '';
-        if ($request->has('server')) {
-            $serverInput = $request->input('server'); // Use input() method to get form field
-            if (is_string($serverInput)) {
-                $serverValue = $serverInput;
-            } elseif (is_object($serverInput)) {
-                // If it's an object, try to convert it to string or get a property
-                $serverValue = (string) $serverInput;
-            } else {
-                $serverValue = (string) $serverInput;
-            }
-        }
-
-        // Simpan transaksi (opsional, bisa disesuaikan)
+    
+        // 2. Ambil data denom
+        $denom = PriceList::findOrFail($validatedData['denom_id']);
+        $orderId = 'ORDER-' . uniqid();
+    
+        // 3. Simpan transaksi dengan data yang sudah divalidasi
         $trx = Transaction::create([
-            'order_id' => $orderId,
-            'transaction_code' => 'TRX-' . uniqid(), // Generate unique transaction code
-            'amount' => $denom->harga_jual ?? $denom->harga,
-            'payment_status' => 'pending',
+            'order_id'           => $orderId,
+            'transaction_code'   => 'TRX-' . uniqid(),
+            'amount'             => $denom->harga_jual ?? $denom->harga,
+            'payment_status'     => 'pending',
             'transaction_status' => 'pending',
-            'user_id' => $userId, // This can now be null for guest users
-            'game_id' => $denom->product_id,
-            'user_id_game' => $request->user_id, // Set the game user_id directly
-            'server_id' => $serverValue, // Use the safely handled server value
-            'player_id' => $request->user_id, // Use game user_id as player_id
-            'player_name' => 'Player-' . $request->user_id, // Generate player name
-            'metadata' => [
-                'denom_id' => $denom->id,
-                'email' => $request->email,
-                'user_id_game' => $request->user_id, // Store game user_id in metadata too
-                'server' => $serverValue, // Use the safely handled server value
+            'payment_method'     => $validatedData['payment_method'],
+            'user_id'            => Auth::id(),
+            'game_id'            => $denom->product_id,
+            'user_id_game'       => $validatedData['user_id'],
+            'server_id'          => $validatedData['server'] ?? null, // <-- Menggunakan data yang sudah aman
+            'player_id'          => $validatedData['user_id'],
+            'player_name'        => 'Player-' . $validatedData['user_id'],
+            'metadata'           => [
+                'denom_id'       => $denom->id,
+                'email'          => $validatedData['email'],
+                'user_id_game'   => $validatedData['user_id'],
+                'server'         => $validatedData['server'] ?? null, // <-- Menggunakan data yang sudah aman
+                'payment_method' => $validatedData['payment_method'],
             ],
         ]);
-
-        // Redirect ke halaman invoice
+    
+        // 4. Redirect ke halaman invoice
         return redirect()->route('invoice', ['orderId' => $orderId]);
     }
 
@@ -79,6 +66,12 @@ class CustomerController extends Controller
         $trx = Transaction::where('order_id', $orderId)->firstOrFail();
         $snapToken = null;
         $midtransDetail = null;
+
+        // Ambil data denom yang dipilih
+        $selectedDenom = null;
+        if (isset($trx->metadata['denom_id'])) {
+            $selectedDenom = PriceList::find($trx->metadata['denom_id']);
+        }
 
         if ($trx->payment_status === 'pending') {
             try {
@@ -107,7 +100,7 @@ class CustomerController extends Controller
             $midtransDetail = null;
         }
 
-        return view('customer.invoice', compact('trx', 'snapToken', 'midtransDetail'));
+        return view('customer.invoice', compact('trx', 'snapToken', 'midtransDetail', 'selectedDenom'));
     }
 
     public function payment($orderId)

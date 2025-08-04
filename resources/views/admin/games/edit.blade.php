@@ -13,7 +13,7 @@
         </div>
     @endif
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-lg">
-        <form action="{{ route('admin.products.update', $product->product_id) }}" method="POST">
+        <form action="{{ route('admin.games.update', $product->product_id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="mb-4">
@@ -34,7 +34,7 @@
             </div>
             <div class="flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('admin.kelolaGame') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('admin.games.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

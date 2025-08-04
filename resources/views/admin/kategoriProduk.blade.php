@@ -17,7 +17,7 @@
         <!-- Add Category Form -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Tambah Kategori Baru</h2>
-            <form action="{{ route('admin.kategori.store') }}" method="POST" class="flex gap-4">
+            <form action="{{ route('admin.kategori-produk.store') }}" method="POST" class="flex gap-4">
                 @csrf
                 <div class="flex-1">
                     <input type="text" 
@@ -75,7 +75,7 @@
                                         {{ $kategori->created_at->format('d M Y H:i') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" 
+                                        <form action="{{ route('admin.kategori-produk.destroy', $kategori->id) }}" 
                                               method="POST" 
                                               onsubmit="return confirm('Yakin ingin menghapus kategori ini? Semua produk dalam kategori ini akan kehilangan kategorinya.')"
                                               class="inline">

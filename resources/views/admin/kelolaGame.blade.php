@@ -30,16 +30,16 @@
                     <td class="py-2 font-semibold text-gray-900">{{ $game->product_name }}</td>
                     <td>{{ $game->developer }}</td>
                     <td>
-                        <form action="{{ route('admin.products.togglePopular', $game->product_id) }}" method="POST">
+                        <form action="{{ route('admin.games.togglePopular', $game->product_id) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <input type="checkbox" name="is_popular" onchange="this.form.submit()" {{ $game->is_popular ? 'checked' : '' }}>
                         </form>
                     </td>
                     <td class="flex gap-2 items-center">
-                        <a href="{{ route('admin.products.edit', $game->product_id) }}" 
+                        <a href="{{ route('admin.games.edit', $game->product_id) }}" 
                            class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">Edit</a>
-                        <form action="{{ route('admin.products.destroy', $game->product_id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.games.destroy', $game->product_id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 

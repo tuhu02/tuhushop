@@ -7,26 +7,154 @@
     @vite('resources/css/app.css')
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <style>
-        body { background: #23272f; }
-        .invoice-main { background: #181824; border-radius: 1.5rem; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18); max-width: 900px; margin: 2.5rem auto; padding: 2.5rem 2rem 2rem 2rem; color: #fff; }
-        .invoice-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.2rem; }
-        .invoice-header img { width: 60px; height: 60px; border-radius: 1rem; object-fit: cover; }
-        .invoice-title { font-size: 1.7rem; font-weight: 800; color: #facc15; }
-        .invoice-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-        .invoice-tab { flex: 1; text-align: center; padding: 0.7rem 0; border-radius: 0.7rem 0.7rem 0 0; font-weight: 700; background: #23272f; color: #facc15; border-bottom: 3px solid transparent; transition: background 0.2s, color 0.2s; }
-        .invoice-tab.active { background: #facc15; color: #23272f; border-bottom: 3px solid #facc15; }
-        .invoice-row { display: flex; gap: 2rem; flex-wrap: wrap; }
-        .invoice-col { flex: 1 1 320px; background: #23272f; border-radius: 1rem; padding: 1.5rem 1.2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px 0 rgba(31,38,135,0.10); }
-        .invoice-label { color: #facc15; font-weight: 600; }
-        .invoice-value { color: #fff; font-weight: 600; }
-        .invoice-total { color: #4ade80; font-size: 1.2rem; font-weight: 800; }
-        .invoice-btn { background: #facc15; color: #23272f; font-weight: 700; padding: 0.7rem 2.2rem; border-radius: 0.7rem; font-size: 1.1rem; box-shadow: 0 2px 8px 0 rgba(250,204,21,0.10); transition: background 0.2s, transform 0.2s; margin-top: 1.2rem; }
-        .invoice-btn:hover { background: #fde047; color: #181824; transform: translateY(-2px) scale(1.03); }
-        .qr-box { background: #fff; border-radius: 1rem; padding: 1.2rem; display: flex; flex-direction: column; align-items: center; margin-top: 1.2rem; }
-        .qr-box img { width: 180px; height: 180px; }
-        .qr-label { color: #23272f; font-weight: 700; margin-top: 0.7rem; }
-        .countdown { background: #facc15; color: #23272f; font-weight: 700; border-radius: 0.5rem; padding: 0.3rem 1.2rem; font-size: 1.1rem; margin-left: 1rem; }
-        @media (max-width: 900px) { .invoice-row { flex-direction: column; gap: 0; } }
+        /* Global scaling to match 80% zoom preference */
+        html {
+            font-size: 80%; /* This will scale everything down to match 80% zoom */
+        }
+        
+        /* Ensure body maintains proper scaling */
+        body { 
+            background: #23272f; 
+            font-size: 1.25rem; /* Compensate for the 80% html scaling */
+        }
+        
+        /* Invoice specific adjustments */
+        .invoice-main { 
+            background: #181824; 
+            border-radius: 1.5rem; 
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18); 
+            max-width: 900px; 
+            margin: 2.5rem auto; 
+            padding: 2.5rem 2rem 2rem 2rem; 
+            color: #fff; 
+        }
+        .invoice-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 1.2rem; 
+            margin-bottom: 1.2rem; 
+        }
+        .invoice-header img { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 1rem; 
+            object-fit: cover; 
+        }
+        .invoice-title { 
+            font-size: 1.7rem; 
+            font-weight: 800; 
+            color: #facc15; 
+        }
+        .invoice-tabs { 
+            display: flex; 
+            gap: 0.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+        .invoice-tab { 
+            flex: 1; 
+            text-align: center; 
+            padding: 0.7rem 0; 
+            border-radius: 0.7rem 0.7rem 0 0; 
+            font-weight: 700; 
+            background: #23272f; 
+            color: #facc15; 
+            border-bottom: 3px solid transparent; 
+            transition: background 0.2s, color 0.2s; 
+        }
+        .invoice-tab.active { 
+            background: #facc15; 
+            color: #23272f; 
+            border-bottom: 3px solid #facc15; 
+        }
+        .invoice-row { 
+            display: flex; 
+            gap: 2rem; 
+            flex-wrap: wrap; 
+        }
+        .invoice-col { 
+            flex: 1 1 320px; 
+            background: #23272f; 
+            border-radius: 1rem; 
+            padding: 1.5rem 1.2rem; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 2px 8px 0 rgba(31,38,135,0.10); 
+        }
+        .invoice-label { 
+            color: #facc15; 
+            font-weight: 600; 
+        }
+        .invoice-value { 
+            color: #fff; 
+            font-weight: 600; 
+        }
+        .invoice-total { 
+            color: #4ade80; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+        }
+        .invoice-btn { 
+            background: #facc15; 
+            color: #23272f; 
+            font-weight: 700; 
+            padding: 0.7rem 2.2rem; 
+            border-radius: 0.7rem; 
+            font-size: 1.1rem; 
+            box-shadow: 0 2px 8px 0 rgba(250,204,21,0.10); 
+            transition: background 0.2s, transform 0.2s; 
+            margin-top: 1.2rem; 
+        }
+        .invoice-btn:hover { 
+            background: #fde047; 
+            color: #181824; 
+            transform: translateY(-2px) scale(1.03); 
+        }
+        .qr-box { 
+            background: #fff; 
+            border-radius: 1rem; 
+            padding: 1.2rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 1.2rem; 
+        }
+        .qr-box img { 
+            width: 180px; 
+            height: 180px; 
+        }
+        .qr-label { 
+            color: #23272f; 
+            font-weight: 700; 
+            margin-top: 0.7rem; 
+        }
+        .countdown { 
+            background: #facc15; 
+            color: #23272f; 
+            font-weight: 700; 
+            border-radius: 0.5rem; 
+            padding: 0.3rem 1.2rem; 
+            font-size: 1.1rem; 
+            margin-left: 1rem; 
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 900px) { 
+            .invoice-row { 
+                flex-direction: column; 
+                gap: 0; 
+            } 
+        }
+        
+        @media (max-width: 768px) {
+            html {
+                font-size: 85%; /* Slightly larger on mobile */
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            html {
+                font-size: 75%; /* Slightly smaller on large screens */
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen overflow-x-hidden pt-20">
@@ -56,21 +184,63 @@
                     <img src="{{ $trx->game->thumbnail_url ? asset('image/' . $trx->game->thumbnail_url) : asset('image/logo-baru.png') }}" alt="Thumb" style="width:56px;height:56px;border-radius:0.7rem;object-fit:cover;">
                     <div>
                         <div class="font-bold text-lg">{{ $trx->game->product_name ?? '-' }}</div>
-                        <div class="text-gray-300 text-sm">Mobile Legends Indonesia</div>
+                        <div class="text-gray-300 text-sm">
+                            @if($selectedDenom)
+                                {{ $selectedDenom->nama_produk }} - {{ $trx->game->product_name ?? 'Indonesia' }}
+                            @else
+                                {{ $trx->game->product_name ?? 'Indonesia' }}
+                            @endif
+                        </div>
                     </div>
                 </div>
                 <div class="mb-2"><span class="invoice-label">User Id:</span> <span class="invoice-value">{{ $trx->user_id_game }}</span></div>
                 <div class="mb-2"><span class="invoice-label">Server:</span> <span class="invoice-value">{{ $trx->server_id }}</span></div>
+                <div class="mb-2"><span class="invoice-label">Nick:</span> <span class="invoice-value">{{ $trx->user_id_game }}</span></div>
                 <div class="mb-2"><span class="invoice-label">Email:</span> <span class="invoice-value">{{ $trx->metadata['email'] ?? '-' }}</span></div>
-                <div class="mb-2"><span class="invoice-label">Layanan:</span> <span class="invoice-value">{{ $trx->game->product_name ?? '-' }}</span></div>
+                <div class="mb-2"><span class="invoice-label">Layanan:</span> <span class="invoice-value">
+                    @if($selectedDenom)
+                        {{ $selectedDenom->nama_produk }}
+                        @if($selectedDenom->denom)
+                            ({{ $selectedDenom->denom }})
+                        @endif
+                        @if(str_contains(strtolower($selectedDenom->nama_produk), 'bonus') || str_contains(strtolower($selectedDenom->nama_produk), '+'))
+                            <span class="text-green-400 text-xs">+ Bonus</span>
+                        @endif
+                    @else
+                        {{ $trx->game->product_name ?? '-' }}
+                    @endif
+                </span></div>
                 <div class="mb-2"><span class="invoice-label">Data:</span> <span class="invoice-value">{{ $trx->user_id_game }}{{ $trx->server_id ? '|' . $trx->server_id : '' }}</span></div>
             </div>
             <div class="invoice-col">
-                <div class="mb-2"><span class="invoice-label">Metode Pembayaran:</span> <span class="invoice-value">{{ strtoupper($midtransDetail->payment_type ?? ($trx->payment_method ?? 'QRIS')) }}</span></div>
-                <div class="mb-2"><span class="invoice-label">Harga:</span> <span class="invoice-value">Rp {{ number_format($trx->amount, 0, ',', '.') }}</span></div>
-                <div class="mb-2"><span class="invoice-label">Fee:</span> <span class="invoice-value">Rp 0</span></div>
+                <div class="mb-2"><span class="invoice-label">Metode Pembayaran:</span> 
+                    <span class="invoice-value flex items-center">
+                        @php
+                            $paymentMethod = strtoupper($midtransDetail->payment_type ?? ($trx->payment_method ?? $trx->metadata['payment_method'] ?? 'QRIS'));
+                        @endphp
+                        @if(str_contains(strtolower($paymentMethod), 'qris'))
+                            <img src="{{ asset('image/qris.png') }}" alt="QRIS" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'dana'))
+                            <img src="{{ asset('image/dana.png') }}" alt="DANA" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'gopay'))
+                            <img src="{{ asset('image/gopay.png') }}" alt="GoPay" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'shopeepay'))
+                            <img src="{{ asset('image/shopeepay.png') }}" alt="ShopeePay" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'ovo'))
+                            <img src="{{ asset('image/ovo.png') }}" alt="OVO" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'indomaret'))
+                            <img src="{{ asset('image/indomaret.png') }}" alt="Indomaret" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @elseif(str_contains(strtolower($paymentMethod), 'alfamart'))
+                            <img src="{{ asset('image/alfamart.png') }}" alt="Alfamart" class="h-4 w-auto max-w-full mr-2 object-contain">
+                        @endif
+                        {{ $paymentMethod }}
+                    </span>
+                </div>
+                <div class="mb-2"><span class="invoice-label">Harga:</span> <span class="invoice-value">Rp {{ number_format($selectedDenom ? ($selectedDenom->harga_jual ?? $selectedDenom->harga) : $trx->amount, 0, ',', '.') }}</span></div>
+                <div class="mb-2"><span class="invoice-label">Potongan Harga:</span> <span class="invoice-value text-green-400">Rp 0</span></div>
                 <div class="mb-2"><span class="invoice-label">Total Bayar:</span> <span class="invoice-total">Rp {{ number_format($trx->amount, 0, ',', '.') }}</span></div>
-                <div class="mb-2"><span class="invoice-label">Kontak:</span> <span class="invoice-value">{{ $trx->metadata['email'] ?? '-' }}</span></div>
+                <div class="mb-2"><span class="invoice-label text-xs text-gray-400">*Harga sudah termasuk pajak</span></div>
+                <div class="mb-2"><span class="invoice-label">Kontak:</span> <span class="invoice-value">{{ $trx->metadata['email'] ?? '085171743947' }}</span></div>
                 @if($midtransDetail)
                     @if($midtransDetail->payment_type == 'qris')
                         <div class="qr-box">
@@ -112,6 +282,46 @@
                 <!-- Instruksi pembayaran dinamis sudah tampil di atas (VA, QRIS, retail, dsb) -->
             @endif
         </div>
+        
+        <!-- Security notice -->
+        <div class="flex items-center justify-center mt-6">
+            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+            <span class="text-green-400 text-sm">Pembayaran anda terjamin aman</span>
+        </div>
     </div>
+    
+    <!-- Countdown Timer Script -->
+    <script>
+        // Set countdown time (20 minutes = 1200 seconds)
+        let timeLeft = 1200;
+        
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                countdownElement.textContent = 
+                    (minutes < 10 ? '0' : '') + minutes + ':' + 
+                    (seconds < 10 ? '0' : '') + seconds;
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                if (countdownElement) {
+                    countdownElement.textContent = '00:00';
+                    countdownElement.classList.add('text-red-400');
+                }
+            }
+            
+            timeLeft--;
+        }
+        
+        // Update countdown every second
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        
+        // Initial call
+        updateCountdown();
+    </script>
 </body>
 </html> 

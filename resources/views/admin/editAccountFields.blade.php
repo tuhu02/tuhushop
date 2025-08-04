@@ -18,7 +18,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <form action="{{ route('admin.admin.account_fields.update', $product->product_id) }}" method="POST">
+        <form action="{{ route('admin.produk.account-fields.update', $product->product_id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="mb-4">

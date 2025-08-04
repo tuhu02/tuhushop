@@ -30,13 +30,16 @@ class Transaction extends Model
         'reseller_id',
         'ip_address',
         'user_agent',
-        'metadata'
+        'metadata',
+        'fulfillment_status',
+        'fulfillment_response',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'metadata' => 'array',
+        'fulfillment_response' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -54,6 +57,20 @@ class Transaction extends Model
     const PAYMENT_PAID = 'paid';
     const PAYMENT_EXPIRED = 'expired';
     const PAYMENT_FAILED = 'failed';
+
+    //=================================
+    // RELASI-RELASI MODEL
+    //=================================
+
+    /**
+     * Get the PriceList item (denom) associated with the transaction.
+     * This is crucial for the WebhookController to order from DigiFlazz.
+     */
+    public function priceList(): BelongsTo
+    {
+        // Mengambil denom_id dari dalam kolom JSON 'metadata'
+        return $this->belongsTo(PriceList::class, 'metadata->denom_id', 'id');
+    }
 
     /**
      * Get the user that owns the transaction.
@@ -86,6 +103,10 @@ class Transaction extends Model
     {
         return $this->belongsTo(Produk::class, 'product_id');
     }
+
+    //=================================
+    // FUNGSI HELPER & ATTRIBUTE
+    //=================================
 
     /**
      * Generate unique order ID.
@@ -147,6 +168,10 @@ class Transaction extends Model
         };
     }
 
+    //=================================
+    // SCOPE-SCOPE QUERY
+    //=================================
+
     /**
      * Scope for successful transactions.
      */
@@ -177,8 +202,12 @@ class Transaction extends Model
     public function scopeThisMonth($query)
     {
         return $query->whereMonth('created_at', now()->month)
-                    ->whereYear('created_at', now()->year);
+                     ->whereYear('created_at', now()->year);
     }
+
+    //=================================
+    // FUNGSI STATIK UNTUK STATISTIK
+    //=================================
 
     /**
      * Get total revenue for a period.
@@ -208,4 +237,4 @@ class Transaction extends Model
             'this_month_revenue' => self::successful()->thisMonth()->sum('amount'),
         ];
     }
-} 
+}

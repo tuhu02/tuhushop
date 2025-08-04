@@ -9,7 +9,7 @@ class KategoriDenom extends Model
 {
     use HasFactory;
     protected $table = 'kategori_denoms';
-    protected $fillable = ['nama', 'slug', 'product_id'];
+    protected $fillable = ['nama', 'slug', 'product_id', 'sort_order'];
 
     public function product()
     {

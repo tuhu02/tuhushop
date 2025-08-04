@@ -56,8 +56,8 @@
                     <i class="fas fa-edit w-4 h-4 mr-2"></i>
                     Kelola Produk
                 </a>
-                <a href="{{ route('admin.kategori.index') }}" 
-                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('admin.kategori.*') ? 'bg-teal-50 text-teal-700' : '' }}">
+                <a href="{{ route('admin.kategori-produk.index') }}" 
+                   class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('admin.kategori-produk.*') ? 'bg-teal-50 text-teal-700' : '' }}">
                     <i class="fas fa-tags w-4 h-4 mr-2"></i>
                     Kelola Kategori
                 </a>

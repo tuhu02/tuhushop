@@ -16,7 +16,7 @@
                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     <i class="fas fa-edit mr-2"></i>Edit Produk
                 </a>
-                <a href="{{ route('admin.admin.account_fields.edit', $product->product_id) }}" 
+                <a href="{{ route('admin.produk.account-fields', $product->product_id) }}" 
                    class="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700">
                     <i class="fas fa-list-alt mr-2"></i>Edit Struktur Form Akun
                 </a>
@@ -113,7 +113,7 @@
 
                     <!-- Sync Digiflazz Button -->
                     @if($product->kode_digiflazz)
-                        <form action="{{ route('admin.produk.syncDigiflazz', $product->product_id) }}" 
+                        <form action="{{ route('admin.produk.sync-digiflazz', $product->product_id) }}" 
                               method="POST" 
                               class="inline-block">
                             @csrf

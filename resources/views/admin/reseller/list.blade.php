@@ -21,7 +21,7 @@
                 </select>
                 <button type="submit" class="bg-aqua text-white px-4 py-2 rounded">Cari</button>
             </form>
-            <a href="{{ route('admin.resellers') }}" class="text-aqua hover:underline">Kembali ke Dashboard Admin</a>
+            <a href="{{ route('admin.resellers.index') }}" class="text-aqua hover:underline">Kembali ke Dashboard Admin</a>
         </div>
         <div class="bg-gray-800 rounded-lg p-6 overflow-x-auto">
             <table class="w-full text-left text-gray-300">

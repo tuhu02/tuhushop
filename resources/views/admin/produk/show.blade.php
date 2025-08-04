@@ -17,7 +17,7 @@
                 <p class="text-gray-600 mb-2">Deskripsi: {{ $product->description ?? '-' }}</p>
                 <div class="mt-4">
                     <a href="{{ route('admin.produk.edit', $product->product_id) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2">Edit</a>
-                    <a href="{{ route('admin.kelolaProduk') }}" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Kembali</a>
+                    <a href="{{ route('admin.produk.index') }}" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Kembali</a>
                 </div>
             </div>
         </div>

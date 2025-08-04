@@ -1,0 +1,128 @@
+/* Global scaling to match 80% zoom preference */
+html {
+    font-size: 80%;
+    /* This will scale everything down to match 80% zoom */
+}
+
+/* Ensure body maintains proper scaling */
+body {
+    font-size: 1.25rem;
+    /* Compensate for the 80% html scaling */
+}
+
+/* Specific adjustments for better proportions */
+.text-2xl {
+    font-size: 1.5rem !important;
+}
+
+.text-3xl {
+    font-size: 1.875rem !important;
+}
+
+.text-4xl {
+    font-size: 2.25rem !important;
+}
+
+.text-lg {
+    font-size: 1.125rem !important;
+}
+
+.text-base {
+    font-size: 1rem !important;
+}
+
+.text-sm {
+    font-size: 0.875rem !important;
+}
+
+/* Payment method cards adjustments */
+.payment-option {
+    padding: 0.75rem !important;
+    min-height: 80px !important;
+}
+
+/* Denom cards adjustments */
+.denom-card {
+    padding: 1rem !important;
+    min-height: 100px !important;
+}
+
+/* Game cards adjustments */
+.game-item {
+    min-height: 120px !important;
+}
+
+/* Carousel adjustments */
+.carousel-container {
+    max-height: 300px !important;
+}
+
+/* Header and navigation adjustments */
+.nav-link {
+    font-size: 0.9rem !important;
+}
+
+/* Button adjustments */
+.btn-primary {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+}
+
+/* Modal adjustments */
+.modal-content {
+    max-width: 90% !important;
+    margin: 1rem auto !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    html {
+        font-size: 85%;
+        /* Slightly larger on mobile */
+    }
+}
+
+@media (min-width: 1200px) {
+    html {
+        font-size: 75%;
+        /* Slightly smaller on large screens */
+    }
+}
+
+/* Additional utility classes for consistent spacing */
+.scale-80 {
+    transform: scale(0.8);
+    transform-origin: top left;
+}
+
+.compact-padding {
+    padding: 0.75rem !important;
+}
+
+.compact-margin {
+    margin: 0.75rem !important;
+}
+
+/* Form elements adjustments */
+input,
+select,
+textarea {
+    font-size: 0.9rem !important;
+}
+
+/* Table adjustments */
+table {
+    font-size: 0.9rem !important;
+}
+
+/* Card adjustments */
+.card {
+    padding: 1rem !important;
+}
+
+/* Icon adjustments */
+.fas,
+.fab,
+.far {
+    font-size: 0.9em !important;
+}

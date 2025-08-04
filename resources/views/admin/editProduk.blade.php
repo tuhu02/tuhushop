@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Edit Produk</h1>
             <div class="flex gap-2">
-                <a href="{{ route('admin.admin.account_fields.edit', $product->product_id) }}" 
+                <a href="{{ route('admin.produk.account-fields', $product->product_id) }}" 
                    class="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700">
                     <i class="fas fa-list-alt mr-2"></i>Edit Struktur Form Akun
                 </a>

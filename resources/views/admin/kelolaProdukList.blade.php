@@ -529,7 +529,7 @@
                 console.log('Order to save:', order);
 
                 // Send to server
-                fetch('{{ route("admin.produk.updateOrder") }}', {
+                fetch('{{ route("admin.produk.update-order") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

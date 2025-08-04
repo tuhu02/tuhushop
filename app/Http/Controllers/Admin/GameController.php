@@ -49,7 +49,7 @@ class GameController extends Controller
 
         $product->update($data);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('admin.games.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
     public function destroy(Produk $product)
@@ -61,7 +61,7 @@ class GameController extends Controller
 
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('admin.games.index')->with('success', 'Produk berhasil dihapus!');
     }
 
     public function togglePopular(Produk $product)
@@ -69,6 +69,6 @@ class GameController extends Controller
         $product->update(['is_popular' => !$product->is_popular]);
         
         $status = $product->is_popular ? 'ditandai sebagai populer' : 'dihapus dari populer';
-        return redirect()->route('admin.products.index')->with('success', "Produk berhasil {$status}!");
+        return redirect()->route('admin.games.index')->with('success', "Produk berhasil {$status}!");
     }
 } 
