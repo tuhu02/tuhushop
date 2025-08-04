@@ -102,13 +102,64 @@
     </style>
 </head>
 <body>
-    
-    <x-navbar :links="[ 
-        ['url' => '/home', 'label' => 'Home'], 
-        ['url' => '/topup', 'label' => 'Topup'], 
-        ['url' => '/cekTransaksi', 'label' => 'Cek Transaksi'], 
-        ['url' => '/kontak', 'label' => 'kontak'], 
-    ]" />
+    <nav class="bg-[#181820] px-6 py-4 sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center w-full gap-6">
+            <div class="flex-shrink-0">
+                <a href="/" class="flex items-center">
+                    <img src="/image/logo-baru.png" alt="Logo Tuhu Shop" class="h-8 w-8 object-contain">
+                </a>
+            </div>
+
+            <div class="flex-1 relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <input type="text" class="w-full bg-[#2D2D2D] text-white rounded-lg px-4 py-2.5 pl-11 focus:outline-none focus:ring-2 focus:ring-[#e5c07b]" placeholder="Cari Game atau Voucher">
+            </div>
+
+            <div class="flex-shrink-0">
+                <div class="flex items-center bg-[#2D2D2D] rounded-lg px-3 py-1.5 gap-2 border border-gray-700">
+                    <span class="inline-block w-6 h-4" style="background: linear-gradient(to bottom, #FF0000 50%, #FFFFFF 50%);"></span>
+                    <span class="text-white font-semibold text-sm">ID / IDR</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full h-px bg-gray-700 my-3"></div>
+
+        <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-8 text-gray-300">
+                <a href="/topup" class="flex items-center gap-2 text-white font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    Topup
+                </a>
+                <a href="/cekTransaksi" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                    Cek Transaksi
+                </a>
+                <a href="/leaderboard" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    Leaderboard
+                </a>
+                <a href="/kalkulator" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                    Kalkulator
+                </a>
+            </div>
+            <div class="flex items-center gap-8 text-gray-300">
+                <a href="/login" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                    Masuk
+                </a>
+                <a href="/register" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                    Daftar
+                </a>
+            </div>
+        </div>
+    </nav>
 
     @if(session('success'))
         <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
@@ -151,7 +202,7 @@
 
         <!-- Bagian POPULER (Tetap Seperti Semula) -->
         <h1 class="text-white font-bold text-2xl mb-3 mt-5">POPULER</h1>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-4 gap-4">
             @foreach($populerGames as $game)
             <a href="{{ route('produk.public', $game->product_id) }}" class="block">
                 <div class="p-3 rounded-lg bg-charcoal flex items-center hover:bg-aqua hover:shadow-lg transition duration-200">
@@ -234,7 +285,7 @@
                 <div class="w-full lg:w-6/12 px-4">
                     <h4 class="text-2xl fonat-semibold text-blueGray-700 font-bold">TUHU SHOP</h4>
                     <h5 class="text-sm mt-0 mb-2 text-blueGray-600">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Saepe non, deserunt ipsum voluptatem sunt veniam consequatur delectus explicabo libero omnis vel nihil ipsam ex fugit aliquam quaerat impedit? Dignissimos, architecto.
+                        Tuhu Shop adalah tempat top up games yang aman, murah dan terpercaya. Proses cepat 1-3 Detik. Open 24 jam. Payment terlengkap. Jika ada kendala silahkan klik logo CS pada kanan bawah di website ini.
                     </h5>
                     <div class="mt-6 lg:mb-0 mb-6">
                         <button class="bg-white text-lightBlue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
