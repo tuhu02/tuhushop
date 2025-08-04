@@ -131,29 +131,29 @@
 
         <div class="flex items-center justify-between w-full">
             <div class="flex items-center gap-8 text-gray-300">
-                <a href="/topup" class="flex items-center gap-2 text-white font-bold">
+                <a href="/topup" class="flex items-center gap-2 text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                     Topup
                 </a>
-                <a href="/cekTransaksi" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                <a href="/cekTransaksi" class="flex items-center gap-2 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                     Cek Transaksi
                 </a>
-                <a href="/leaderboard" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                <a href="/leaderboard" class="flex items-center gap-2 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                     Leaderboard
                 </a>
-                <a href="/kalkulator" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                <a href="/kalkulator" class="flex items-center gap-2 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
                     Kalkulator
                 </a>
             </div>
             <div class="flex items-center gap-8 text-gray-300">
-                <a href="/login" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                <a href="/login" class="flex items-center gap-2 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
                     Masuk
                 </a>
-                <a href="/register" class="flex items-center gap-2 font-semibold hover:text-white transition-colors">
+                <a href="/register" class="flex items-center gap-2 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                     Daftar
                 </a>
@@ -167,7 +167,7 @@
         </div>
     @endif
 
-    <div class="container mx-auto mt-20 p-5">
+    <div class="container mx-auto mt-10 p-5">
         <!-- Carousel Section -->
         <div class="relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-lg">
             <!-- Slides -->
