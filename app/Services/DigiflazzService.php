@@ -23,6 +23,81 @@ class DigiflazzService
     }
 
     /**
+     * Make top-up request to Digiflazz
+     * @param array $data Request data
+     * @return array Response with success status
+     */
+    public function makeTopUpRequest(array $data)
+    {
+        try {
+            Log::info('Making top-up request to Digiflazz', $data);
+
+            $response = Http::post($this->baseUrl . '/transaction', $data);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                
+                if (isset($responseData['data'])) {
+                    $status = strtolower($responseData['data']['status'] ?? '');
+                    
+                    if (in_array($status, ['sukses', 'pending'])) {
+                        Log::info('Top-up request successful', [
+                            'ref_id' => $data['ref_id'],
+                            'status' => $status,
+                            'response' => $responseData['data']
+                        ]);
+                        
+                        return [
+                            'success' => true,
+                            'data' => $responseData['data']
+                        ];
+                    } else {
+                        Log::error('Top-up request failed', [
+                            'ref_id' => $data['ref_id'],
+                            'status' => $status,
+                            'response' => $responseData['data']
+                        ]);
+                        
+                        return [
+                            'success' => false,
+                            'message' => $responseData['data']['message'] ?? 'Transaction failed'
+                        ];
+                    }
+                } else {
+                    Log::error('Invalid response format from Digiflazz', [
+                        'response' => $responseData
+                    ]);
+                    
+                    return [
+                        'success' => false,
+                        'message' => 'Invalid response from Digiflazz'
+                    ];
+                }
+            } else {
+                Log::error('HTTP request failed to Digiflazz', [
+                    'status_code' => $response->status(),
+                    'response' => $response->body()
+                ]);
+                
+                return [
+                    'success' => false,
+                    'message' => 'Failed to connect to Digiflazz'
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception in makeTopUpRequest', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => 'Exception: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Membuat signature key yang dinamis untuk setiap request.
      * @param string $refId ID referensi unik untuk request tersebut.
      * @return string

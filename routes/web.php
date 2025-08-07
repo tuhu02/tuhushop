@@ -28,6 +28,7 @@ Route::get('/invoice/{orderId}', [CustomerController::class, 'invoice'])->name('
 Route::get('/payment/{orderId}', [CustomerController::class, 'payment'])->name('payment');
 Route::get('/payment/success/{orderId}', [CustomerController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('/payment/failed/{orderId}', [CustomerController::class, 'paymentFailed'])->name('payment.failed');
+Route::get('/check-digiflazz-status/{orderId}', [CustomerController::class, 'checkDigiflazzStatus'])->name('check.digiflazz.status');
 
 // Reseller Routes
 Route::prefix('reseller')->name('reseller.')->group(function () {
@@ -106,21 +107,10 @@ Route::get('/produk/{product_id}', [ProdukController::class, 'showPublic'])->nam
 // Route pembelian produk Digiflazz
 Route::post('/produk/{product_id}/buy', [ProdukController::class, 'buyDigiflazz'])->name('produk.buy');
 
-// Route untuk testing koneksi API Digiflazz
-Route::get('/test-digiflazz', function () {
-    $username = config('services.digiflazz.username');
-    $apiKey = config('services.digiflazz.api_key');
-    $baseUrl = config('services.digiflazz.base_url');
-    $sign = md5($username . $apiKey . 'pricelist');
-
-    $response = Http::post($baseUrl . '/price-list', [
-        'cmd' => 'prepaid',
-        'username' => $username,
-        'sign' => $sign,
-    ]);
-
-    return $response->json();
-});
+// Routes untuk Midtrans dan Invoice
+Route::post('/midtrans/notification', [ProdukController::class, 'handlePaymentNotification']);
+Route::get('/payment/{ref_id}', [ProdukController::class, 'showPayment'])->name('payment.show');
+Route::get('/transaction/{ref_id}/invoice', [ProdukController::class, 'showInvoice'])->name('transaction.invoice');
 
 // Route untuk pengecekan nickname MLBB
 Route::post('/api/mlbb-nickname', [ProdukController::class, 'cekMLBBUsername']);

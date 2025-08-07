@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\TransactionStatusNotification;
+use App\Models\PriceList;
 
 class ProcessTransaction implements ShouldQueue
 {
@@ -48,10 +49,21 @@ class ProcessTransaction implements ShouldQueue
                 'transaction_status' => Transaction::STATUS_PROCESSING
             ]);
 
+            // Get denom data from metadata
+            $denomId = $this->transaction->metadata['denom_id'] ?? null;
+            if (!$denomId) {
+                throw new \Exception('Denom ID not found in transaction metadata');
+            }
+
+            $denom = PriceList::find($denomId);
+            if (!$denom || !$denom->kode_digiflazz) {
+                throw new \Exception('SKU Digiflazz not found for denom ID: ' . $denomId);
+            }
+
             // Prepare data for Digiflazz
             $digiflazzData = [
                 'username' => config('services.digiflazz.username'),
-                'buyer_sku_code' => $this->transaction->game->digiflazz_id,
+                'buyer_sku_code' => $denom->kode_digiflazz,
                 'customer_no' => $this->transaction->user_id_game,
                 'ref_id' => $this->transaction->order_id,
                 'sign' => md5(config('services.digiflazz.username') . config('services.digiflazz.api_key') . $this->transaction->order_id),
@@ -132,8 +144,16 @@ class ProcessTransaction implements ShouldQueue
     protected function sendNotification(string $status): void
     {
         try {
-            $notification = new TransactionStatusNotification($this->transaction, $status);
-            $this->transaction->user->notify($notification);
+            // Check if user exists before sending notification
+            if ($this->transaction->user) {
+                $notification = new TransactionStatusNotification($this->transaction, $status);
+                $this->transaction->user->notify($notification);
+            } else {
+                Log::warning('User not found for notification', [
+                    'order_id' => $this->transaction->order_id,
+                    'user_id' => $this->transaction->user_id
+                ]);
+            }
         } catch (\Exception $e) {
             Log::error('Failed to send notification', [
                 'order_id' => $this->transaction->order_id,

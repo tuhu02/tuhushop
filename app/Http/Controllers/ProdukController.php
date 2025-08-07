@@ -15,42 +15,170 @@ class ProdukController extends Controller
      */
     public function buyDigiflazz(Request $request, $product_id)
     {
-        $username = config('services.digiflazz.username');
-        $apiKey = config('services.digiflazz.api_key');
-        $baseUrl = config('services.digiflazz.base_url');
+        try {
+            // Ambil detail produk untuk identifikasi tipe
+            $product = Produk::where('product_id', $product_id)->firstOrFail();
+            $username = config('services.digiflazz.username');
+            $apiKey = config('services.digiflazz.api_key');
+            $baseUrl = config('services.digiflazz.base_url');
 
-        // Validasi input
-        $request->validate([
-            'buyer_sku_code' => 'required|string',
-            'customer_no' => 'required|string',
-        ]);
+            // Validasi input dasar
+            $request->validate([
+                'buyer_sku_code' => 'required|string',
+            ]);
 
-        $buyerSku = $request->input('buyer_sku_code');
-        $customerNo = $request->input('customer_no');
-        $refId = uniqid('trx_');
-        $sign = md5($username . $apiKey . $refId);
+            $buyerSku = $request->input('buyer_sku_code');
+            $refId = $request->input('ref_id') ?? uniqid('trx_');
+            $testing = $request->input('testing', false);
+            $sign = md5($username . $apiKey . $refId);
 
-        // Kirim request ke Digiflazz
-        $response = Http::post($baseUrl . '/transaction', [
-            'username' => $username,
-            'buyer_sku_code' => $buyerSku,
-            'customer_no' => $customerNo,
-            'ref_id' => $refId,
-            'sign' => $sign,
-        ]);
+            // Cek apakah ini produk MLBB dari nama atau kode produk
+            $isMLBB = stripos($product->product_name, 'mobile legend') !== false || 
+                     stripos($product->product_name, 'mlbb') !== false ||
+                     stripos($buyerSku, 'mlbb') !== false;
 
-        // Log respons untuk debugging
-        \Log::info('Digiflazz Buy Response', [
-            'request' => [
+            if ($isMLBB) {
+                // Validasi khusus untuk MLBB
+                $request->validate([
+                    'user_id' => 'required|string',
+                    'server' => 'required|string',
+                ]);
+
+                $userId = $request->input('user_id');
+                $serverId = $request->input('server');
+
+                // Format MLBB: User ID (Server ID)
+                $customerNo = $userId . $serverId;
+
+                // Cek nickname dulu sebelum melakukan pembelian
+                $nickname = $this->checkMLBBNickname($userId, $serverId);
+                if (!$nickname || (is_array($nickname) && isset($nickname['error_response']))) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User ID atau Server tidak valid. Mohon periksa kembali.',
+                    ], 400);
+                }
+            } else {
+                // Untuk produk non-MLBB
+                $request->validate([
+                    'customer_no' => 'required|string',
+                ]);
+                $customerNo = $request->input('customer_no');
+            }
+
+            // Build payload sesuai dokumentasi
+            $payload = [
+                'username' => $username,
                 'buyer_sku_code' => $buyerSku,
                 'customer_no' => $customerNo,
                 'ref_id' => $refId,
                 'sign' => $sign,
-            ],
-            'response' => $response->json(),
-        ]);
+            ];
 
-        return response()->json($response->json());
+            if ($testing) {
+                $payload['testing'] = true;
+            }
+
+            // Dapatkan harga dari price list
+            $priceList = PriceList::where('buyer_sku_code', $buyerSku)->first();
+            if (!$priceList) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harga produk tidak ditemukan',
+                ], 400);
+            }
+
+            // Calculate total amount
+            $price = $priceList->price;
+            $adminFee = $priceList->admin_fee ?? 0;
+            $total = $price + $adminFee;
+
+            // Validate minimum balance if needed
+            if (auth()->check() && auth()->user()->balance < $total) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Saldo tidak mencukupi untuk melakukan pembelian ini'
+                ], 400);
+            }
+
+            // Create transaction record
+            $transaction = \App\Models\Transaction::create([
+                'product_id' => $product->id,
+                'buyer_sku_code' => $buyerSku,
+                'customer_no' => $customerNo,
+                'user_id' => $isMLBB ? $request->input('user_id') : null,
+                'server_id' => $isMLBB ? $request->input('server') : null,
+                'ref_id' => $refId,
+                'status' => 'UNPAID',
+                'price' => $price,
+                'admin' => $adminFee,
+                'total' => $total,
+                'testing' => $testing,
+                'user_id' => auth()->id(), // Save authenticated user ID if available
+                'digiflazz_payload' => json_encode($payload), // Save payload for later use
+            ]);
+
+            // Setup Midtrans Payment
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $transaction->ref_id,
+                    'gross_amount' => $transaction->total,
+                ],
+                'customer_details' => [
+                    'first_name' => auth()->user()->name ?? 'Guest',
+                    'email' => auth()->user()->email ?? 'guest@example.com',
+                ],
+                'item_details' => [
+                    [
+                        'id' => $product->product_id,
+                        'price' => $transaction->price,
+                        'quantity' => 1,
+                        'name' => $product->product_name,
+                    ]
+                ]
+            ];
+
+            if ($transaction->admin > 0) {
+                $params['item_details'][] = [
+                    'id' => 'admin_fee',
+                    'price' => $transaction->admin,
+                    'quantity' => 1,
+                    'name' => 'Biaya Admin'
+                ];
+            }
+
+            try {
+                // Dapatkan Snap Token dari Midtrans
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                
+                // Update transaction dengan snap token
+                $transaction->update(['snap_token' => $snapToken]);
+
+                // Redirect langsung ke halaman pembayaran
+                return redirect()->route('payment.show', ['ref_id' => $transaction->ref_id]);
+
+            } catch (\Exception $e) {
+                \Log::error('Midtrans Error', ['error' => $e->getMessage()]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal memproses pembayaran'
+                ], 500);
+            }
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ], 404);
+        } catch (\Exception $e) {
+            \Log::error('Buy Digiflazz Error', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memproses pembelian'], 500);
+        }
     }
     public function showPublic($product_id)
     {
@@ -136,17 +264,19 @@ class ProdukController extends Controller
             // Pengecekan nickname MLBB yang sebenarnya
             // Menggunakan API MLBB atau service yang sesuai
             $nickname = $this->checkMLBBNickname($userId, $serverId);
+            // Jika response error, ambil pesan error yang bisa ditampilkan
             if (is_array($nickname) && isset($nickname['error_response'])) {
+                $digiflazz = $nickname['error_response'];
+                $errorMsg = isset($digiflazz['data']['message']) ? $digiflazz['data']['message'] : (isset($digiflazz['data']) ? json_encode($digiflazz['data']) : 'Nickname tidak ditemukan atau server sedang maintenance');
                 return response()->json([
                     'success' => false,
                     'nickname' => null,
-                    'message' => 'Nickname tidak ditemukan atau server sedang maintenance',
-                    'digiflazz_response' => $nickname['error_response'],
+                    'message' => $errorMsg,
                     'user_id' => $userId,
                     'server' => $serverId
                 ], 404);
             }
-            if ($nickname) {
+            if ($nickname && is_string($nickname)) {
                 return response()->json([
                     'success' => true,
                     'nickname' => $nickname,
@@ -248,5 +378,239 @@ class ProdukController extends Controller
         $randomNumber = rand(100, 999);
         
         return $baseNickname . $randomNumber;
+    }
+
+    /**
+     * Handle payment notification from Midtrans
+     */
+    public function handlePaymentNotification(Request $request)
+    {
+        try {
+            $notif = new \Midtrans\Notification();
+            
+            \Log::info('Payment Notification Received', [
+                'order_id' => $notif->order_id,
+                'transaction_status' => $notif->transaction_status,
+                'fraud_status' => $notif->fraud_status,
+                'payment_type' => $notif->payment_type,
+                'gross_amount' => $notif->gross_amount
+            ]);
+
+            $transaction = \App\Models\Transaction::where('ref_id', $notif->order_id)
+                ->lockForUpdate() // Prevent race conditions
+                ->firstOrFail();
+
+            // Verify transaction amount
+            if ((int)$notif->gross_amount !== (int)$transaction->total) {
+                \Log::error('Payment amount mismatch', [
+                    'expected' => $transaction->total,
+                    'received' => $notif->gross_amount
+                ]);
+                return response()->json(['status' => 'ERROR', 'message' => 'Amount mismatch'], 400);
+            }
+
+            // Update payment details
+            $transaction->payment_type = $notif->payment_type;
+            $transaction->payment_status = $notif->transaction_status;
+            $transaction->payment_time = now();
+            $transaction->payment_details = json_encode($notif);
+            
+            // Log payment status update
+            \Log::info('Payment Status Updated', [
+                'ref_id' => $transaction->ref_id,
+                'old_status' => $transaction->getOriginal('payment_status'),
+                'new_status' => $notif->transaction_status,
+            ]);
+
+            switch ($notif->transaction_status) {
+                case 'capture':
+                    if ($notif->fraud_status == 'challenge') {
+                        $transaction->status = 'CHALLENGE';
+                    } else if ($notif->fraud_status == 'accept') {
+                        $this->processDigiflazzTransaction($transaction);
+                    }
+                    break;
+                    
+                case 'settlement':
+                    $this->processDigiflazzTransaction($transaction);
+                    break;
+                    
+                case 'pending':
+                    $transaction->status = 'PENDING';
+                    break;
+                    
+                case 'deny':
+                case 'cancel':
+                case 'expire':
+                    $transaction->status = 'FAILED';
+                    // Optionally notify user about failed payment
+                    if ($transaction->user_id) {
+                        $transaction->user->notify(new \App\Notifications\PaymentFailedNotification($transaction));
+                    }
+                    break;
+                    
+                case 'refund':
+                    $transaction->status = 'REFUNDED';
+                    break;
+            }
+
+            $transaction->save();
+
+            \Log::info('Payment Notification Processed', [
+                'transaction_id' => $transaction->id,
+                'status' => $transaction->status
+            ]);
+            
+            return response()->json(['status' => 'OK']);
+            
+        } catch (\Exception $e) {
+            \Log::error('Payment Notification Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['status' => 'ERROR', 'message' => $e->getMessage()], 500);
+        }
+
+        return response()->json(['status' => 'OK']);
+    }
+
+    /**
+     * Process Digiflazz transaction after successful payment
+     */
+    private function processDigiflazzTransaction($transaction)
+    {
+        try {
+            $username = config('services.digiflazz.username');
+            $apiKey = config('services.digiflazz.api_key');
+            $baseUrl = config('services.digiflazz.base_url');
+            $sign = md5($username . $apiKey . $transaction->ref_id);
+
+            // Build payload untuk Digiflazz
+            $payload = [
+                'username' => $username,
+                'buyer_sku_code' => $transaction->buyer_sku_code,
+                'customer_no' => $transaction->customer_no,
+                'ref_id' => $transaction->ref_id,
+                'sign' => $sign,
+            ];
+
+            if ($transaction->testing) {
+                $payload['testing'] = true;
+            }
+
+            // Kirim request ke Digiflazz
+            $response = Http::post($baseUrl . '/transaction', $payload);
+            $result = $response->json();
+
+            // Log detail transaksi
+            \Log::info('Digiflazz Buy Response', [
+                'transaction_id' => $transaction->id,
+                'request' => $payload,
+                'response' => $result,
+            ]);
+
+            if (!$response->successful()) {
+                $transaction->status = 'FAILED';
+                $transaction->digiflazz_response = $result;
+                $transaction->save();
+                return;
+            }
+
+            // Update transaction dengan response dari Digiflazz
+            $responseData = $result['data'] ?? [];
+            $transaction->status = 'SUCCESS';
+            $transaction->sn = $responseData['sn'] ?? null;
+            $transaction->digiflazz_status = $responseData['status'] ?? null;
+            $transaction->digiflazz_message = $responseData['message'] ?? null;
+            $transaction->digiflazz_rc = $responseData['rc'] ?? null;
+            $transaction->digiflazz_response = $result;
+            $transaction->save();
+
+            // Kirim notifikasi ke user jika perlu
+            if ($transaction->user_id) {
+                $transaction->user->notify(new \App\Notifications\TransactionStatusNotification($transaction));
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Digiflazz Processing Error', [
+                'error' => $e->getMessage(),
+                'transaction_id' => $transaction->id
+            ]);
+            $transaction->status = 'ERROR';
+            $transaction->save();
+        }
+    }
+
+    /**
+     * Show payment page
+     */
+    public function showPayment($ref_id)
+    {
+        $transaction = \App\Models\Transaction::where('ref_id', $ref_id)
+            ->with('product')
+            ->firstOrFail();
+
+        // Jika transaksi gagal/cancel/expire, redirect ke produk
+        if (in_array($transaction->status, ['FAILED', 'ERROR', 'REFUNDED'])) {
+            return redirect()->route('produk.public', ['product_id' => $transaction->product->product_id])
+                ->with('error', 'Transaksi sudah gagal/dibatalkan. Silakan lakukan pembelian ulang.');
+        }
+
+        // Jika transaksi sudah sukses, redirect ke invoice
+        if (in_array($transaction->status, ['SUCCESS', 'PENDING']) && in_array($transaction->payment_status, ['settlement', 'capture'])) {
+            return redirect()->route('transaction.invoice', ['ref_id' => $ref_id]);
+        }
+
+        // Jika transaksi masih UNPAID, tampilkan halaman pembayaran
+        if ($transaction->status === 'UNPAID') {
+            return view('customer.payment', [
+                'snapToken' => $transaction->snap_token,
+                'transaction' => $transaction,
+                'product' => $transaction->product
+            ]);
+        }
+
+        // Default: redirect ke produk jika status tidak dikenali
+        return redirect()->route('produk.public', ['product_id' => $transaction->product->product_id])
+            ->with('error', 'Status transaksi tidak valid. Silakan lakukan pembelian ulang.');
+    }
+
+    /**
+     * Show invoice after successful payment
+     */
+    public function showInvoice($ref_id)
+    {
+        $transaction = \App\Models\Transaction::where('ref_id', $ref_id)
+            ->with('product') // Eager load product
+            ->firstOrFail();
+
+        // Cek status pembayaran dan transaksi
+        if ($transaction->payment_status !== 'settlement' && $transaction->payment_status !== 'capture') {
+            return redirect()->route('payment.show', ['ref_id' => $ref_id])
+                ->with('error', 'Silakan selesaikan pembayaran terlebih dahulu');
+        }
+
+        if (!in_array($transaction->status, ['SUCCESS', 'PENDING'])) {
+            return redirect()->route('produk.public', $transaction->product->product_id)
+                ->with('error', 'Invoice hanya tersedia untuk transaksi yang sudah dibayar atau sedang diproses');
+        }
+
+        return view('customer.invoice', [
+            'product' => $transaction->product,
+            'buyerSku' => $transaction->buyer_sku_code,
+            'customerNo' => $transaction->customer_no,
+            'userId' => $transaction->user_id,
+            'serverId' => $transaction->server_id,
+            'refId' => $transaction->ref_id,
+            'status' => $transaction->status,
+            'message' => $transaction->digiflazz_message ?? ($transaction->status === 'SUCCESS' ? 'Pembayaran berhasil' : 'Pembayaran sedang diproses'),
+            'sn' => $transaction->sn,
+            'price' => $transaction->price,
+            'admin' => $transaction->admin,
+            'testing' => $transaction->testing,
+            'digiflazz_status' => $transaction->digiflazz_status,
+            'created_at' => $transaction->created_at,
+            'paid_at' => $transaction->updated_at,
+        ]);
     }
 }
