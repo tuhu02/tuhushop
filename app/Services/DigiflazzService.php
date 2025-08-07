@@ -32,7 +32,7 @@ class DigiflazzService
         try {
             Log::info('Making top-up request to Digiflazz', $data);
 
-            $response = Http::post($this->baseUrl . '/transaction', $data);
+            $response = Http::timeout(30)->post($this->baseUrl . '/transaction', $data);
 
             if ($response->successful()) {
                 $responseData = $response->json();
@@ -74,14 +74,19 @@ class DigiflazzService
                     ];
                 }
             } else {
+                // HTTP request berhasil tapi response error
+                $responseData = $response->json();
+                $errorMessage = $responseData['data']['message'] ?? 'Transaction failed';
+                
                 Log::error('HTTP request failed to Digiflazz', [
                     'status_code' => $response->status(),
-                    'response' => $response->body()
+                    'response' => $response->body(),
+                    'error' => $errorMessage
                 ]);
                 
                 return [
                     'success' => false,
-                    'message' => 'Failed to connect to Digiflazz'
+                    'message' => $errorMessage
                 ];
             }
         } catch (\Exception $e) {
@@ -104,7 +109,15 @@ class DigiflazzService
      */
     private function generateSignature($refId)
     {
-        return md5($this->username . $this->apiKey . $refId);
+        // Format: md5(username + api_key + ref_id)
+        $signature = md5($this->username . $this->apiKey . $refId);
+        Log::info('Generated signature', [
+            'username' => $this->username,
+            'api_key' => substr($this->apiKey, 0, 8) . '...', // Log partial key for security
+            'ref_id' => $refId,
+            'signature' => $signature
+        ]);
+        return $signature;
     }
     
     // ===================================================================
@@ -120,39 +133,42 @@ class DigiflazzService
     {
         // Ambil denom/produk yang dibeli dari relasi
         $denom = $transaction->priceList; 
-        if (!$denom || !$denom->sku_digiflazz) {
+        if (!$denom || !$denom->kode_digiflazz) {
             Log::error('SKU DigiFlazz tidak ditemukan untuk transaksi', ['order_id' => $transaction->order_id]);
             throw new \Exception('SKU DigiFlazz tidak ditemukan pada data produk.');
         }
 
         $refId = $transaction->order_id; // Gunakan order_id Anda sebagai ref_id DigiFlazz
-        $sku = $denom->sku_digiflazz;
+        $sku = $denom->kode_digiflazz;
         $customerNo = $transaction->user_id_game;
         
-        if (!empty($transaction->server_id)) {
-            $customerNo .= $transaction->server_id;
-        }
+        // Format customer number properly - use only user_id_game for now
+        $customerNo = $transaction->user_id_game;
 
         // Buat signature dinamis khusus untuk transaksi ini
-        $signature = $this->generateSignature($refId);
+        // Gunakan format yang benar: username + api_key + ref_id
+        $signature = md5($this->username . $this->apiKey . $refId);
 
         Log::info('Mengirim pesanan ke DigiFlazz', compact('sku', 'customerNo', 'refId'));
 
-        $response = Http::post($this->baseUrl . '/transaction', [
+        $requestData = [
             'username' => $this->username,
             'buyer_sku_code' => $sku,
             'customer_no' => $customerNo,
             'ref_id' => $refId,
             'sign' => $signature,
-        ]);
+        ];
 
-        $responseData = $response->json()['data'] ?? null;
+        // Log the request data for debugging
+        Log::info('Request data to DigiFlazz', $requestData);
 
-        if ($response->successful() && isset($responseData['status']) && in_array(strtolower($responseData['status']), ['sukses', 'pending'])) {
-            return ['status' => 'success', 'data' => $responseData];
+        // Use the existing makeTopUpRequest method
+        $result = $this->makeTopUpRequest($requestData);
+        
+        if ($result['success']) {
+            return ['status' => 'success', 'data' => $result['data']];
         } else {
-            Log::error('Gagal memesan ke DigiFlazz', ['response' => $response->body()]);
-            return ['status' => 'failed', 'data' => $responseData ?? ['message' => 'Gagal menghubungi DigiFlazz.']];
+            return ['status' => 'failed', 'data' => ['message' => $result['message']]];
         }
     }
 

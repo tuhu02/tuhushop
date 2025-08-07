@@ -49,42 +49,24 @@ class ProcessTransaction implements ShouldQueue
                 'transaction_status' => Transaction::STATUS_PROCESSING
             ]);
 
-            // Get denom data from metadata
-            $denomId = $this->transaction->metadata['denom_id'] ?? null;
-            if (!$denomId) {
-                throw new \Exception('Denom ID not found in transaction metadata');
-            }
-
-            $denom = PriceList::find($denomId);
+            // Get denom data using the relationship
+            $denom = $this->transaction->priceList;
             if (!$denom || !$denom->kode_digiflazz) {
-                throw new \Exception('SKU Digiflazz not found for denom ID: ' . $denomId);
+                throw new \Exception('SKU Digiflazz not found for transaction: ' . $this->transaction->order_id);
             }
 
-            // Prepare data for Digiflazz
-            $digiflazzData = [
-                'username' => config('services.digiflazz.username'),
-                'buyer_sku_code' => $denom->kode_digiflazz,
-                'customer_no' => $this->transaction->user_id_game,
-                'ref_id' => $this->transaction->order_id,
-                'sign' => md5(config('services.digiflazz.username') . config('services.digiflazz.api_key') . $this->transaction->order_id),
-                'testing' => config('app.env') === 'local' ? 1 : 0
-            ];
 
-            // Add server_id if provided
-            if ($this->transaction->server_id) {
-                $digiflazzData['server_id'] = $this->transaction->server_id;
-            }
 
-            // Make request to Digiflazz
-            $response = $digiflazzService->makeTopUpRequest($digiflazzData);
+            // Use the service method instead of direct request
+            $result = $digiflazzService->orderProduct($this->transaction);
 
-            if ($response['success']) {
+            if ($result['status'] === 'success') {
                 // Update transaction with Digiflazz reference
                 $this->transaction->update([
-                    'digiflazz_ref_id' => $response['data']['ref_id'] ?? null,
+                    'digiflazz_ref_id' => $result['data']['ref_id'] ?? null,
                     'transaction_status' => Transaction::STATUS_SUCCESS,
                     'metadata' => array_merge($this->transaction->metadata ?? [], [
-                        'digiflazz_response' => $response['data']
+                        'digiflazz_response' => $result['data']
                     ])
                 ]);
 
@@ -93,12 +75,12 @@ class ProcessTransaction implements ShouldQueue
 
                 Log::info('Transaction processed successfully', [
                     'order_id' => $this->transaction->order_id,
-                    'digiflazz_ref_id' => $response['data']['ref_id'] ?? null
+                    'digiflazz_ref_id' => $result['data']['ref_id'] ?? null
                 ]);
 
             } else {
                 // Handle failure
-                $this->handleFailure($response['message'] ?? 'Unknown error');
+                $this->handleFailure($result['data']['message'] ?? 'Unknown error');
             }
 
         } catch (\Exception $e) {

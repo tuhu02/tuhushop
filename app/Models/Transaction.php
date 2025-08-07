@@ -73,6 +73,18 @@ class Transaction extends Model
     }
 
     /**
+     * Get the PriceList item using direct access to metadata.
+     */
+    public function getPriceListAttribute()
+    {
+        $denomId = $this->metadata['denom_id'] ?? null;
+        if ($denomId) {
+            return PriceList::find($denomId);
+        }
+        return null;
+    }
+
+    /**
      * Get the user that owns the transaction.
      */
     public function user(): BelongsTo
