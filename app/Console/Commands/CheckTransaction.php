@@ -59,7 +59,8 @@ class CheckTransaction extends Command
                     ['ID', $denom->id],
                     ['Product Name', $denom->nama_produk],
                     ['Digiflazz Code', $denom->kode_digiflazz ?? 'NOT SET'],
-                    ['Price', 'Rp ' . number_format($denom->harga, 0, ',', '.')],
+                    ['Harga Beli', 'Rp ' . number_format($denom->harga_beli, 0, ',', '.')],
+                    ['Harga Jual', 'Rp ' . number_format($denom->harga_jual, 0, ',', '.')],
                 ]);
             } else {
                 $this->error('Denom not found for ID: ' . $denomId);

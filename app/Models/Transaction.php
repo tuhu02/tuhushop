@@ -25,7 +25,6 @@ class Transaction extends Model
         'server_id',
         'notes',
         'digiflazz_ref_id',
-        'payment_gateway_ref',
         'commission_amount',
         'reseller_id',
         'ip_address',

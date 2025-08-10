@@ -509,22 +509,43 @@ class ProdukController extends Controller
                 'response' => $result,
             ]);
 
+            // Jika respons gagal, update status jadi FAILED
             if (!$response->successful()) {
                 $transaction->status = 'FAILED';
                 $transaction->digiflazz_response = $result;
                 $transaction->save();
+                \Log::error('Digiflazz response not successful', ['response' => $result]);
                 return;
             }
 
             // Update transaction dengan response dari Digiflazz
             $responseData = $result['data'] ?? [];
-            $transaction->status = 'SUCCESS';
+            $digiflazzStatus = $responseData['status'] ?? null;
+            $digiflazzMessage = $responseData['message'] ?? null;
+
+            // Jika status Digiflazz sukses, update jadi SUCCESS
+            if (strtolower($digiflazzStatus) === 'sukses' || strtolower($digiflazzStatus) === 'success') {
+                $transaction->status = 'SUCCESS';
+            } else if (strtolower($digiflazzStatus) === 'pending' || strtolower($digiflazzStatus) === 'processing') {
+                $transaction->status = 'PENDING';
+            } else {
+                $transaction->status = 'FAILED';
+            }
+
             $transaction->sn = $responseData['sn'] ?? null;
-            $transaction->digiflazz_status = $responseData['status'] ?? null;
-            $transaction->digiflazz_message = $responseData['message'] ?? null;
+            $transaction->digiflazz_status = $digiflazzStatus;
+            $transaction->digiflazz_message = $digiflazzMessage;
             $transaction->digiflazz_rc = $responseData['rc'] ?? null;
             $transaction->digiflazz_response = $result;
             $transaction->save();
+
+            \Log::info('Digiflazz transaction status updated', [
+                'transaction_id' => $transaction->id,
+                'status' => $transaction->status,
+                'digiflazz_status' => $digiflazzStatus,
+                'digiflazz_message' => $digiflazzMessage,
+                'response' => $result
+            ]);
 
             // Kirim notifikasi ke user jika perlu
             if ($transaction->user_id) {

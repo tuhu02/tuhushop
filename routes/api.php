@@ -18,3 +18,8 @@ use App\Http\Controllers\WebhookController;
  * Ini adalah rute terpenting untuk proses otomatisasi pesanan.
  */
 Route::post('/midtrans/callback', [WebhookController::class, 'handle'])->name('midtrans.callback');
+
+/**
+ * Endpoint untuk polling status invoice
+ */
+Route::get('/check-status/{ref_id}', [\App\Http\Controllers\ProdukController::class, 'apiCheckStatus'])->name('api.check.status');

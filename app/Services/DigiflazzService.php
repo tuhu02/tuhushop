@@ -39,9 +39,29 @@ class DigiflazzService
                 
                 if (isset($responseData['data'])) {
                     $status = strtolower($responseData['data']['status'] ?? '');
+                    $serialNumber = $responseData['data']['sn'] ?? null;
                     
-                    if (in_array($status, ['sukses', 'pending'])) {
+                    // Jika ada serial number, maka transaksi berhasil meskipun status pending
+                    $isSuccessful = ($status === 'sukses') || 
+                                   ($status === 'success') || 
+                                   ($status === 'pending' && !empty($serialNumber));
+                    
+                    if (in_array($status, ['sukses', 'success', 'pending']) && $isSuccessful) {
                         Log::info('Top-up request successful', [
+                            'ref_id' => $data['ref_id'],
+                            'status' => $status,
+                            'serial_number' => $serialNumber,
+                            'is_successful' => $isSuccessful,
+                            'response' => $responseData['data']
+                        ]);
+                        
+                        return [
+                            'success' => true,
+                            'data' => $responseData['data']
+                        ];
+                    } else if (in_array($status, ['pending']) && empty($serialNumber)) {
+                        // Still processing - no serial number yet
+                        Log::info('Top-up request still processing', [
                             'ref_id' => $data['ref_id'],
                             'status' => $status,
                             'response' => $responseData['data']
@@ -49,7 +69,8 @@ class DigiflazzService
                         
                         return [
                             'success' => true,
-                            'data' => $responseData['data']
+                            'data' => $responseData['data'],
+                            'processing' => true
                         ];
                     } else {
                         Log::error('Top-up request failed', [

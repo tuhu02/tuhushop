@@ -61,21 +61,34 @@ class ProcessTransaction implements ShouldQueue
             $result = $digiflazzService->orderProduct($this->transaction);
 
             if ($result['status'] === 'success') {
+                // Check if transaction is actually successful based on serial number
+                $serialNumber = $result['data']['sn'] ?? null;
+                $status = strtolower($result['data']['status'] ?? '');
+                
+                $isSuccessful = ($status === 'sukses') || 
+                               ($status === 'success') || 
+                               ($status === 'pending' && !empty($serialNumber));
+                
+                $finalStatus = $isSuccessful ? Transaction::STATUS_SUCCESS : Transaction::STATUS_PROCESSING;
+                
                 // Update transaction with Digiflazz reference
                 $this->transaction->update([
                     'digiflazz_ref_id' => $result['data']['ref_id'] ?? null,
-                    'transaction_status' => Transaction::STATUS_SUCCESS,
+                    'transaction_status' => $finalStatus,
                     'metadata' => array_merge($this->transaction->metadata ?? [], [
                         'digiflazz_response' => $result['data']
                     ])
                 ]);
 
-                // Send success notification
-                $this->sendNotification('success');
+                // Send notification based on final status
+                $this->sendNotification($finalStatus === Transaction::STATUS_SUCCESS ? 'success' : 'processing');
 
-                Log::info('Transaction processed successfully', [
+                Log::info('Transaction processed', [
                     'order_id' => $this->transaction->order_id,
-                    'digiflazz_ref_id' => $result['data']['ref_id'] ?? null
+                    'digiflazz_ref_id' => $result['data']['ref_id'] ?? null,
+                    'final_status' => $finalStatus,
+                    'is_successful' => $isSuccessful,
+                    'serial_number' => $serialNumber
                 ]);
 
             } else {

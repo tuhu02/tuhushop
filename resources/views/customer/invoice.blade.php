@@ -492,17 +492,16 @@
         
         function startAutoRefresh() {
             refreshInterval = setInterval(function() {
-                checkDigiflazzStatus();
-            }, 30000); // Refresh setiap 30 detik
+                checkInvoiceStatus();
+            }, 10000); // Refresh setiap 10 detik
         }
-        
-        function checkDigiflazzStatus() {
-            fetch('{{ route("check.digiflazz.status", ["orderId" => $trx->order_id]) }}')
+
+        function checkInvoiceStatus() {
+            fetch('/api/check-status/{{ $trx->ref_id ?? $trx->order_id }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        if (data.status === 'success' || data.status === 'failed') {
-                            // Stop auto refresh and reload page
+                        if (data.status === 'SUCCESS' || data.status === 'FAILED') {
                             clearInterval(refreshInterval);
                             location.reload();
                         }
@@ -512,17 +511,13 @@
                     console.error('Error checking status:', error);
                 });
         }
-        
-        function refreshStatus() {
-            checkDigiflazzStatus();
-        }
-        
+
         // Start auto refresh when page loads
         document.addEventListener('DOMContentLoaded', function() {
             startAutoRefresh();
         });
         @endif
-        
+
         // Manual refresh function
         function refreshStatus() {
             location.reload();

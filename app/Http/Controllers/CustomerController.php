@@ -458,10 +458,18 @@ class CustomerController extends Controller
                 
                 if (isset($responseData['data'])) {
                     $status = strtolower($responseData['data']['status'] ?? '');
+                    $serialNumber = $responseData['data']['sn'] ?? null;
                     
-                    if (in_array($status, ['sukses', 'pending'])) {
+                    // Jika ada serial number, maka transaksi berhasil meskipun status pending
+                    $isSuccessful = ($status === 'sukses') || 
+                                   ($status === 'success') || 
+                                   ($status === 'pending' && !empty($serialNumber));
+                    
+                    if (in_array($status, ['sukses', 'success', 'pending'])) {
+                        $finalStatus = $isSuccessful ? 'success' : 'processing';
+                        
                         $trx->update([
-                            'transaction_status' => $status === 'sukses' ? 'success' : 'processing',
+                            'transaction_status' => $finalStatus,
                             'metadata' => array_merge($trx->metadata ?? [], [
                                 'digiflazz_response' => $responseData['data']
                             ])
@@ -469,7 +477,7 @@ class CustomerController extends Controller
                         
                         return response()->json([
                             'success' => true,
-                            'status' => $status === 'sukses' ? 'success' : 'processing',
+                            'status' => $finalStatus,
                             'data' => $responseData['data']
                         ]);
                     } else {
